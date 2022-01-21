@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SHADE DAIDE2Gloss Translator</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" >
+  <link rel="icon" href="data:,">
+  <script>
+
+    var moveunit = '';
+    var convoyunit = '';
+    var supportunit = '';
+    var provlist = '';
+    var lastselectedprov = '';
+
+    function createPost(data)
+    {
+      $.ajax({
+          url: "/daide2gloss",
+          type: "POST",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: function(result, status) {
+            document.getElementById('glosslabel').innerText = result["gloss"]
+          }
+        });
+    }
+
+    $(document).ready(function() {
+      $('#clearbutton').click(function() {
+        $('input:checked').removeAttr('checked');
+        document.getElementById('daidelabel').innerText = '';
+        moveunit = '';
+        convoyunit = '';
+        supportunit = '';
+        provlist = '';
+        lastselectedprov = '';
+        createPost({'daidetext': '', 'tones': []});
+      });
+    });
+
+    function updateMove() {
+      var movepower = $("input[name='movepower']:checked").val();
+      if (movepower != null) {
+        movepower = movepower.substr(movepower.length - 3);
+      }
+      var unittype = $("input[name='unittype']:checked").val();
+      var roletype = $("input[name='roletype']:checked").val();
+      if (roletype === null) {
+        moveunit = movepower + ' ' + unittype + ' ' + lastselectedprov
+      }
+      else if (roletype == 'Focus') {
+        moveunit = movepower + ' ' + unittype + ' ' + lastselectedprov
+      }
+      else if (roletype == 'Support') {
+        supportunit = movepower + ' ' + unittype + ' ' + lastselectedprov
+      }
+      else if (roletype == 'Convoy') {
+        convoyunit = movepower + ' ' + unittype + ' ' + lastselectedprov
+      }
+    }
+
+    function updateGloss() {
+      var frompower = $("input[name='frompower']:checked").val();
+      if (frompower != null) {
+        frompower = frompower.substr(frompower.length - 3);
+      }
+      var topowers = [];
+      $.each($("input[name='topower']:checked"), function() {
+        var curval = $(this).val();
+        topowers.push(curval.substr(curval.length - 3))
+      });
+      var messtype = $("input[name='msgtype']:checked").val();
+      var truetype = $("input[name='trutype']:checked").val();
+      var restype = $("input[name='resptype']:checked").val();
+      var actiontype = $("input[name='acttype']:checked").val();
+      var actpowers = [];
+      $.each($("input[name='actpower']:checked"), function() {
+        var curval = $(this).val();
+        actpowers.push(curval.substr(curval.length - 3))
+      });
+      var tarpowers = [];
+      $.each($("input[name='tarpower']:checked"), function() {
+        var curval = $(this).val();
+        tarpowers.push(curval.substr(curval.length - 3))
+      });
+      var messtones = [];
+      $.each($("input[name='tones']:checked"), function() {
+        messtones.push($(this).val())
+      });
+
+      var daidestr = '';
+      if (frompower != null) {
+        daidestr += 'FRM (' + frompower + ')';
+      }
+      if (topowers.length > 0) {
+        daidestr += ' (' + topowers.join(' ') + ')';
+      }
+
+      var actiondaide = '';
+      if (actiontype == 'PCE') {
+        actiondaide = '(PCE (' + actpowers.join(' ') + '))';
+      }
+      else if (actiontype == 'DRW') {
+        if (actpowers.length > 0) {
+          actiondaide = '(DRW (' + actpowers.join(' ') + '))';
+        }
+        else {
+          actiondaide = '(DRW)';
+        }
+      }
+      else if (actiontype == 'SLO') {
+        actiondaide = '(SLO (' + actpowers.join(' ') + '))';
+      }
+      else if (actiontype == 'ALY') {
+        actiondaide = '(ALY (' + actpowers.join(' ') + ') VSS (' + tarpowers.join(' ') + '))';
+      }
+      else if (actiontype == 'DMZ') {
+        actiondaide = '(DMZ (' + actpowers.join(' ') + ') (' + provlist.trim() + '))';
+      }
+      else if (actiontype == 'HLD') {
+        actiondaide = '(XDO ((' + moveunit + ') HLD))';
+      }
+      else if (actiontype == 'WVE') {
+        actiondaide = '(XDO (' + actpowers.join(' ') + ' WVE))';
+      }
+      else if (actiontype == 'DSB') {
+        actiondaide = '(XDO ((' + moveunit + ') DSB))';
+      }
+      else if (actiontype == 'REM') {
+        actiondaide = '(XDO ((' + moveunit + ') REM))';
+      }
+      else if (actiontype == 'BLD') {
+        actiondaide = '(XDO ((' + moveunit + ') BLD))';
+      }
+      else if (actiontype == 'MTO') {
+        actiondaide = '(XDO ((' + moveunit + ') MTO ' + lastselectedprov + '))';
+      }
+      else if (actiontype == 'RTO') {
+        actiondaide = '(XDO ((' + moveunit + ') RTO ' + lastselectedprov + '))';
+      }
+      else if (actiontype == 'SUPH') {
+        actiondaide = '(XDO ((' + supportunit + ') SUP (' + moveunit + ')))';
+      }
+      else if (actiontype == 'SUPM') {
+        actiondaide = '(XDO ((' + supportunit + ') SUP (' + moveunit + ') MTO ' + lastselectedprov + '))';
+      }
+      else if (actiontype == 'CVY') {
+        actiondaide = '(XDO ((' + convoyunit + ') CVY (' + moveunit + ') CTO ' + lastselectedprov + '))';
+      }
+      else if (actiontype == 'CTO') {
+        actiondaide = '(XDO ((' + moveunit + ') CTO ' + lastselectedprov + ' VIA (' + provlist.trim() + ')))';
+      }
+
+      if (truetype == 'NOT') {
+        actiondaide = '(NOT ' + actiondaide + ')';
+      }
+      else if (truetype == 'NAR') {
+        actiondaide = '(NAR ' + actiondaide + ')';
+      }
+
+      if (messtype == 'PRP') {
+        actiondaide = '(PRP ' + actiondaide + ')';
+      }
+      else if (messtype == 'FCT') {
+        actiondaide = '(FCT ' + actiondaide + ')';
+      }
+
+      if (restype == 'YES') {
+        actiondaide = '(YES ' + actiondaide + ')';
+      }
+      else if (restype == 'REJ') {
+        actiondaide = '(REJ ' + actiondaide + ')';
+      }
+      else if (restype == 'BWX') {
+        actiondaide = '(BWX ' + actiondaide + ')';
+      }
+      else if (restype == 'HUH') {
+        actiondaide = '(HUH ' + actiondaide + ')';
+      }
+      else if (restype == 'CCL') {
+        actiondaide = '(CCL ' + actiondaide + ')';
+      }
+
+      daidestr += ' ' + actiondaide;
+      document.getElementById('daidelabel').innerText = daidestr;
+      createPost({'daidetext': daidestr, 'tones': messtones});
+    }
+
+    $(document).ready(function() {
+      $('#DIPLOMAP').click(function(e) {
+        e.preventDefault();
+        lastselectedprov = e.target.id;
+        provlist += e.target.id + ' ';
+        updateMove();
+        updateGloss();
+      });
+    });
+
+    $(document).ready(function() {
+      $('#daidebuilder').change(function() {
+        updateGloss();
+      });
+    });
+
+    $(document).ready(function() {
+      $("input[name='roletype'").change(function() {
+        var selectedrole = $("input[name='roletype']:checked").val();
+        if (selectedrole == 'Path') {
+          provlist = ''
+        }
+        updateMove();
+        updateGloss();
+      });
+    });
+
+    $(document).ready(function() {
+      $("input[name='unittype'").change(function() {
+        updateMove();
+        updateGloss();
+      });
+    });
+
+    $(document).ready(function() {
+      $("input[name='movepower'").change(function() {
+        updateMove();
+        updateGloss();
+      });
+    });
+  </script>
+</head>
+  <body>
+
+    <div class="devtitle">
+      <a href="https://devtechnology.com/">
+        <img id="devlogo" src="static/img/DevLogo.png" alt="Foo Co.: Where everyone can fizz the buzz" >
+      </a>
+      DAIDE Gloss Generator
+    </div>
+
+    <div id="introtext">
+      <p style="text-align: center; font-weight: 550; margin-right: 8%; margin-bottom: 0.5%;"> Welcome to the DAIDE Gloss Generator - turn your formal Diplomacy utterances into human-readable text!
+      </p>
+        <span style="font-weight: normal;font-size: small;">Start by choosing options of what level 10-20 DAIDE Diplomacy message to build.
+          As soon as something intelligible is constructed, an English gloss will show up.
+        <br/><br/>We can currently understand any statements about alliances, peace deals, draws, solo wins, DMZs or moves involving Great Powers.
+          <br/><br/><p style="font-weight: bold;font-size: small;">*The following application has been tested in Firefox.</p>
+        </span>
+
+    </div>
+
+    <div class="daideentry">
+      <table>
+        <tr>
+          <td>
+            <form id="daidebuilder">
+              <table class="classytable">
+                <thead>
+                  <tr>
+                    <th>
+                      From
+                    </th>
+                    <th>
+                      To
+                    </th>
+                    <th>
+                      Message Type
+                    </th>
+                    <th>
+                      Response Type
+                    </th>
+                    <th>
+                      Truth Value
+                    </th>
+                    <th>
+                      Action Type
+                    </th>
+                    <th>
+                      Actors
+                    </th>
+                    <th>
+                      Targets
+                    </th>
+                    <th>
+                      Tones
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <label><input type="radio" name="frompower" value="FAUS">Austria</label>
+                      <label><input type="radio" name="frompower" value="FFRA">France</label>
+                      <label><input type="radio" name="frompower" value="FGER">Germany</label>
+                      <label><input type="radio" name="frompower" value="FENG">Great Britain</label>
+                      <label><input type="radio" name="frompower" value="FITA">Italy</label>
+                      <label><input type="radio" name="frompower" value="FRUS">Russia</label>
+                      <label><input type="radio" name="frompower" value="FTUR">Turkey</label>
+                    </td>
+                    <td>
+                      <label><input type="checkbox" name="topower" value="TAUS">Austria</label>
+                      <label><input type="checkbox" name="topower" value="TFRA">France</label>
+                      <label><input type="checkbox" name="topower" value="TGER">Germany</label>
+                      <label><input type="checkbox" name="topower" value="TENG">Great Britain</label>
+                      <label><input type="checkbox" name="topower" value="TITA">Italy</label>
+                      <label><input type="checkbox" name="topower" value="TRUS">Russia</label>
+                      <label><input type="checkbox" name="topower" value="TTUR">Turkey</label>
+                    </td>
+                    <td>
+                      <label><input type="radio" name="msgtype" value="PRP">Proposal</label>
+                      <label><input type="radio" name="msgtype" value="FCT">Fact</label>
+                    </td>
+                    <td>
+                      <label><input type="radio" name="resptype" value="None">None</label>
+                      <label><input type="radio" name="resptype" value="YES">Agree</label>
+                      <label><input type="radio" name="resptype" value="REJ">Reject</label>
+                      <label><input type="radio" name="resptype" value="BWX">Ignore</label>
+                      <label><input type="radio" name="resptype" value="HUH">Huh?</label>
+                      <label><input type="radio" name="resptype" value="CCL">Cancel</label>
+                    </td>
+                    <td>
+                      <label><input type="radio" name="trutype" value="TRU">True</label>
+                      <label><input type="radio" name="trutype" value="NOT">False</label>
+                      <label><input type="radio" name="trutype" value="NAR">Unknown</label>
+                    </td>
+                    <td>
+                      <label><input type="radio" name="acttype" value="PCE">Peace</label>
+                      <label><input type="radio" name="acttype" value="ALY">Alliance</label>
+                      <label><input type="radio" name="acttype" value="DRW">Draw</label>
+                      <label><input type="radio" name="acttype" value="SLO">Solo</label>
+                      <label><input type="radio" name="acttype" value="MTO">Move</label>
+                      <label><input type="radio" name="acttype" value="SUPM">Support Move</label>
+                      <label><input type="radio" name="acttype" value="HLD">Hold</label>
+                      <label><input type="radio" name="acttype" value="SUPH">Support Hold</label>
+                      <label><input type="radio" name="acttype" value="CVY">Convoy</label>
+                      <label><input type="radio" name="acttype" value="CTO">Move via Convoy</label>
+                      <label><input type="radio" name="acttype" value="DMZ">DMZ</label>
+                      <label><input type="radio" name="acttype" value="RTO">Retreat</label>
+                      <label><input type="radio" name="acttype" value="DSB">Disband</label>
+                      <label><input type="radio" name="acttype" value="BLD">Build Unit</label>
+                      <label><input type="radio" name="acttype" value="REM">Remove Unit</label>
+                      <label><input type="radio" name="acttype" value="WVE">Waive Build</label>
+                    </td>
+                    <td>
+                      <label><input type="checkbox" name="actpower" value="ACTAUS">Austria</label>
+                      <label><input type="checkbox" name="actpower" value="ACTFRA">France</label>
+                      <label><input type="checkbox" name="actpower" value="ACTGER">Germany</label>
+                      <label><input type="checkbox" name="actpower" value="ACTENG">Great Britain</label>
+                      <label><input type="checkbox" name="actpower" value="ACTITA">Italy</label>
+                      <label><input type="checkbox" name="actpower" value="ACTRUS">Russia</label>
+                      <label><input type="checkbox" name="actpower" value="ACTTUR">Turkey</label>
+                    </td>
+                    <td>
+                      <label><input type="checkbox" name="tarpower" value="TARAUS">Austria</label>
+                      <label><input type="checkbox" name="tarpower" value="TARFRA">France</label>
+                      <label><input type="checkbox" name="tarpower" value="TARGER">Germany</label>
+                      <label><input type="checkbox" name="tarpower" value="TARENG">Great Britain</label>
+                      <label><input type="checkbox" name="tarpower" value="TARITA">Italy</label>
+                      <label><input type="checkbox" name="tarpower" value="TARRUS">Russia</label>
+                      <label><input type="checkbox" name="tarpower" value="TARTUR">Turkey</label>
+                    </td>
+                    <td>
+                      <label><input type="checkbox" name="tones" value="Objective">Objective</label>
+                      <label><input type="checkbox" name="tones" value="Haughty">Haughty</label>
+                      <label><input type="checkbox" name="tones" value="Obsequious">Obsequious</label>
+                      <label><input type="checkbox" name="tones" value="Urgent">Urgent</label>
+                      <label><input type="checkbox" name="tones" value="Relaxed">Relaxed</label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </td>
+          <td>
+            <img id="diploimg" src="static/img/DiplomacyMap600.png" alt="Diplomacy Map" usemap="#image-map">
+            <map name="image-map" id="DIPLOMAP">
+              <area id="SPA" target="_self" alt="Spain" title="Spain" href="#" coords="78,432,103,447" shape="rect">
+              <area id="POR" target="_self" alt="Portugal" title="Portugal" href="#" coords="19,423,37,436" shape="rect">
+              <area id="ADR" target="_self" alt="Adriatic" title="Adriatic" href="#" coords="300,443,321,453" shape="rect">
+              <area id="AEG" target="_self" alt="Aegean" title="Aegean" href="#" coords="380,493,405,506" shape="rect">
+              <area id="ALB" target="_self" alt="Albania" title="Albania" href="#" coords="328,443,339,454" shape="rect">
+              <area id="ANK" target="_self" alt="Ankara" title="Ankara" href="#" coords="498,440,519,451" shape="rect">
+              <area id="APU" target="_self" alt="Apulia" title="Apulia" href="#" coords="282,455,301,466" shape="rect">
+              <area id="ARM" target="_self" alt="Armenia" title="Armenia" href="#" coords="570,450,593,462" shape="rect">
+              <area id="BAL" target="_self" alt="Baltic" title="Baltic" href="#" coords="297,247,320,257" shape="rect">
+              <area id="BAR" target="_self" alt="Barents" title="Barents" href="#" coords="425,4,455,18" shape="rect">
+              <area id="BEL" target="_self" alt="Belgium" title="Belgium" href="#" coords="185,307,200,317" shape="rect">
+              <area id="BER" target="_self" alt="Berlin" title="Berlin" href="#" coords="265,278,283,288" shape="rect">
+              <area id="BLA" target="_self" alt="Black Sea" title="Black Sea" href="#" coords="485,403,510,415" shape="rect">
+              <area id="BOH" target="_self" alt="Bohemia" title="Bohemia" href="#" coords="276,332,292,341" shape="rect">
+              <area id="BRE" target="_self" alt="Brest" title="Brest" href="#" coords="124,330,140,342" shape="rect">
+              <area id="BUD" target="_self" alt="Budapest" title="Budapest" href="#" coords="338,372,364,386" shape="rect">
+              <area id="BUL" target="_self" alt="Bulgaria" title="Bulgaria" href="#" coords="384,427,403,438" shape="rect">
+              <area id="BUR" target="_self" alt="Burgundy" title="Burgundy" href="#" coords="178,356,194,366" shape="rect">
+              <area id="CLY" target="_self" alt="Clyde" title="Clyde" href="#" coords="128,190,141,198" shape="rect">
+              <area id="CON" target="_self" alt="Constantinople" title="Constantinople" href="#" coords="426,465,445,476" shape="rect">
+              <area id="DEN" target="_self" alt="Denmark" title="Denmark" href="#" coords="245,224,261,232" shape="rect">
+              <area id="EAS" target="_self" alt="Eastern Mediterranean" title="Eastern Mediterranean" href="#" coords="441,533,470,543" shape="rect">
+              <area id="ECH" target="_self" alt="English Channel" title="English Channel" href="#" coords="130,293,153,303" shape="rect">
+              <area id="EDI" target="_self" alt="Edinburgh" title="Edinburgh" href="#" coords="149,190,163,200" shape="rect">
+              <area id="FIN" target="_self" alt="Finland" title="Finland" href="#" coords="364,148,385,160" shape="rect">
+              <area id="GAL" target="_self" alt="Galecia" title="Galecia" href="#" coords="345,329,364,342" shape="rect">
+              <area id="GAS" target="_self" alt="Gascony" title="Gascony" href="#" coords="125,385,143,394" shape="rect">
+              <area id="GOB" target="_self" alt="Bothnia" title="Bothnia" href="#" coords="319,163,338,174" shape="rect">
+              <area id="GOL" target="_self" alt="Gulf of Lyon" title="Gulf of Lyon" href="#" coords="163,441,185,451" shape="rect">
+              <area id="GRE" target="_self" alt="Greece" title="Greece" href="#" coords="342,472,361,484" shape="rect">
+              <area id="HEL" target="_self" alt="Helgoland" title="Helgoland" href="#" coords="213,251,233,262" shape="rect">
+              <area id="HOL" target="_self" alt="Holland" title="Holland" href="#" coords="201,277,221,285" shape="rect">
+              <area id="ION" target="_self" alt="Ionian" title="Ionian" href="#" coords="304,502,327,516" shape="rect">
+              <area id="IRI" target="_self" alt="Irish Sea" title="Irish Sea" href="#" coords="91,255,106,270" shape="rect">
+              <area id="KIE" target="_self" alt="Kiel" title="Kiel" href="#" coords="228,272,250,285" shape="rect">
+              <area id="LON" target="_self" alt="London" title="London" href="#" coords="152,273,167,285" shape="rect">
+              <area id="LVN" target="_self" alt="Livonia" title="Livonia" href="#" coords="369,246,390,259" shape="rect">
+              <area id="LVP" target="_self" alt="Liverpool" title="Liverpool" href="#" coords="133,219,147,228" shape="rect">
+              <area id="MAO" target="_self" alt="Mid-Atlantic" title="Mid-Atlantic" href="#" coords="40,336,73,354" shape="rect">
+              <area id="MAR" target="_self" alt="Marseilles" title="Marseilles" href="#" coords="166,397,187,409" shape="rect">
+              <area id="MOS" target="_self" alt="Moscow" title="Moscow" href="#" coords="447,249,473,266" shape="rect">
+              <area id="MUN" target="_self" alt="Munich" title="Munich" href="#" coords="226,345,249,359" shape="rect">
+              <area id="NAF" target="_self" alt="North Africa" title="North Africa" href="#" coords="122,515,147,535" shape="rect">
+              <area id="NAO" target="_self" alt="North Atlantic" title="North Atlantic" href="#" coords="56,107,87,120" shape="rect">
+              <area id="NAP" target="_self" alt="Naples" title="Naples" href="#" coords="282,474,303,487" shape="rect">
+              <area id="NTH" target="_self" alt="North Sea" title="North Sea" href="#" coords="182,214,205,227" shape="rect">
+              <area id="NWG" target="_self" alt="Norwegian Sea" title="Norwegian Sea" href="#" coords="211,55,243,74" shape="rect">
+              <area id="NWY" target="_self" alt="Norway" title="Norway" href="#" coords="241,164,263,175" shape="rect">
+              <area id="PAR" target="_self" alt="Paris" title="Paris" href="#" coords="148,343,166,354" shape="rect">
+              <area id="PIC" target="_self" alt="Picardy" title="Picardy" href="#" coords="162,311,179,322" shape="rect">
+              <area id="PIE" target="_self" alt="Piedmont" title="Piedmont" href="#" coords="207,392,222,403" shape="rect">
+              <area id="PRU" target="_self" alt="Prussia" title="Prussia" href="#" coords="325,271,344,281" shape="rect">
+              <area id="ROM" target="_self" alt="Rome" title="Rome" href="#" coords="247,438,266,450" shape="rect">
+              <area id="RUH" target="_self" alt="Ruhr" title="Ruhr" href="#" coords="207,315,227,325" shape="rect">
+              <area id="RUM" target="_self" alt="Rumania" title="Rumania" href="#" coords="399,399,423,409" shape="rect">
+              <area id="SER" target="_self" alt="Serbia" title="Serbia" href="#" coords="340,434,358,446" shape="rect">
+              <area id="SEV" target="_self" alt="Sevastopol" title="Sevastopol" href="#" coords="525,333,550,349" shape="rect">
+              <area id="SIL" target="_self" alt="Silesia" title="Silesia" href="#" coords="296,312,311,322" shape="rect">
+              <area id="SKA" target="_self" alt="Skaggerack" title="Skaggerack" href="#" coords="249,207,270,218" shape="rect">
+              <area id="SMY" target="_self" alt="Smyrna" title="Smyrna" href="#" coords="449,494,469,504" shape="rect">
+              <area id="STP" target="_self" alt="St. Petersburg" title="St. Petersburg" href="#" coords="447,135,469,154" shape="rect">
+              <area id="SWE" target="_self" alt="Sweden" title="Sweden" href="#" coords="290,157,312,169" shape="rect">
+              <area id="SYR" target="_self" alt="Syria" title="Syria" href="#" coords="557,518,577,531" shape="rect">
+              <area id="TRI" target="_self" alt="Trieste" title="Trieste" href="#" coords="293,407,314,420" shape="rect">
+              <area id="TUN" target="_self" alt="Tunis" title="Tunis" href="#" coords="202,535,221,547" shape="rect">
+              <area id="TUS" target="_self" alt="Tuscany" title="Tuscany" href="#" coords="232,408,250,420" shape="rect">
+              <area id="TYR" target="_self" alt="Tyrolia" title="Tyrolia" href="#" coords="249,365,262,376" shape="rect">
+              <area id="TYS" target="_self" alt="Tyrrhenian Sea" title="Tyrrhenian Sea" href="#" coords="234,475,259,488" shape="rect">
+              <area id="UKR" target="_self" alt="Ukraine" title="Ukraine" href="#" coords="405,324,431,338" shape="rect">
+              <area id="VEN" target="_self" alt="Venice" title="Venice" href="#" coords="238,392,257,402" shape="rect">
+              <area id="VIE" target="_self" alt="Vienna" title="Vienna" href="#" coords="297,355,314,364" shape="rect">
+              <area id="WAL" target="_self" alt="Wales" title="Wales" href="#" coords="122,262,141,273" shape="rect">
+              <area id="WAR" target="_self" alt="Warsaw" title="Warsaw" href="#" coords="345,290,367,300" shape="rect">
+              <area id="WES" target="_self" alt="Western Mediterranean" title="Western Mediterranean" href="#" coords="152,473,184,485" shape="rect">
+              <area id="YOR" target="_self" alt="Yorkshire" title="Yorkshire" href="#" coords="151,243,165,249" shape="rect">
+            </map>
+            <br>
+            <form id="movebuilder">
+              <table class="classytable">
+                <thead>
+                  <tr>
+                    <th>
+                      Power
+                    </th>
+                    <th>
+                      Unit Type
+                    </th>
+                    <th>
+                      Role
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <label><input type="radio" name="movepower" value="MAUS">Austria</label>
+                      <label><input type="radio" name="movepower" value="MFRA">France</label>
+                      <label><input type="radio" name="movepower" value="MGER">Germany</label>
+                      <label><input type="radio" name="movepower" value="MENG">Great Britain</label>
+                      <label><input type="radio" name="movepower" value="MITA">Italy</label>
+                      <label><input type="radio" name="movepower" value="MRUS">Russia</label>
+                      <label><input type="radio" name="movepower" value="MTUR">Turkey</label>
+                    </td>
+                    <td>
+                      <label><input type="radio" name="unittype" value="AMY">Army</label>
+                      <label><input type="radio" name="unittype" value="FLT">Fleet</label>
+                    </td>
+                    <td>
+                      <label><input type="radio" name="roletype" value="Focus">Focus</label>
+                      <label><input type="radio" name="roletype" value="Support">Support</label>
+                      <label><input type="radio" name="roletype" value="Convoy">Convoy</label>
+                      <label><input type="radio" name="roletype" value="Path">Path</label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="daidegloss">
+      <hr/>
+      <br/>
+      <span>DAIDE: </span><span id="daidelabel"></span><br/><br/>
+      <span>Gloss: </span><span id="glosslabel"></span>
+      <br/>
+      <br/>
+      <span unselectable="on" class="ButtonySpan" id="clearbutton">Clear</span>
+      <br/>
+    </div>
+
+    <br/>
+    <hr/>
+    <br/>
+    <div class="copy-right-text">
+      <!-- FOOTER COPYRIGHT TEXT -->
+      <p> Copyright © 2022 Dev Technology Group All Rights Reserved.</p>
+    </div>
+  </body>
+</html>

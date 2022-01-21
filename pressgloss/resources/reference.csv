@@ -1,0 +1,86 @@
+trigram,type,Objective,Haughty,Familiar,Sea,Coast,Supply
+AUS,Power,Austria-Hungary,The Austro-Hungarian Empire,Vienna,0,0,0
+ENG,Power,Great Britain,The British Empire,Jolly Olde England,0,0,0
+FRA,Power,France,The Third Republic,The Hexagon,0,0,0
+GER,Power,Germany,The Holy Roman Empire,Deutschland,0,0,0
+ITA,Power,Italy,The Italian Empire,Italia,0,0,0
+RUS,Power,Russia,The Russian Empire,Muscovy,0,0,0
+TUR,Power,Turkey,The Ottoman Empire,Anatolia,0,0,0
+AMY,Unit,Army,Army,Army,0,0,0
+FLT,Unit,Fleet,Fleet,Fleet,0,0,0
+ADR,Province,the Adriatic Sea,the Adriatic Sea,the Adriatic Sea,1,0,0
+AEG,Province,the Aegean Sea,the Aegean Sea,the Aegean Sea,1,0,0
+ALB,Province,Albania,Albania,Albania,0,1,0
+ANK,Province,Ankara,Ankara,Ankara,0,1,1
+APU,Province,Apulia,Apulia,Apulia,0,1,0
+ARM,Province,Armenia,Armenia,Armenia,0,1,0
+BAL,Province,the Baltic Sea,the Baltic Sea,the Baltic Sea,1,0,0
+BAR,Province,the Barents Sea,the Barents Sea,the Barents Sea,1,0,0
+BEL,Province,Belgium,Belgium,Belgium,0,1,1
+BER,Province,Berlin,Berlin,Berlin,0,1,1
+BLA,Province,the Black Sea,the Black Sea,the Black Sea,1,0,0
+BOH,Province,Bohemia,Bohemia,Bohemia,0,0,0
+BRE,Province,Brest,Brest,Brest,0,1,1
+BUD,Province,Budapest,Budapest,Budapest,0,0,1
+BUL,Province,Bulgaria,Bulgaria,Bulgaria,0,1,1
+BUR,Province,Burgundy,Burgundy,Burgundy,0,0,0
+CLY,Province,Clyde,Clyde,Clyde,0,1,0
+CON,Province,Constantinople,Constantinople,Constantinople,0,1,1
+DEN,Province,Denmark,Denmark,Denmark,0,1,1
+EAS,Province,the Eastern Mediterranean,the Eastern Mediterranean,the Eastern Mediterranean,1,0,0
+ECH,Province,the English Channel,the English Channel,the English Channel,1,0,0
+EDI,Province,Edinburgh,Edinburgh,Edinburgh,0,1,1
+FIN,Province,Finland,Finland,Finland,0,1,0
+GAL,Province,Galecia,Galecia,Galecia,0,0,0
+GAS,Province,Gascony,Gascony,Gascony,0,1,0
+GOB,Province,the Gulf of Bothnia,the Gulf of Bothnia,the Gulf of Bothnia,1,0,0
+GOL,Province,the Gulf of Lyon,the Gulf of Lyon,the Gulf of Lyon,1,0,0
+GRE,Province,Greece,Greece,Greece,0,1,1
+HEL,Province,the Helgoland Bight,the Helgoland Bight,the Helgoland Bight,1,0,0
+HOL,Province,Holland,Holland,Holland,0,1,1
+ION,Province,the Ionian Sea,the Ionian Sea,the Ionian Sea,1,0,0
+IRI,Province,the Irish Sea,the Irish Sea,the Irish Sea,1,0,0
+KIE,Province,Kiel,Kiel,Kiel,0,1,1
+LON,Province,London,London,London,0,1,1
+LVN,Province,Livonia,Livonia,Livonia,0,1,0
+LVP,Province,Liverpool,Liverpool,Liverpool,0,1,1
+MAO,Province,the Mid-Atlantic,the Mid-Atlantic,the Mid-Atlantic,1,0,0
+MAR,Province,Marseilles,Marseilles,Marseilles,0,1,1
+MOS,Province,Moscow,Moscow,Moscow,0,0,1
+MUN,Province,Munich,Munich,Munich,0,0,1
+NAF,Province,North Africa,North Africa,North Africa,0,1,0
+NAO,Province,the North Atlantic,the North Atlantic,the North Atlantic,1,0,0
+NAP,Province,Naples,Naples,Naples,0,1,1
+NCS,Province,the North Coast,the North Coast,the North Coast,0,1,0
+NTH,Province,the North Sea,the North Sea,the North Sea,1,0,0
+NWG,Province,the Norwegian Sea,the Norwegian Sea,the Norwegian Sea,1,0,0
+NWY,Province,Norway,Norway,Norway,0,1,1
+PAR,Province,Paris,Paris,Paris,0,0,1
+PIC,Province,Picardy,Picardy,Picardy,0,1,0
+PIE,Province,Piedmont,Piedmont,Piedmont,0,1,0
+POR,Province,Portugal,Portugal,Portugal,0,1,1
+PRU,Province,Prussia,Prussia,Prussia,0,1,0
+ROM,Province,Rome,Rome,Rome,0,1,1
+RUH,Province,Ruhr,Ruhr,Ruhr,0,0,0
+RUM,Province,Rumania,Rumania,Rumania,0,1,1
+SER,Province,Serbia,Serbia,Serbia,0,0,1
+SEV,Province,Sevastopol,Sevastopol,Sevastopol,0,1,1
+SIL,Province,Silesia,Silesia,Silesia,0,0,0
+SKA,Province,Skaggerack,Skaggerack,Skaggerack,1,0,0
+SMY,Province,Smyrna,Smyrna,Smyrna,0,1,1
+SPA,Province,Spain,Spain,Spain,0,1,1
+STP,Province,St. Petersburg,St. Petersburg,St. Petersburg,0,1,1
+SWE,Province,Sweden,Sweden,Sweden,0,1,1
+SYR,Province,Syria,Syria,Syria,0,1,0
+TRI,Province,Trieste,Trieste,Trieste,0,1,1
+TUN,Province,Tunis,Tunis,Tunis,0,1,1
+TUS,Province,Tuscany,Tuscany,Tuscany,0,1,0
+TYR,Province,Tyrolia,Tyrolia,Tyrolia,0,0,0
+TYS,Province,the Tyrrhenian Sea,the Tyrrhenian Sea,the Tyrrhenian Sea,1,0,0
+UKR,Province,Ukraine,Ukraine,Ukraine,0,0,0
+VEN,Province,Venice,Venice,Venice,0,1,1
+VIE,Province,Vienna,Vienna,Vienna,0,0,1
+WAL,Province,Wales,Wales,Wales,0,1,0
+WAR,Province,Warsaw,Warsaw,Warsaw,0,0,1
+WES,Province,the Western Mediterranean,the Western Mediterranean,the Western Mediterranean,1,0,0
+YOR,Province,Yorkshire,Yorkshire,Yorkshire,0,1,0

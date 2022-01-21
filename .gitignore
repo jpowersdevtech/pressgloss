@@ -1,0 +1,16 @@
+# Byte-compiled
+*.pyc
+*.pyo
+*.pyd
+
+# Scripts
+*.sh
+*.bat
+
+# IDE
+.spyproject/
+.spyderproject/
+.idea/
+
+# Test results
+.coverage

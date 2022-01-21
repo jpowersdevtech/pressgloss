@@ -1,2 +1,0 @@
-# pressgloss
-DAIDE Gloss generator
