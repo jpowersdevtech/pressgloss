@@ -13,7 +13,9 @@ parsetests = ['FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA)))',
               'FRM ( ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA ITA) (PRP (PCE (ENG FRA ITA)))',
-              'FRM (ENG) (FRA ITA) (PRP (ALY (ENG FRA ITA) VSS (RUS TUR)))']
+              'FRM (ENG) (FRA ITA) (PRP (ALY (ENG FRA ITA) VSS (RUS TUR)))',
+              'FRM (ENG) (FRA ITA) (PRP (ALY (ENG FRA ITA)VSS (RUS TUR)))',
+              'FRM (ENG) (FRA ITA) (PRP (ALY (ENG FRA ITA) VSS(RUS TUR)))']
 
 daide20tests = [
                 ('FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) HLD)))', 'I propose the following move: Great Britain holds their Army in Liverpool.'),
