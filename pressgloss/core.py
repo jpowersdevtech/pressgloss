@@ -679,7 +679,7 @@ class PressMessage:
     elif arrangement[0] == 'DMZ':
       retstr = 'I propose that ' + helpers.listOfPowers(arrangement[1], frompower, topowers) + ' agree to create a Demilitarized Zone in ' + helpers.listOfProvinces(arrangement[2]) + '.'
       retstr = retstr.replace(' me ', ' I ')
-    elif arrangement[0] == 'NOT':
+    elif arrangement[0] == 'NOT' and len(arrangement) > 1:
       subarrangement = arrangement[1]
       if subarrangement[0] == 'PCE':
         if frompower in subarrangement[1]:
@@ -713,7 +713,7 @@ class PressMessage:
       elif subarrangement[0] == 'DMZ':
         retstr = 'I propose that ' + helpers.listOfPowers(subarrangement[1], frompower, topowers) + ' do not create a Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
         retstr = retstr.replace(' me ', ' I ')
-    elif arrangement[0] == 'NAR':
+    elif arrangement[0] == 'NAR' and len(arrangement) > 1:
       subarrangement = arrangement[1]
       if subarrangement[0] == 'PCE':
         if frompower in subarrangement[1]:
