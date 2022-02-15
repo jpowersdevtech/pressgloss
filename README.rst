@@ -8,9 +8,6 @@ glosses with tone.
 Easy use:
 pip install -r requirements.txt
 
-To run unit tests:
-.\\test.bat or ./test.sh
-
 To start the Flask app:
 
     python -m pressgloss --operation app

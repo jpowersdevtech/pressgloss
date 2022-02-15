@@ -41,7 +41,7 @@ def main(): # type: () -> None
     print(english)
   elif lesArgs.operation == 'app':
     app = create_app()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
   elif lesArgs.operation == 'test':
     exprlist = helpers.daide2lists(lesArgs.daide)
     print(str(len(exprlist)))
