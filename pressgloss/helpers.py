@@ -61,7 +61,7 @@ def listOfProvinces(provincelist): # type: ([]) -> str
 
   return retstr
 
-def listOfPowers(powerlist, frompower, topowers): # type: ([], str, []) -> str
+def listOfPowers(powerlist, frompower, topowers, case='Objective'): # type: ([], str, [], str) -> str
   """
   Creates a list of names of Powers relative to a sender and recipient and with tone
 
@@ -71,12 +71,19 @@ def listOfPowers(powerlist, frompower, topowers): # type: ([], str, []) -> str
   :type frompower: str
   :param topowers: the Powers that received the message with the list
   :type topowers: []
+  :param case: the case for a pronoun if needed
+  :type case: str
 
   :return: an English list of powers
   :rtype: str
   """
 
   retstr = ''
+
+  whoami = 'me'
+  if case == 'Subjective':
+    whoami = 'I'
+
   if len(powerlist) == 0:
     return 'Ahem.'
 
@@ -99,7 +106,7 @@ def listOfPowers(powerlist, frompower, topowers): # type: ([], str, []) -> str
 
   if len(powerlist) == 1:
     if fromincluded:
-      retstr = 'me'
+      retstr = whoami
     elif allinclusive:
       retstr = 'you'
     else:
@@ -114,7 +121,7 @@ def listOfPowers(powerlist, frompower, topowers): # type: ([], str, []) -> str
       elif numused < len(powerlist):
         retstr += ', '
     if fromincluded:
-      retstr += 'me'
+      retstr += whoami
       numused += 1
       if numused == len(powerlist) - 1:
         retstr += ' and '

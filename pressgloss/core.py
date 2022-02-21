@@ -119,6 +119,80 @@ class PressMessage:
 
     return not self.__eq__(other)
 
+  def longTerm(self, arrangement, frompower, topowers): # type ([], str, []) -> str
+    """
+    Creates an English description of a long-term arrangement.
+
+    :param arrangement: the nested list form of the DAIDE arrangement
+    :type arrangement: []
+    :param frompower: the trigram of the sending power
+    :type frompower: str
+    :param topowers: the trigrams of the receiving powers
+    :type topowers: []
+
+    :return: the English arrangement gloss
+    :rtype: str
+    """
+
+    retstr = 'Ahem.'
+
+    if arrangement[0] == 'PCE':
+      outoftheloop = [curpower for curpower in arrangement[1] if curpower != frompower and curpower not in topowers]
+      if len(outoftheloop) == 0:
+        if frompower in arrangement[1]:
+          retstr = 'a peace treaty between us'
+        else:
+          retstr = 'a peace treaty between you'
+      else:
+        retstr = 'a peace treaty between ' + helpers.listOfPowers(arrangement[1], frompower, topowers)
+    elif arrangement[0] == 'ALY':
+      maskedallies = [curpower for curpower in arrangement[1] if curpower != frompower and curpower not in topowers]
+      if len(maskedallies) > 0:
+        if frompower in arrangement[1]:
+          retstr = 'an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + ' involving ' + helpers.listOfPowers(maskedallies, None, None)
+        else:
+          retstr = 'an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + ' involving ' + helpers.listOfPowers(maskedallies, None, None)
+      elif frompower in arrangement[1]:
+        retstr = 'an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers)
+      else:
+        retstr = 'an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + ' involving ' + helpers.listOfPowers(arrangement[1], frompower, topowers)
+    elif arrangement[0] == 'DMZ':
+      retstr = 'a Demilitarized Zone in ' + helpers.listOfProvinces(arrangement[2]) + ' for ' + helpers.listOfPowers(arrangement[1], frompower, topowers)
+
+    return retstr
+
+  def endGame(self, endgoal, frompower, topowers):
+    """
+    Creates an English description of an end goal.
+
+    :param endgoal: the nested list form of the DAIDE endgoal
+    :type endgoal: []
+    :param frompower: the trigram of the sending power
+    :type frompower: str
+    :param topowers: the trigrams of the receiving powers
+    :type topowers: []
+
+    :return: the English endgoal gloss
+    :rtype: str
+    """
+
+    retstr = ''
+
+    if endgoal[0] == 'DRW':
+      if len(endgoal) == 1:
+        retstr = 'a draw between you and me'
+      else:
+        retstr = 'a draw between ' + helpers.listOfPowers(endgoal[1], frompower, topowers)
+    elif endgoal[0] == 'SLO':
+      if frompower in endgoal[1]:
+        retstr = 'a solo win by me'
+      elif len(topowers) == 1 and topowers[0] in endgoal[1]:
+        retstr = 'a solo win by you'
+      else:
+        retstr = 'a solo win by ' + helpers.listOfPowers(endgoal[1], frompower, topowers)
+
+    return retstr
+
   def bustAMove(self, movedetails, frompower, topowers): # type ([], str, []) -> str
     """
     Creates an English description of a Diplomacy move.
@@ -238,6 +312,60 @@ class PressMessage:
 
     return retstr
 
+  def negate(self, negation, frompower, topowers): # type ([], str, []) -> str
+    """
+    Creates an English negation of an arrangement or move
+
+    :param negation: the nested list form of the DAIDE negation
+    :type negation: str
+    :param frompower: the trigram of the sending power
+    :type frompower: str
+    :param topowers: the trigrams of the receiving powers
+    :type topowers: []
+
+    :return: the English negation
+    :rtype: str
+    """
+
+    retstr = 'Ahem.'
+
+    arrangement = negation[1]
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'It is not the case that there is ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['SLO', 'DRW']:
+      retstr = 'It is not the case that there is ' + self.endGame(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] == 'XDO':
+      retstr = 'The following move will not happen: ' + self.bustAMove(arrangement, frompower, topowers) + '.'
+
+    return retstr
+
+  def noidea(self, unknown, frompower, topowers): # type ([], str, []) -> str
+    """
+    Creates an English absence of evidence of an arrangement or move
+
+    :param negation: the nested list form of the DAIDE unknown
+    :type negation: str
+    :param frompower: the trigram of the sending power
+    :type frompower: str
+    :param topowers: the trigrams of the receiving powers
+    :type topowers: []
+
+    :return: the English unknown
+    :rtype: str
+    """
+
+    retstr = 'Ahem.'
+
+    arrangement = unknown[1]
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'I do not know if there is ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['SLO', 'DRW']:
+      retstr = 'I do not know that there is ' + self.endGame(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] == 'XDO':
+      retstr = 'I don\'t know if this move will happen: ' + self.bustAMove(arrangement, frompower, topowers) + '.'
+
+    return retstr
+
   def englishConfuseProposal(self, frompower, topowers): # type (str, []) -> str
     """
     Creates an English confusion about a proposal in the context of a sender, recipients and desired tone.
@@ -254,17 +382,21 @@ class PressMessage:
     retstr = 'I don\'t understand your proposal.'
 
     arrangement = self.details[1][1]
-    if helpers.daidecontains(arrangement, 'PCE'):
+    if helpers.daidecontains(arrangement, 'AND'):
+      retstr = 'I don\'t understand your set of proposals.'
+    elif helpers.daidecontains(arrangement, 'ORR'):
+      retstr = 'I don\'t understand your set of proposals.'
+    elif helpers.daidecontains(arrangement, 'PCE'):
       retstr = 'I don\'t understand your peace proposal.'
-    if helpers.daidecontains(arrangement, 'ALY'):
+    elif helpers.daidecontains(arrangement, 'ALY'):
       retstr = 'I don\'t understand your alliance proposal.'
-    if helpers.daidecontains(arrangement, 'DRW'):
+    elif helpers.daidecontains(arrangement, 'DRW'):
       retstr = 'I don\'t understand your draw proposal.'
-    if helpers.daidecontains(arrangement, 'SLO'):
+    elif helpers.daidecontains(arrangement, 'SLO'):
       retstr = 'I don\'t understand your solo proposal.'
-    if helpers.daidecontains(arrangement, 'XDO'):
+    elif helpers.daidecontains(arrangement, 'XDO'):
       retstr = 'I don\'t understand your move proposal.'
-    if helpers.daidecontains(arrangement, 'DMZ'):
+    elif helpers.daidecontains(arrangement, 'DMZ'):
       retstr = 'I don\'t understand your Demilitarized Zone proposal.'
 
     return retstr
@@ -304,15 +436,19 @@ class PressMessage:
     retstr = 'I wish to cancel my agreement to your latest proposal.'
 
     arrangement = self.details[1][1] # (PRP (PCE or (PRP (NOT (PCE
-    if helpers.daidecontains(arrangement, 'PCE'):
+    if helpers.daidecontains(arrangement, 'AND'):
+      retstr = 'I wish to cancel my agreement to your set of proposals.'
+    elif helpers.daidecontains(arrangement, 'ORR'):
+      retstr = 'I wish to cancel my agreement to your set of proposals.'
+    elif helpers.daidecontains(arrangement, 'PCE'):
       retstr = 'I wish to cancel my agreement to your peace proposal.'
-    if helpers.daidecontains(arrangement, 'ALY'):
+    elif helpers.daidecontains(arrangement, 'ALY'):
       retstr = 'I wish to cancel my agreement to your alliance proposal.'
-    if helpers.daidecontains(arrangement, 'DRW'):
+    elif helpers.daidecontains(arrangement, 'DRW'):
       retstr = 'I wish to cancel my agreement to your draw proposal.'
-    if helpers.daidecontains(arrangement, 'SLO'):
+    elif helpers.daidecontains(arrangement, 'SLO'):
       retstr = 'I wish to cancel my agreement to your solo proposal.'
-    if helpers.daidecontains(arrangement, 'XDO'):
+    elif helpers.daidecontains(arrangement, 'XDO'):
       retstr = 'I wish to cancel my agreement to your proposal about the move: '
       if arrangement[1][0] == 'XDO':
         subarrangement = arrangement[1][1]
@@ -320,7 +456,7 @@ class PressMessage:
       elif arrangement[1][0] in ['NOT', 'NAR']:
         subarrangement = arrangement[1][1][1]
         retstr += self.bustAMove(subarrangement, frompower, topowers)
-    if helpers.daidecontains(arrangement, 'DMZ'):
+    elif helpers.daidecontains(arrangement, 'DMZ'):
       retstr = 'I wish to cancel my agreement to your proposal regarding the Demilitarized Zone in '
       if arrangement[1][0] == 'DMZ':
         subarrangement = arrangement[1]
@@ -347,55 +483,32 @@ class PressMessage:
     retstr = 'Ahem.'
 
     arrangement = self.details[1][1]
-    if arrangement[0] == 'PCE':
-      if frompower in arrangement[1]:
-        retstr = 'I wish to cancel the request that we sign a peace deal.'
-      else:
-        retstr = 'I wish to cancel the request that you sign a peace deal.'
-    elif arrangement[0] == 'ALY':
-      retstr = 'I wish to cancel the proposed alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '.'
-    elif arrangement[0] == 'DRW':
-      retstr = 'I wish to cancel the proposed draw.'
-    elif arrangement[0] == 'SLO':
-      retstr = 'I wish to cancel my support for your solo win.'
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'I wish to cancel my proposal regarding ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['DRW', 'SLO']:
+      retstr = 'I wish to cancel my proposal regarding ' + self.endGame(arrangement, frompower, topowers) + '.'
     elif arrangement[0] == 'XDO':
       retstr = 'I wish to cancel my proposed move: ' + self.bustAMove(arrangement[1], frompower, topowers)
-    elif arrangement[0] == 'DMZ':
-      retstr = 'I wish to cancel my proposed Demilitarized Zone in ' + helpers.listOfProvinces(arrangement[2]) + '.'
     elif arrangement[0] == 'NOT':
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        if frompower in subarrangement[1]:
-          retstr = 'I wish to cancel my opposition to our peace deal.'
-        else:
-          retstr = 'I wish to cancel my opposition to your peace deal.'
-      elif subarrangement[0] == 'ALY':
-        retstr = 'I wish to cancel my opposition to the proposed alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'I wish to cancel my opposition to a draw.'
-      elif subarrangement[0] == 'SLO':
-        retstr = 'I wish to cancel my opposition to your solo win.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I wish to cancel my proposal against ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['DRW', 'SLO']:
+        retstr = 'I wish to cancel my proposal against ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
         retstr = 'I wish to cancel my opposition to the move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I wish to cancel my opposition to the Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
     elif arrangement[0] == 'NAR':
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        if frompower in subarrangement[1]:
-          retstr = 'I wish to cancel my opposition to our peace deal.'
-        else:
-          retstr = 'I wish to cancel my opposition to your peace deal.'
-      elif subarrangement[0] == 'ALY':
-        retstr = 'I wish to cancel my opposition to the proposed alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'I wish to cancel my opposition to a draw.'
-      elif subarrangement[0] == 'SLO':
-        retstr = 'I wish to cancel my opposition to your solo win.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I wish to cancel my proposal regarding ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['DRW', 'SLO']:
+        retstr = 'I wish to cancel my proposal regarding ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
         retstr = 'I wish to cancel my ambivalence about the move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I wish to cancel my ambivalence about the Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
+    elif arrangement[0] == 'ORR':
+      retstr = 'I wish to cancel my proposal of ' + str(len(arrangement) - 1) + ' choices.'
+    elif arrangement[0] == 'AND':
+      retstr = 'I wish to cancel my proposal of ' + str(len(arrangement) - 1) + ' propositions.'
 
     return retstr
 
@@ -420,10 +533,12 @@ class PressMessage:
       retstr = self.englishCancelAgreement(frompower, topowers)
     return retstr
 
-  def englishRejectProposal(self, frompower, topowers): # type (str, []) -> str
+  def englishRejectProposal(self, inarr, frompower, topowers): # type ([], str, []) -> str
     """
     Creates an English rejection to a proposal in the context of a sender, recipients and desired tone.
 
+    :param inarr: the proposed arrangement in nest list DAIDE form
+    :type inarr: []
     :param frompower: the trigram of the sending power
     :type frompower: str
     :param topowers: the trigrams of the receiving powers
@@ -436,71 +551,38 @@ class PressMessage:
     retstr = 'Ahem.'
 
     arrangement = self.details[1][1]
-    if arrangement[0] == 'PCE':
-      possiblepartners = [curpower for curpower in arrangement[1] if curpower != frompower]
-      retstr = 'I will not sign a peace deal with ' + helpers.listOfPowers(possiblepartners, None, None) + '.'
-    elif arrangement[0] == 'ALY':
-      possibleallies = [curpower for curpower in arrangement[1] if curpower != frompower]
-      retstr = 'I will not ally with ' + helpers.listOfPowers(possibleallies, frompower, None) + ' against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '.'
-    elif arrangement[0] == 'DRW':
-      if len(arrangement) == 1:
-        retstr = 'I reject a draw.'
-      else:
-        retstr = 'I reject a draw between us.'
-    elif arrangement[0] == 'SLO':
-      if frompower in arrangement[1]:
-        retstr = 'I am not pursuing a solo win at this time.'
-      elif len(topowers) == 1 and topowers[0] in arrangement[1]:
-        retstr = 'I will block your attempt at a solo win.'
-      else:
-        retstr = 'I will block ' + helpers.listOfPowers(arrangement[1], frompower, None) + '\'s solo win bid.'
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'I will not accept ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['DRW', 'SLO']:
+      retstr = 'I will not accept ' + self.endGame(arrangement, frompower, topowers) + '.'
     elif arrangement[0] == 'XDO':
       retstr = 'I will not execute the move: ' + self.bustAMove(arrangement[1], frompower, topowers)
-    elif arrangement[0] == 'DMZ':
-      retstr = 'I will not respect the Demilitarized Zone in ' + helpers.listOfProvinces(arrangement[2]) + '.'
     elif arrangement[0] == 'NOT':
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        possiblepartners = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        if len(possiblepartners) < len(topowers):
-          retstr = 'I won\'t promise not to make peace with ' + helpers.listOfPowers(possiblepartners, None, None) + '.'
-        else:
-          retstr = 'I think a peace treaty would be a good idea between the ' + helpers.size2numstr(subarrangement[1]) + ' of us.'
-      elif subarrangement[0] == 'ALY':
-        retstr = 'I think an alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + ' is a good idea.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'I will still be seeking a draw condition.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'I will pursue a solo win if I want to.'
-        elif len(topowers) == 1 and topowers[0] in subarrangement[1]:
-          retstr = 'I think you are going for a solo win despite what you say.'
-        else:
-          retstr = 'I think ' + helpers.listOfPowers(subarrangement[1], frompower, None) + ' is going for a solo win despite what you say.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'Despite your request, I will support ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['DRW', 'SLO']:
+        retstr = 'Despite your request, I will support ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
         retstr = 'I will go ahead and execute the move regardless: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'Regardless, I will still respect the Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
     elif arrangement[0] == 'NAR':
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        possiblepartners = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        retstr = 'I can\'t promise I won\'t pursue peace between me and ' + helpers.listOfPowers(possiblepartners, None, None) + '.'
-      elif subarrangement[0] == 'ALY':
-        retstr = 'I can\'t promise not to ally against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'I think a draw is very possible now.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'A solo win is still on the table if I want to.'
-        elif len(topowers) == 1 and topowers[0] in subarrangement[1]:
-          retstr = 'I don\'t know what your intentions for a solo win are.'
-        else:
-          retstr = 'I don\'t know what ' + helpers.listOfPowers(subarrangement[1], frompower, None) + '\'s intentions for a solo win are.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'Despite your request, I might support ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['DRW', 'SLO']:
+        retstr = 'Despite your request, I might support ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
-        retstr = 'I am not ambiguous about the move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I am not ambiguous about the Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
+        retstr = 'I might go ahead and execute the move regardless: ' + self.bustAMove(subarrangement[1], frompower, topowers)
+    elif arrangement[0] == 'ORR':
+      retstr = 'I decline to pick any of these proposals: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishProposal(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
+    elif arrangement[0] == 'AND':
+      retstr = 'I reject these proposals: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishProposal(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
 
     return retstr
 
@@ -520,13 +602,15 @@ class PressMessage:
     retstr = 'Ahem.'
     arrangement = self.details[1]
     if arrangement[0] == 'PRP':
-      retstr = self.englishRejectProposal(frompower, topowers)
+      retstr = self.englishRejectProposal(arrangement, frompower, topowers)
     return retstr
 
-  def englishYesProposal(self, frompower, topowers): # type (str, []) -> str
+  def englishYesProposal(self, inarr, frompower, topowers): # type ([], str, []) -> str
     """
     Creates an English agreement to a proposal in the context of a sender, recipients and desired tone.
 
+    :param inarr: the proposed arrangement in nest list DAIDE form
+    :type inarr: []
     :param frompower: the trigram of the sending power
     :type frompower: str
     :param topowers: the trigrams of the receiving powers
@@ -538,68 +622,34 @@ class PressMessage:
 
     retstr = 'Ahem.'
 
-    arrangement = self.details[1][1]
-    if arrangement[0] == 'PCE':
-      retstr = 'Yes, I will sign a peace treaty between ' + helpers.listOfPowers(arrangement[1], frompower, None) + '.'
-    elif arrangement[0] == 'ALY':
-      retstr = 'Yes, I will sign an alliance between ' + helpers.listOfPowers(arrangement[1], frompower, None) + ' against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '.'
-    elif arrangement[0] == 'DRW':
-      if len(arrangement) == 1:
-        retstr = 'Yes, I agree to a draw.'
-      else:
-        retstr = 'Yes, I agree to a draw between our ' + helpers.size2numstr(arrangement[1]) + ' countries.'
-    elif arrangement[0] == 'SLO':
-      if frompower in arrangement[1]:
-        retstr = 'I will use your support to pursue a solo win.'
-      elif len(topowers) == 1 and topowers[0] in arrangement[1]:
-        retstr = 'I will support your solo win bid.'
-      else:
-        retstr = 'I will support ' + helpers.listOfPowers(arrangement[1], frompower, None) + '\'s solo win bid.'
+    arrangement = inarr[1]
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'Yes, I will agree to ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['DRW', 'SLO']:
+      retstr = 'Yes, I will agree to ' + self.endGame(arrangement, frompower, topowers) + '.'
     elif arrangement[0] == 'XDO':
       retstr = 'I agree to do my part in executing the move: ' + self.bustAMove(arrangement[1], frompower, topowers)
-    elif arrangement[0] == 'DMZ':
-      retstr = 'I agree to do my part in respecting the Demilitarized Zone in ' + helpers.listOfProvinces(arrangement[2]) + '.'
     elif arrangement[0] == 'NOT':
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        possiblepartners = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        retstr = 'I will end any peace treaties between me and ' + helpers.listOfPowers(possiblepartners, None, None) + '.'
-      elif subarrangement[0] == 'ALY':
-        possibleallies = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        retstr = 'I will not ally with ' + helpers.listOfPowers(possibleallies, None, None) + ' against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'You\'re right, it\'s not the time for a draw.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'I will not pursue a solo win.'
-        elif len(topowers) == 1 and topowers[0] in subarrangement[1]:
-          retstr = 'I agree you shouldn\'t pursue a solo win bid.'
-        else:
-          retstr = 'I agree that ' + helpers.listOfPowers(subarrangement[1], frompower, None) + ' should not pursue a solo win.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I agree to oppose ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['DRW', 'SLO']:
+        retstr = 'I agree to oppose ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
         retstr = 'I agree to do my part in not executing the move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I agree to do my part in ignoring the Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
     elif arrangement[0] == 'NAR':
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        possiblepartners = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        retstr = 'I agree, no peace with ' + helpers.listOfPowers(possiblepartners, None, None) + '.'
-      elif subarrangement[0] == 'ALY':
-        retstr = 'I agree, no alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'I agree, a draw is not right at this time.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'If I will pursue a solo win, I won\'t rely on your support.'
-        elif len(topowers) == 1 and topowers[0] in subarrangement[1]:
-          retstr = 'I agree that you can\'t rely on me to support your solo win bid.'
-        else:
-          retstr = 'I agree that ' + helpers.listOfPowers(subarrangement[1], frompower, None) + ' should not rely on me to support a solo win.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I agree to be mysterious about ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['DRW', 'SLO']:
+        retstr = 'I agree to be mysterious about ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
-        retstr = 'I agree that I may or may not participate in the move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I agree that I may or may not respect the Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
+        retstr = 'I agree to be ambivalent about the move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
+    elif arrangement[0] == 'AND':
+      retstr = 'I agree to all these proposals: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishProposal(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
 
     return retstr
 
@@ -619,13 +669,58 @@ class PressMessage:
     retstr = 'Ahem.'
     arrangement = self.details[1]
     if arrangement[0] == 'PRP':
-      retstr = self.englishYesProposal(frompower, topowers)
+      retstr = self.englishYesProposal(arrangement, frompower, topowers)
     return retstr
 
-  def englishProposal(self, frompower, topowers): # type (str, []) -> str
+  def englishArrangement(self, inarr, frompower, topowers): # type ([], str, []) -> str
+    """
+    Creates an atomic English arrangement in the context of a sender and recipients.
+
+    :param inarr: the proposed arrangement in nest list DAIDE form
+    :type inarr: []
+    :param frompower: the trigram of the sending power
+    :type frompower: str
+    :param topowers: the trigrams of the receiving powers
+    :type topowers: []
+
+    :return: the English arrangement
+    :rtype: str
+    """
+
+    retstr = 'Ahem.'
+
+    arrangement = inarr
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['SLO', 'DRW']:
+      retstr = self.endGame(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] == 'XDO':
+      retstr = self.bustAMove(arrangement[1], frompower, topowers)
+    elif arrangement[0] == 'NOT' and len(arrangement) > 1:
+      subarrangement = arrangement[1]
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'That there not be ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['SLO', 'DRW']:
+        retstr = 'I do not want ' + self.endGame(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] == 'XDO':
+        retstr = 'I do not support the following move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
+    elif arrangement[0] == 'NAR' and len(arrangement) > 1:
+      subarrangement = arrangement[1]
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I am not ready for ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['SLO', 'DRW']:
+        retstr = 'I am not ready for ' + self.endGame(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] == 'XDO':
+        retstr = 'I am ambivalent about the following move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
+
+    return retstr
+
+  def englishProposal(self, inarr, frompower, topowers): # type ([], str, []) -> str
     """
     Creates an English proposal in the context of a sender, recipients and desired tone.
 
+    :param inarr: the proposed arrangement in nest list DAIDE form
+    :type inarr: []
     :param frompower: the trigram of the sending power
     :type frompower: str
     :param topowers: the trigrams of the receiving powers
@@ -637,117 +732,51 @@ class PressMessage:
 
     retstr = 'Ahem.'
 
-    if len(self.details) < 2:
-      return retstr
-
-    arrangement = self.details[1]
-    if arrangement[0] == 'PCE':
-      maskedparticipants = [curpower for curpower in arrangement[1] if curpower != frompower and curpower not in topowers]
-      if frompower in arrangement[1]:
-        retstr = 'Let us sign a peace treaty together.'
-      elif len(maskedparticipants) > 0:
-        retstr = 'Would ' + helpers.listOfPowers(arrangement[1], frompower, topowers) + ' agree to end any conflict between you and sign a peace treaty?'
-      else:
-        retstr = 'Would you ' + helpers.size2numstr(arrangement[1]) + ' agree to end any conflict between you and sign a peace treaty?'
-    elif arrangement[0] == 'ALY':
-      maskedallies = [curpower for curpower in arrangement[1] if curpower != frompower and curpower not in topowers]
-      if len(maskedallies) > 0:
-        if frompower in arrangement[1]:
-          retstr = 'Let us declare an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + ' with ' + helpers.listOfPowers(maskedallies, None, None) + '.'
-        elif len(topowers) == 1:
-          retstr = 'Would you declare an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + ' with ' + helpers.listOfPowers(maskedallies, None, None) + '?'
-        else:
-          retstr = 'Would you ' + helpers.size2numstr(topowers) + ' declare an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + ' with ' + helpers.listOfPowers(maskedallies, None, None) + '?'
-      elif frompower in arrangement[1]:
-        retstr = 'Let us declare an alliance against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '.'
-      else:
-        retstr = 'Would you ' + helpers.size2numstr(arrangement[1]) + ' ally against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '?'
-    elif arrangement[0] == 'DRW':
-      if len(arrangement) == 1:
-        retstr = 'Are you amenable to a draw?'
-      else:
-        retstr = 'Are you amenable to a draw between ' + helpers.listOfPowers(arrangement[1], None, None) + '?'
-    elif arrangement[0] == 'SLO':
-      if frompower in arrangement[1]:
-        retstr = 'You should let me go for a solo win.'
-      elif len(topowers) == 1 and topowers[0] in arrangement[1]:
-        retstr = 'You should go for a solo win, I won\'t get in your way.'
-      else:
-        retstr = 'We should let ' + helpers.listOfPowers(arrangement[1], frompower, topowers) + ' go for a solo victory.'
+    arrangement = inarr[1]
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'I propose ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['SLO', 'DRW']:
+      retstr = 'I propose ' + self.endGame(arrangement, frompower, topowers) + '.'
     elif arrangement[0] == 'XDO':
       retstr = 'I propose the following move: ' + self.bustAMove(arrangement[1], frompower, topowers)
-    elif arrangement[0] == 'DMZ':
-      retstr = 'I propose that ' + helpers.listOfPowers(arrangement[1], frompower, topowers) + ' agree to create a Demilitarized Zone in ' + helpers.listOfProvinces(arrangement[2]) + '.'
-      retstr = retstr.replace(' me ', ' I ')
     elif arrangement[0] == 'NOT' and len(arrangement) > 1:
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        if frompower in subarrangement[1]:
-          retstr = 'I propose that we end any promises of peace between us.'
-        else:
-          retstr = 'I propose that you end your treaty together.'
-      elif subarrangement[0] == 'ALY':
-        if frompower in subarrangement[1]:
-          retstr = 'We should not ally against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-        elif frompower in subarrangement[3]:
-          retstr = 'Please do not form an alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-        else:
-          retstr = 'Don\'t ally together against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        if len(subarrangement) == 1:
-          if len(topowers) == 1:
-            retstr = 'I wouldn\'t agree to a draw with ' + helpers.listOfPowers(subarrangement[1], None, topowers) + '.'
-          else:
-            retstr = 'I wouldn\'t agree to a draw with you ' + helpers.size2numstr(topowers) + '.'
-        else:
-          retstr = 'I wouldn\'t agree to a draw between ' + helpers.listOfPowers(subarrangement[1], None, None) + '.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'You should not let me go for a solo win.'
-        elif len(topowers) == 1 and topowers[0] in subarrangement[1]:
-          retstr = 'I wouldn\'t try for a solo win if I were you.'
-        else:
-          retstr = 'We should not let ' + helpers.listOfPowers(subarrangement[1], frompower, topowers) + ' go for a solo victory.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I propose that there not be ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['SLO', 'DRW']:
+        retstr = 'I do not want ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
         retstr = 'I do not support the following move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I propose that ' + helpers.listOfPowers(subarrangement[1], frompower, topowers) + ' do not create a Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
-        retstr = retstr.replace(' me ', ' I ')
     elif arrangement[0] == 'NAR' and len(arrangement) > 1:
       subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        if frompower in subarrangement[1]:
-          retstr = 'I propose we don\'t make peace at this time.'
-        else:
-          retstr = 'You shouldn\'t sign a peace agreement together.'
-      elif subarrangement[0] == 'ALY':
-        if frompower in subarrangement[1]:
-          retstr = 'I propose we make no alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-        elif frompower in subarrangement[3]:
-          retstr = 'Please do not form an alliance against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-        else:
-          retstr = 'I propose you don\'t ally together against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        retstr = 'There is no draw condition between us.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'You should not support my solo win attempt.'
-        elif len(topowers) == 1 and topowers[0] in subarrangement[1]:
-          retstr = 'I won\'t pledge support of your solo win.'
-        else:
-          retstr = 'We should not support ' + helpers.listOfPowers(subarrangement[1], frompower, topowers) + '\'s solo victory.'
+      if subarrangement[0] in ['PCE', 'ALY', 'DMZ']:
+        retstr = 'I am not ready for ' + self.longTerm(subarrangement, frompower, topowers) + '.'
+      elif subarrangement[0] in ['SLO', 'DRW']:
+        retstr = 'I am not ready for ' + self.endGame(subarrangement, frompower, topowers) + '.'
       elif subarrangement[0] == 'XDO':
         retstr = 'I am ambivalent about the following move: ' + self.bustAMove(subarrangement[1], frompower, topowers)
-      elif subarrangement[0] == 'DMZ':
-        retstr = 'I am ambivalent about ' + helpers.listOfPowers(subarrangement[1], frompower, topowers) + ' creating a Demilitarized Zone in ' + helpers.listOfProvinces(subarrangement[2]) + '.'
-        retstr = retstr.replace(' me ', ' I ')
+    elif arrangement[0] == 'ORR':
+      retstr = 'I propose you choose one of the following options: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishArrangement(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
+    elif arrangement[0] == 'AND':
+      retstr = 'I propose the following set of actions: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishArrangement(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
+    elif arrangement[0] == 'IFF' and len(arrangement) == 3:
+      retstr = 'I propose the following quid pro quo: If ' + self.englishArrangement(arrangement[1], frompower, topowers) + ', then ' + self.englishArrangement(arrangement[2], frompower, topowers)
+      retstr = retstr.replace('.,', ',')
 
     return retstr
 
-  def englishFact(self, frompower, topowers): # type (str, []) -> str
+  def englishFact(self, situation, frompower, topowers): # type ([], str, []) -> str
     """
     Creates an English fact in the context of a sender, recipients and desired tone.
 
+    :param situation: the fact in nest list DAIDE form
+    :type situation: []
     :param frompower: the trigram of the sending power
     :type frompower: str
     :param topowers: the trigrams of the receiving powers
@@ -759,85 +788,27 @@ class PressMessage:
 
     retstr = 'Ahem.'
 
-    if len(self.details) < 2:
-      return retstr
-
-    arrangement = self.details[1]
-    if arrangement[0] == 'PCE':
-      possibleparticipants = [curpower for curpower in arrangement[1] if curpower != frompower]
-      if frompower in arrangement[1]:
-        retstr = 'I have a peace deal with ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-      else:
-        retstr = 'There is a peace deal between ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-    elif arrangement[0] == 'ALY':
-      possibleallies = [curpower for curpower in arrangement[1] if curpower != frompower]
-      if frompower in arrangement[1]:
-        retstr = 'I have an alliance with ' + helpers.listOfPowers(possibleallies, frompower, topowers) + ' against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '.'
-      else:
-        retstr = 'There is an alliance between ' + helpers.listOfPowers(possibleallies, frompower, topowers) + ' against ' + helpers.listOfPowers(arrangement[3], frompower, topowers) + '.'
-    elif arrangement[0] == 'DRW':
-      if len(arrangement) == 1:
-        retstr = 'I am in a draw condition.'
-      elif frompower in arrangement[1]:
-        possibleparticipants = [curpower for curpower in arrangement[1] if curpower != frompower]
-        retstr = 'I am in a draw condition with ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-      else:
-        retstr = 'There is a draw condition between ' + helpers.listOfPowers(arrangement[1], None, None) + '.'
-    elif arrangement[0] == 'SLO':
-      if frompower in arrangement[1]:
-        retstr = 'I am going for a solo win.'
-      else:
-        retstr = helpers.listOfPowers(arrangement[1], frompower, topowers) + ' is going for a solo win.'
+    arrangement = situation[1]
+    if arrangement[0] in ['PCE', 'ALY', 'DMZ']:
+      retstr = 'It is a fact that there is a ' + self.longTerm(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] in ['SLO', 'DRW']:
+      retstr = 'It is likely that there is ' + self.endGame(arrangement, frompower, topowers) + '.'
+    elif arrangement[0] == 'XDO':
+      retstr = 'The following move will happen: ' + self.bustAMove(arrangement, frompower, topowers) + '.'
     elif arrangement[0] == 'NOT':
-      subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        possibleparticipants = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        if frompower in subarrangement[1]:
-          retstr = 'I broke my peace deal with ' + helpers.listOfPowers(possibleparticipants, frompower, None) + '.'
-        else:
-          retstr = 'There is no longer a peace deal between ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-      elif subarrangement[0] == 'ALY':
-        possibleallies = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        if frompower in subarrangement[1]:
-          retstr = 'I do not have an alliance with ' + helpers.listOfPowers(possibleallies, frompower, topowers) + ' against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-        else:
-          retstr = 'There is no alliance between ' + helpers.listOfPowers(possibleallies, frompower, topowers) + ' against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        if len(subarrangement) == 1:
-          retstr = 'I am not in a draw condition.'
-        else:
-          possibleparticipants = [curpower for curpower in subarrangement[1] if curpower != frompower]
-          retstr = 'I am not in a draw condition with ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'I am not going for a solo win.'
-        else:
-          retstr = helpers.listOfPowers(subarrangement[1], frompower, topowers) + ' is not going for a solo win.'
+      retstr = self.negate(arrangement, frompower, topowers)
     elif arrangement[0] == 'NAR':
-      subarrangement = arrangement[1]
-      if subarrangement[0] == 'PCE':
-        possibleparticipants = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        if frompower in subarrangement[1]:
-          retstr = 'I have no peace deal with ' + helpers.listOfPowers(possibleparticipants, frompower, None) + '.'
-        else:
-          retstr = 'There is no peace deal between ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-      elif subarrangement[0] == 'ALY':
-        possibleallies = [curpower for curpower in subarrangement[1] if curpower != frompower]
-        if frompower in subarrangement[1]:
-          retstr = 'I do not have an alliance with ' + helpers.listOfPowers(possibleallies, frompower, topowers) + ' against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-        else:
-          retstr = 'There is no alliance between ' + helpers.listOfPowers(possibleallies, frompower, topowers) + ' against ' + helpers.listOfPowers(subarrangement[3], frompower, topowers) + '.'
-      elif subarrangement[0] == 'DRW':
-        if len(subarrangement) == 1:
-          retstr = 'A draw is not something I\'ve considered.'
-        else:
-          possibleparticipants = [curpower for curpower in subarrangement[1] if curpower != frompower]
-          retstr = 'I haven\'t considered a draw with ' + helpers.listOfPowers(possibleparticipants, frompower, topowers) + '.'
-      elif subarrangement[0] == 'SLO':
-        if frompower in subarrangement[1]:
-          retstr = 'A solo win is not something I\'ve considered.'
-        else:
-          retstr = 'I haven\'t considered a solo win by ' + helpers.listOfPowers(subarrangement[1], frompower, topowers) + '.'
+      retstr = self.noidea(arrangement, frompower, topowers)
+    elif arrangement[0] == 'ORR':
+      retstr = 'One of the following is a fact: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishArrangement(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
+    elif arrangement[0] == 'AND':
+      retstr = 'The following are facts: <br><ul>'
+      for cSub in range(1, len(arrangement)):
+        retstr += '<li>' + self.englishArrangement(arrangement[cSub], frompower, topowers) + '</li>'
+      retstr += '</ul>'
 
     return retstr
 
@@ -858,9 +829,9 @@ class PressMessage:
 
     retstr = 'Ahem.'
     if self.details[0] == 'PRP':
-      retstr = self.englishProposal(frompower, topowers)
+      retstr = self.englishProposal(self.details, frompower, topowers)
     elif self.details[0] == 'FCT':
-      retstr = self.englishFact(frompower, topowers)
+      retstr = self.englishFact(self.details, frompower, topowers)
     elif self.details[0] == 'YES':
       retstr = self.englishYes(frompower, topowers)
     elif self.details[0] == 'REJ':
