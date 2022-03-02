@@ -2,6 +2,7 @@
 import logging
 import os
 import sys
+import random
 
 # Third-party imports
 import flask
@@ -10,6 +11,7 @@ from flask import Blueprint
 
 # pressgloss imports
 import pressgloss.core as PRESSGLOSS
+import pressgloss.helpers as helpers
 
 landingpage = Blueprint('landingpage', __name__, template_folder='templates')
 theapi = Blueprint('theapi', __name__, template_folder='templates')
@@ -38,4 +40,22 @@ def daide2gloss(): # type: () -> Response
     results = {"gloss": PRESSGLOSS.daide2gloss(daidetext, thetones)}
     return flask.jsonify(results)
 
-  return flask.jsonify([])
+  return flask.jsonify({})
+
+@theapi.route('/randomdaide', methods=['POST'])
+def randomdaide(): # type: () -> Response
+  """
+  Generate a random DAIDE expression and English gloss
+
+  :return: A Flask Response with type JSON containing the DAIDE and gloss.
+  :rtype: Response
+  """
+
+  if flask.request.method == 'POST':
+    reqdict = flask.request.get_json(force=True)
+    tones = random.sample(helpers.tonelist, random.randint(1, 3))
+    utterance = PRESSGLOSS.PressUtterance(None, tones)
+    results = {"daide": utterance.daide, "gloss": utterance.english}
+    return flask.jsonify(results)
+
+  return flask.jsonify({})

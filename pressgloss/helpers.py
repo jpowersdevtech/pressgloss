@@ -6,6 +6,9 @@ import csv
 import json
 import re
 
+# pressgloss imports
+import pressgloss.core
+
 refData = []
 
 # Initialization loads reference data from resources CSV.
@@ -17,8 +20,31 @@ if (os.path.isfile(refPath)):
                for row in csv.DictReader(refFile, skipinitialspace=True)]
 
 powerdict = {curdata['trigram']: curdata for curdata in refData if curdata['type'] == 'Power'}
+powerlist = list(powerdict.keys())
 provincedict = {curdata['trigram']: curdata for curdata in refData if curdata['type'] == 'Province'}
+provincelist = list(provincedict.keys())
 unitdict = {curdata['trigram']: curdata for curdata in refData if curdata['type'] == 'Unit'}
+unitlist = list(unitdict.keys())
+sealist = [curdata['trigram'] for curdata in refData if curdata['Sea'] == '1' or curdata['Coast'] == '1']
+supplylist = [curdata['trigram'] for curdata in refData if curdata['Supply'] == '1']
+tonelist = ['Haughty', 'Objective', 'Urgent', 'Obsequious', 'PigLatin']
+
+def initcap(instr): # type: (str) -> str
+  """
+  Creates a sentence case string
+
+  :param instr: the input string
+  :type instr: str
+
+  :return: sentence capitalized version of the input
+  :rtype: str
+
+  """
+
+  if instr is None or len(instr) == 1:
+    return ''
+
+  return instr[0].upper() + instr[1:]
 
 def daidecontains(daidelist, match): # type: ([], str) -> bool
   """
@@ -63,7 +89,7 @@ def listOfProvinces(provincelist): # type: ([]) -> str
 
 def listOfPowers(powerlist, frompower, topowers, case='Objective'): # type: ([], str, [], str) -> str
   """
-  Creates a list of names of Powers relative to a sender and recipient and with tone
+  Creates a list of names of Powers relative to a sender and recipient and with case if needed
 
   :param powerlist: the Powers trigram list
   :type powerlist: []
@@ -71,14 +97,25 @@ def listOfPowers(powerlist, frompower, topowers, case='Objective'): # type: ([],
   :type frompower: str
   :param topowers: the Powers that received the message with the list
   :type topowers: []
-  :param case: the case for a pronoun if needed
+  :param case: the case for a pronoun if needed (Objective|Subjective)
   :type case: str
 
   :return: an English list of powers
   :rtype: str
   """
 
-  retstr = ''
+  if case == 'Possessive':
+    if frompower in powerlist:
+      if len(powerlist) == 1:
+        return 'my'
+      else:
+        return 'our'
+    else:
+      listedto = [curpower for curpower in topowers if curpower in powerlist]
+      if len(listedto) > 0:
+        return 'your'
+      else:
+        return 'their'
 
   whoami = 'me'
   if case == 'Subjective':
@@ -87,55 +124,32 @@ def listOfPowers(powerlist, frompower, topowers, case='Objective'): # type: ([],
   if len(powerlist) == 0:
     return 'Ahem.'
 
-  everyoneelse = powerlist
-  if topowers is not None and frompower is not None:
-    everyoneelse = [curpower for curpower in powerlist if curpower not in topowers and curpower != frompower]
-  elif frompower is not None:
-    everyoneelse = [curpower for curpower in powerlist if curpower != frompower]
-  elif topowers is not None:
-    everyoneelse = [curpower for curpower in powerlist if curpower not in topowers]
-
   allinclusive = False
   if topowers is not None:
     listedto = [curpower for curpower in topowers if curpower in powerlist]
     allinclusive = len(listedto) == len(topowers)
 
-  fromincluded = False
-  if frompower is not None:
-    fromincluded = frompower in powerlist
-
-  if len(powerlist) == 1:
-    if fromincluded:
-      retstr = whoami
-    elif allinclusive:
-      retstr = 'you'
+  orderedlist = []
+  if allinclusive:
+    if len(topowers) == 1:
+      orderedlist.append('you')
     else:
-      retstr = powerdict[powerlist[0]]['Objective']
-  else:
-    numused = 0
-    if allinclusive:
-      retstr = 'you'
-      numused += len(topowers)
-      if numused == len(powerlist) - 1:
-        retstr += ' and '
-      elif numused < len(powerlist):
-        retstr += ', '
-    if fromincluded:
-      retstr += whoami
-      numused += 1
-      if numused == len(powerlist) - 1:
-        retstr += ' and '
-      elif numused < len(powerlist):
-        retstr += ', '
-    for curpower in everyoneelse:
-      retstr += powerdict[curpower]['Objective']
-      numused += 1
-      if numused == len(powerlist) - 1:
-        retstr += ' and '
-      elif numused < len(powerlist):
-        retstr += ', '
+      orderedlist.append('you ' + str(size2numstr(topowers)))
 
-  return retstr.strip()
+  for curpower in powerlist:
+    if curpower != frompower and curpower not in topowers:
+      orderedlist.append(powerdict[curpower]['Objective'])
+
+  if frompower in powerlist:
+    orderedlist.append(whoami)
+
+  retstr = ', '.join(orderedlist)
+  if len(orderedlist) > 1:
+    retpref = retstr[:retstr.rfind(', ')]
+    retsuff = retstr[retstr.rfind(', ') + 2:]
+    retstr = retpref + ' and ' + retsuff
+
+  return retstr
 
 def size2numstr(inlist): # type: ([]) -> str
   """
@@ -205,56 +219,53 @@ def daide2lists(daide): # type: (str) -> []
 
   return retlist
 
-def tonetize(daide, glosssofar, frompower, topowers, tones): # type: (str, str, str, [], []) -> str
+def tonetize(utterance, glosssofar): # type: (pressgloss.core.PressUtterance, str) -> str
   """
   Take a basic expression and apply tones to it if possible.
 
-  :param daide: the original DAIDE syntax expression
-  :type daide: str
+  :param utterance: the original DAIDE utterance
+  :type utterance: pressgloss.core.PressUtterance
   :param glosssofar: the English gloss that has been produced so far.
   :type glosssofar: str
-  :param frompower: the Power that is sending the message
-  :type frompower: str
-  :param topowers: the Powers who will receive the message
-  :type topowers: []
-  :param tones: the tones to use
-  :type tones: []
 
   """
 
+  if glosssofar == '' or glosssofar == 'Ahem.':
+    return glosssofar
+
   retstr = glosssofar
-  if 'HUH' in daide or 'BWX' in daide:
+  if 'HUH' in utterance.daide or 'BWX' in utterance.daide:
     return retstr
-  if 'Haughty' in tones:
-    if 'CCL' in daide:
+  if 'Haughty' in utterance.tones:
+    if 'CCL' in utterance.daide:
       retstr = retstr + ' Pray we do not alter the deal further.'
-    elif 'YES' in daide or 'REJ' in daide:
-      retstr = powerdict[frompower]['Haughty'] + ' has deigned to respond to your missive: ' + retstr
-      if 'Urgent' in tones:
-        if 'REJ' in daide:
+    elif 'YES' in utterance.daide or 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Haughty'] + ' has deigned to respond to your missive: ' + retstr
+      if 'Urgent' in utterance.tones:
+        if 'REJ' in utterance.daide:
           retstr = retstr + ' Now leave me alone for a while, many things are afoot.'
         else:
           retstr = retstr + ' I expect to see action on this matter from you soon.'
     else:
-      retstr = powerdict[frompower]['Haughty'] + ' demands your attention in this matter. ' + retstr + ' What say you to that?'
-      if 'PRP' in daide and 'Urgent' in tones:
+      retstr = powerdict[utterance.frompower]['Haughty'] + ' demands your attention in this matter. ' + retstr + ' What say you to that?'
+      if 'PRP' in utterance.daide and 'Urgent' in utterance.tones:
         retstr = retstr + ' You don\'t have much time to waste in considering your response.'
-  elif 'Obsequious' in tones:
-    if 'CCL' in daide:
+  elif 'Obsequious' in utterance.tones:
+    if 'CCL' in utterance.daide:
       retstr = retstr + ' Sorry for bothering you.'
-    elif 'YES' in daide or 'REJ' in daide:
-      retstr = powerdict[frompower]['Familiar'] + ' is happy to provide a response: ' + retstr
-      if 'Urgent' in tones:
-        if 'REJ' in daide:
+    elif 'YES' in utterance.daide or 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Familiar'] + ' is happy to provide a response: ' + retstr
+      if 'Urgent' in utterance.tones:
+        if 'REJ' in utterance.daide:
           retstr = retstr + ' Not much time to chat, but all the best for your game.'
         else:
           retstr = retstr + ' I really need a response if you could be so kind.'
     else:
-      if len(topowers) == 1:
-        retstr = 'Oh great leader of ' + powerdict[topowers[0]]['Haughty'] + ', please hear me out. ' + retstr + '. Respectfully, the nation of ' + powerdict[frompower]['Objective'] + '.'
+      if len(utterance.topowers) == 1:
+        retstr = 'Oh great leader of ' + powerdict[utterance.topowers[0]]['Haughty'] + ', please hear me out. ' + retstr + '. Respectfully, the nation of ' + powerdict[utterance.frompower]['Objective'] + '.'
       else:
-        retstr + 'Oh great Powers of Europe, please hear me out. ' + retstr + '. Respectfully, the nation of ' + powerdict[frompower]['Objective'] + '.'
-      if 'PRP' in daide and 'Urgent' in tones:
+        retstr + 'Oh great Powers of Europe, please hear me out. ' + retstr + '. Respectfully, the nation of ' + powerdict[utterance.frompower]['Objective'] + '.'
+      if 'PRP' in utterance.daide and 'Urgent' in utterance.tones:
         retstr = retstr + ' I really need a response if you could be so kind.'
 
   return retstr
