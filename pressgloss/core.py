@@ -196,7 +196,7 @@ class PressFact(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'FCT'
-      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR'])
+      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR', 'IFF'])
       self.details = randomFactory(utterance, self, contentword)
     elif len(thelists) == 2:
       self.operator = thelists[0]
@@ -261,7 +261,7 @@ class PressProposal(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'PRP'
-      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR'])
+      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR', 'IFF'])
       self.details = randomFactory(utterance, self, contentword)
     elif len(thelists) == 2:
       self.operator = thelists[0]
@@ -1880,10 +1880,20 @@ class PressIf(PressMessage):
       self.antecedent = randomFactory(utterance, self, anteword)
       consword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR'])
       self.consequent = randomFactory(utterance, self, consword)
+      self.alternative = None
+      if random.choice([True, False]):
+        altword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR'])
+        self.alternative = randomFactory(utterance, self, altword)
     elif len(thelists) == 3:
       self.operator = thelists[0]
       self.antecedent = messageFactory(utterance, self, thelists[1])
       self.consequent = messageFactory(utterance, self, thelists[2])
+      self.alternative = None
+    elif len(thelists) == 5:
+      self.operator = thelists[0]
+      self.antecedent = messageFactory(utterance, self, thelists[1])
+      self.consequent = messageFactory(utterance, self, thelists[2])
+      self.alternative = messageFactory(utterance, self, thelists[4])
 
   def formenglish(self): # type () -> str
     """
@@ -1901,6 +1911,8 @@ class PressIf(PressMessage):
                          ': if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish() + '.'
         else:
           self.english = 'Would you consider ' + self.consequent.formsimpleenglish() + ' if ' + self.antecedent.formsimpleenglish() + '?'
+        if self.alternative is not None:
+          self.english += ' If not this, then perhaps ' + self.antecedent.formsimpleenglish() + '?'
       # (YES (PRP (IFF
       elif self.container.container.operator == 'YES':
         self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' ' + self.antecedent.formsimpleenglish() + \
@@ -1972,6 +1984,8 @@ class PressIf(PressMessage):
       # (FCT (IFF
       if self.container.container is None:
         self.english = 'I believe that if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish()
+        if self.alternative is not None:
+          self.english += ' If not this, then ' + self.antecedent.formsimpleenglish() + '.'
       # (HUH (FCT (IFF
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a trade.'
@@ -1989,6 +2003,8 @@ class PressIf(PressMessage):
     """
 
     self.simpleenglish = 'if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish()
+    if self.alternative is not None:
+      self.simpleenglish += ', otherwise ' + self.alternative.formsimpleenglish()
 
     return self.simpleenglish
 
@@ -2000,7 +2016,11 @@ class PressIf(PressMessage):
     :rtype: str
     """
 
-    return 'IFF ' + '(' + self.antecedent.formDAIDE() + ') (' + self.consequent.formDAIDE() + ')'
+    retval = 'IFF ' + '(' + self.antecedent.formDAIDE() + ') (' + self.consequent.formDAIDE() + ')'
+    if self.alternative is not None:
+      retval += ' ELS (' +  self.alternative.formDAIDE() + ')'
+
+    return retval
 
 class PressNot(PressMessage):
   """ The game-related content of a negation. """
