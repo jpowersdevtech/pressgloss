@@ -24,6 +24,8 @@ from . import create_app
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Objective"
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (AND (PCE (FRA ITA)) (XDO ((ENG AMY LVP) RTO YOR))))" --tones "Objective"
 # python -m pressgloss --operation test --daide "FRM ( ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))"
+# python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
+
 def main(): # type: () -> None
   logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
   leParser = argparse.ArgumentParser()
@@ -47,11 +49,18 @@ def main(): # type: () -> None
     for citer in range(0, iterations):
       english = PRESSGLOSS.daide2gloss(lesArgs.daide, tones)
       print(english)
-  if lesArgs.operation == 'random':
+  elif lesArgs.operation == 'random':
     for citer in range(0, iterations):
       tones = random.sample(helpers.tonelist, random.randint(1, 3))
       utterance = PRESSGLOSS.PressUtterance(None, tones)
       print(utterance.daide + ' --> ' + utterance.english)
+  elif lesArgs.operation == 'expound':
+    print('DAIDE,Tones,English')
+    legaltones = [tone for tone in helpers.tonelist if tone != 'PigLatin']
+    for citer in range(0, iterations):
+      tones = random.sample(legaltones, random.randint(0, 2))
+      english = PRESSGLOSS.daide2gloss(lesArgs.daide, tones)
+      print('"' + lesArgs.daide + '","' + str(tones) + '","' + english + '"')
   elif lesArgs.operation == 'app':
     app = create_app()
     app.run(debug=True, host='0.0.0.0')
