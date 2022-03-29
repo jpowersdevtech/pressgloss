@@ -5,6 +5,7 @@ import os
 import csv
 import json
 import re
+import random
 
 # pressgloss imports
 import pressgloss.core
@@ -149,6 +150,14 @@ def listOfPowers(powerlist, frompower, topowers, case='Objective'): # type: ([],
     retsuff = retstr[retstr.rfind(', ') + 2:]
     retstr = retpref + ' and ' + retsuff
 
+  if retstr == 'you and me':
+    if random.choice([True, False]):
+      retstr = 'us'
+
+  if retstr == 'you and I':
+    if random.choice([True, False]):
+      retstr = 'we'
+
   return retstr
 
 def size2numstr(inlist): # type: ([]) -> str
@@ -219,6 +228,89 @@ def daide2lists(daide): # type: (str) -> []
 
   return retlist
 
+def piglatinword(inword): # type: (str) -> str
+  """
+  Converts a word to Pig Latin
+
+  :param inword: the original word, assumed to be just a word, no punctuation or other horsing around
+  :type inword: str
+
+  :return: the word in Pig Latin
+  :rtype: str
+
+  """
+
+#  print('Started with ' + inword)
+
+  if len(inword) == 1:
+    return inword + 'way'
+
+  initcap = inword[0:1].isupper()
+  initvowel = inword[0:1].lower() in ['a', 'e', 'i', 'o', 'u']
+  secondcons = inword[1:2].lower() not in ['a', 'e', 'i', 'o', 'u', 'y']
+  thirdcons = len(inword) >= 3 and secondcons and inword[2:3].lower() not in ['a', 'e', 'i', 'o', 'u', 'y']
+
+  retword = ''
+  if initvowel:
+#    print('  Initial vowel')
+    retword = inword + 'way'
+  else:
+    swappos = 1
+#    print('  Swapping at position ' + str(swappos))
+    if thirdcons:
+      swappos = 3
+    elif secondcons:
+      swappos = 2
+    moving = inword[0:swappos].lower()
+    staying = inword[swappos:]
+    retword = staying + moving + 'ay'
+#    print('  Swapped: ' + retword)
+    if initcap:
+#      print('  Re-capitalizing')
+      retword = retword[0:1].upper() + retword[1:]
+
+#  print('  Final word: ' + retword)
+  return retword
+
+def piglatinize(instr): # type: (str) -> str
+  """
+  Converts a text to Pig Latin
+
+  :param instr: the original text, assumed to be sentence-like English
+  :type instr: str
+
+  :return: the text in Pig Latin
+  :rtype: str
+
+  """
+
+  words = instr.split()
+  newwords = []
+  for curword in words:
+    newword = curword.strip()
+    prelisted = False
+    postlisted = False
+    punctuation = None
+    if newword.startswith('<li>'):
+      prelisted = True
+      newword = newword[4:]
+    if newword.endswith('</li>'):
+      postlisted = True
+      newword = newword[:-5]
+    if newword[-1] in [',', '.', '?', '!', ':']:
+      punctuation = newword[-1]
+      newword = newword[:-1]
+    newword = piglatinword(newword)
+    if prelisted:
+      newword = '<li>' + newword
+    if punctuation is not None:
+      newword = newword + punctuation
+    if postlisted:
+      newword = newword + '</li>'
+    newwords.append(newword)
+
+  return ' '.join(newwords)
+
 def tonetize(utterance, glosssofar): # type: (pressgloss.core.PressUtterance, str) -> str
   """
   Take a basic expression and apply tones to it if possible.
@@ -267,5 +359,16 @@ def tonetize(utterance, glosssofar): # type: (pressgloss.core.PressUtterance, st
         retstr + 'Oh great Powers of Europe, please hear me out. ' + retstr + '. Respectfully, the nation of ' + powerdict[utterance.frompower]['Objective'] + '.'
       if 'PRP' in utterance.daide and 'Urgent' in utterance.tones:
         retstr = retstr + ' I really need a response if you could be so kind.'
+  elif 'Urgent' in utterance.tones:
+    if 'PRP' in utterance.daide:
+      if 'CCL' in utterance.daide or 'REJ' in utterance.daide:
+        retstr = retstr + ' No time to consider that for now.'
+      elif 'YES' in utterance.daide:
+        retstr = retstr + " Let's get going on this now that it's agreed."
+      else:
+        retstr = retstr + ' We need to move fast on this.'
+
+  if 'PigLatin' in utterance.tones:
+    retstr = piglatinize(retstr)
 
   return retstr

@@ -667,7 +667,7 @@ class PressPeace(PressMessage):
                          ' between ' + helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers) + '.'
         else:
           self.english = 'I ' + random.choice(['propose', 'request']) + ' that ' + \
-                         helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers) + ' ' + \
+                         helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, 'Subjective') + ' ' + \
                          random.choice(['form', 'sign', 'agree to', 'establish']) + ' a ' + \
                          random.choice(['peace treaty', 'peace deal', 'non-agression pact', 'cease-fire']) + '.'
       # (YES (PRP (PCE
