@@ -23,6 +23,7 @@ from . import create_app
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Haughty,Urgent"
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Objective"
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (AND (PCE (FRA ITA)) (XDO ((ENG AMY LVP) RTO YOR))))" --tones "Objective"
+# python -m pressgloss --operation translate --daide "FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))" --tones "Objective,Expert"
 # python -m pressgloss --operation test --daide "FRM ( ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))"
 # python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
 
@@ -56,9 +57,13 @@ def main(): # type: () -> None
       print(utterance.daide + ' --> ' + utterance.english)
   elif lesArgs.operation == 'expound':
     print('DAIDE,Tones,English')
-    legaltones = [tone for tone in helpers.tonelist if tone != 'PigLatin']
+    legaltones = [tone for tone in helpers.tonelist if tone not in ['Urgent', 'Expert', 'Obsequious', 'Haughty', 'PigLatin']]
     for citer in range(0, iterations):
-      tones = random.sample(legaltones, random.randint(0, 2))
+      tones = [random.choice(legaltones)]
+      if random.choice([True, False]):
+        tones.append('Urgent')
+      if random.choice([True, False]):
+        tones.append('Expert')
       english = PRESSGLOSS.daide2gloss(lesArgs.daide, tones)
       print('"' + lesArgs.daide + '","' + str(tones) + '","' + english + '"')
   elif lesArgs.operation == 'app':

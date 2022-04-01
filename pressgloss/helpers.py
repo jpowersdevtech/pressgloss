@@ -28,7 +28,7 @@ unitdict = {curdata['trigram']: curdata for curdata in refData if curdata['type'
 unitlist = list(unitdict.keys())
 sealist = [curdata['trigram'] for curdata in refData if curdata['Sea'] == '1' or curdata['Coast'] == '1']
 supplylist = [curdata['trigram'] for curdata in refData if curdata['Supply'] == '1']
-tonelist = ['Haughty', 'Objective', 'Urgent', 'Obsequious', 'PigLatin']
+tonelist = ['Haughty', 'Objective', 'Urgent', 'Obsequious', 'PigLatin', 'Hostile', 'Friendly', 'Fearful', 'Confident', 'Empathetic', 'Upset', 'Expert']
 
 def initcap(instr): # type: (str) -> str
   """
@@ -359,6 +359,103 @@ def tonetize(utterance, glosssofar): # type: (pressgloss.core.PressUtterance, st
         retstr + 'Oh great Powers of Europe, please hear me out. ' + retstr + '. Respectfully, the nation of ' + powerdict[utterance.frompower]['Objective'] + '.'
       if 'PRP' in utterance.daide and 'Urgent' in utterance.tones:
         retstr = retstr + ' I really need a response if you could be so kind.'
+  elif 'Hostile' in utterance.tones:
+    if 'CCL' in utterance.daide:
+      retstr = retstr + ' This agreement, and your participation, aren\'t worth my time.'
+    elif 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Objective'] + ' cannot waste time on ' + random.choice(['this foolishness', 'you', listOfPowers(utterance.topowers, '', [])]) + ': ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' Now leave me alone for a while, many things are afoot.'
+    elif 'YES' in utterance.daide:
+      retstr = 'This had better work, or ' + random.choice(['you', listOfPowers(utterance.topowers, '', [])]) + ' will soon be seeing my armies rolling into your provinces: ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' I expect to see action on this matter from you soon.'
+    elif 'PRP' in utterance.daide:
+      if len(utterance.topowers) == 1:
+        retstr = 'This might be your last chance. ' + retstr + ' ' + random.choice(['I await', powerdict[utterance.frompower]['Haughty'] + ' awaits']) + ' your response.'
+      else:
+        retstr + 'You ' + size2numstr(utterance.topowers) + ' think you\'ve got it all figured out. No matter - I have the following to propose: ' + retstr + ' ' + random.choice(['I await', powerdict[utterance.frompower]['Haughty'] + ' awaits']) + ' your response.'
+    elif 'FCT' in utterance.daide:
+      retstr = 'You are getting in my way - this should make you worried: ' + retstr
+  elif 'Friendly' in utterance.tones:
+    if 'CCL' in utterance.daide:
+      retstr = retstr + ' Apologies - had to change course, but hope to work with you on other initiatives.'
+    elif 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Objective'] + ' cannot make this commitment right now, but I want to find another way to work together: ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' Let\'s talk over another possibility in the next couple turns.'
+    elif 'YES' in utterance.daide:
+      retstr = 'Yes, this will be a helpful move for both you and me.  ' + retstr + random.choice([' Pleasure doing business with you!', ' Best of luck with your plans!'])
+    elif 'PRP' in utterance.daide:
+      if len(utterance.topowers) == 1:
+        retstr = 'I think this proposal will help us both out. ' + retstr + ' ' + random.choice(['You seem to be a reasonable sort.', 'I think our interests are aligned for the time being.'])
+      else:
+        retstr = 'Let\'s collaborate together in this phase of the game.' + retstr + ' We have more to gain from working together than going on our own.'
+    elif 'FCT' in utterance.daide:
+      retstr = 'Here\'s something I have learned recently.  Hope it helps with your game: ' + retstr
+  elif 'Fearful' in utterance.tones:
+    if 'CCL' in utterance.daide:
+      retstr = retstr + ' I\'m having second thoughts about this situation.  I am nervous about your position.'
+    elif 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Objective'] + ' cannot see how this benefits me, and I worry about your growing strength: ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' Convince me you are not a significant threat to me, or I may seek alliances elsewhere.'
+    elif 'YES' in utterance.daide:
+      retstr = 'I agree, and hope this appeases you for the time being.  ' + retstr + random.choice([' Peaceful journey!', ' Best of luck with your plans!'])
+    elif 'PRP' in utterance.daide:
+      if len(utterance.topowers) == 1:
+        retstr = 'Would this offer do anything to keep your armies off my territory? ' + retstr + ' ' + random.choice(['You seem to be a reasonable sort.', 'I appeal to your better nature.'])
+      else:
+        retstr = 'I address you as one who needs your help - things are not going well for me.' + retstr + ' We have more to gain from working together than going on our own.'
+    elif 'FCT' in utterance.tones:
+      retstr = 'Here\'s something I have learned recently.  It makes me nervous: ' + retstr
+  elif 'Confident' in utterance.tones:
+    if 'CCL' in utterance.daide:
+      retstr = retstr + ' That\'s not actually the best choice I have right now - I\'m going to look for other options.'
+    elif 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Objective'] + ' can do better right now, given my position in the game. ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' I\'m close to reaching my goals - come up with a better proposal soon if you want to do something.'
+    elif 'YES' in utterance.daide:
+      retstr = 'This is a good proposal for me.  ' + powerdict[utterance.frompower]['Objective'] + '\'s position will be strengthened.  ' + retstr + random.choice([' Look out for ' + powerdict[utterance.frompower]['Haughty'] + '!', ' Best of luck with your plans!'])
+    elif 'PRP' in utterance.daide:
+      retstr = 'I can see that you might need my help.  What do you say to this? ' + retstr
+    elif 'FCT' in utterance.daide:
+      retstr = 'Here\'s something I have learned recently.  In my position, I can afford to share some intel: ' + retstr
+  elif 'Empathetic' in utterance.tones:
+    if 'CCL' in utterance.daide:
+      retstr = retstr + ' I do sympathize with your position, but I must retract this.'
+    elif 'REJ' in utterance.daide:
+      retstr = powerdict[utterance.frompower]['Objective'] + ' sees that this would be of benefit to you, but I need more from the deal: ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' Given how the game is going for you, come back to me soon with something better.'
+    elif 'YES' in utterance.daide:
+      retstr = 'I agree, and hope this helps you out for the time being.  ' + retstr + random.choice([' Peaceful journey!', ' Best of luck with your plans!'])
+    elif 'PRP' in utterance.daide:
+      if len(utterance.topowers) == 1:
+        retstr = 'I can see that the game is not going so well for you.  Would you like some help: ' + retstr + ' ' + random.choice(['You should be able to get back on track soon.', 'I can see a couple ways out of trouble for you.'])
+      else:
+        retstr = 'We\'re all in the same boat.  What about a plan to move forward:' + retstr + ' We have more to gain from working together than going on our own.'
+    elif 'FCT' in utterance.daide:
+      retstr = 'Here\'s something I have learned recently.  Hope it helps you out: ' + retstr
+  elif 'Upset' in utterance.tones:
+    if 'CCL' in utterance.daide:
+      retstr = retstr + ' You\'re getting on my nerves - I won\'t be willing to help you out in future.'
+    elif 'REJ' in utterance.daide:
+      retstr = 'This is a ridiculous offer - what makes you think I would be interested? ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' Start paying attention or get ready to see my armies marching into your provinces.'
+    elif 'YES' in utterance.daide:
+      retstr = 'For now, I agree, but you need to start showing better faith: ' + retstr
+      if 'Urgent' in utterance.tones:
+        retstr = retstr + ' I want to see you take action on this soon, or I will lose interest in cooperating.'
+    elif 'PRP' in utterance.daide:
+      if len(utterance.topowers) == 1:
+        retstr = 'Your recent moves are not appropriate for a peaceful relationship.  This is my last offer: ' + retstr + ' ' + random.choice(['You need to reconsider your approach.', 'I can see a difficult future for you.'])
+      else:
+        retstr = 'You ' + size2numstr(utterance.topowers) + ' are getting on my nerves.  This is my last offer:' + retstr + ' We should work together, but you are making that impossible.'
+    elif 'FCT' in utterance.daide:
+      retstr = 'Here\'s something I have learned recently.  You had better take notice: ' + retstr
   elif 'Urgent' in utterance.tones:
     if 'PRP' in utterance.daide:
       if 'CCL' in utterance.daide or 'REJ' in utterance.daide:

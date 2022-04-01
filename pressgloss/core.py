@@ -2324,6 +2324,12 @@ class PressHold(PressMessage):
                          ' in ' + \
                          helpers.provincedict[self.unit[2]]['Objective'] + '.'
 
+    if 'Expert' in self.utterance.tones:
+      unittype = 'A'
+      if self.unit[1] == 'FLT':
+        unittype = 'F'
+      self.simpleenglish += ' (' + unittype + ' ' + self.unit[2] + ' H).'
+
     return self.simpleenglish
 
   def formDAIDE(self): # type () -> str
@@ -2394,6 +2400,12 @@ class PressMoveInto(PressMessage):
                          helpers.provincedict[self.unit[2]]['Objective'] + \
                          ' to ' + \
                          helpers.provincedict[self.province]['Objective'] + '.'
+
+    if 'Expert' in self.utterance.tones:
+      unittype = 'A'
+      if self.unit[1] == 'FLT':
+        unittype = 'F'
+      self.simpleenglish += ' (' + unittype + ' ' + self.unit[2] + ' -> ' + self.province + ').'
 
     return self.simpleenglish
 
@@ -2474,6 +2486,15 @@ class PressSupportHold(PressMessage):
                          helpers.unitdict[self.supported[1]]['Objective'] + \
                          ' in ' + \
                          helpers.provincedict[self.supported[2]]['Objective'] + '.'
+
+    if 'Expert' in self.utterance.tones:
+      supportertype = 'A'
+      if self.supporter[1] == 'FLT':
+        supportertype = 'F'
+      supportedtype = 'A'
+      if self.supported[1] == 'FLT':
+        supportedtype = 'F'
+      self.simpleenglish += ' (' + supportertype + ' ' + self.supporter[2] + ' S ' + supportedtype + ' ' + self.supported[2] + ' H).'
 
     return self.simpleenglish
 
@@ -2560,6 +2581,15 @@ class PressSupportMove(PressMessage):
                          ' into ' + \
                          helpers.provincedict[self.province]['Objective'] + '.'
 
+    if 'Expert' in self.utterance.tones:
+      supportertype = 'A'
+      if self.supporter[1] == 'FLT':
+        supportertype = 'F'
+      supportedtype = 'A'
+      if self.supported[1] == 'FLT':
+        supportedtype = 'F'
+      self.simpleenglish += ' (' + supportertype + ' ' + self.supporter[2] + ' S ' + supportedtype + ' ' + self.supported[2] + ' -> ' + self.province + ').'
+
     return self.simpleenglish
 
   def formDAIDE(self): # type () -> str
@@ -2644,6 +2674,11 @@ class PressConvoy(PressMessage):
                          helpers.provincedict[self.convoyedunit[2]]['Objective'] + \
                          ' into ' + \
                          helpers.provincedict[self.province]['Objective'] + '.'
+
+    if 'Expert' in self.utterance.tones:
+      convoytype = 'F'
+      convoyedtype = 'A'
+      self.simpleenglish += ' (' + convoytype + ' ' + self.convoyunit[2] + ' C ' + convoyedtype + ' ' + self.convoyedunit[2] + ' -> ' + self.province + ').'
 
     return self.simpleenglish
 
