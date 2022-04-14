@@ -125,24 +125,29 @@ def listOfPowers(powerlist, frompower, topowers, case='Objective'): # type: ([],
   if len(powerlist) == 0:
     return 'Ahem.'
 
-  allinclusive = False
-  if topowers is not None:
-    listedto = [curpower for curpower in topowers if curpower in powerlist]
-    allinclusive = len(listedto) == len(topowers)
-
   orderedlist = []
-  if allinclusive:
-    if len(topowers) == 1:
-      orderedlist.append('you')
-    else:
-      orderedlist.append('you ' + str(size2numstr(topowers)))
+  if (frompower is None or frompower == '') and (topowers is None or len(topowers) == 0):
+    orderedlist = [powerdict[curpower]['Objective'] for curpower in powerlist]
+  else:
+    allinclusive = False
+    if topowers is not None:
+      listedto = [curpower for curpower in topowers if curpower in powerlist]
+      allinclusive = len(listedto) == len(topowers)
 
-  for curpower in powerlist:
-    if curpower != frompower and curpower not in topowers:
-      orderedlist.append(powerdict[curpower]['Objective'])
+    if allinclusive:
+      if len(topowers) < 2:
+        orderedlist.append('you')
+      else:
+        orderedlist.append('you ' + str(size2numstr(topowers)))
+    elif frompower not in powerlist:
+      orderedlist = [powerdict[curpower]['Objective'] for curpower in powerlist]
 
-  if frompower in powerlist:
-    orderedlist.append(whoami)
+    for curpower in powerlist:
+      if curpower != frompower and curpower not in topowers and powerdict[curpower]['Objective'] not in orderedlist:
+        orderedlist.append(powerdict[curpower]['Objective'])
+
+    if frompower in powerlist:
+      orderedlist.append(whoami)
 
   retstr = ', '.join(orderedlist)
   if len(orderedlist) > 1:

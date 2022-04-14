@@ -453,6 +453,12 @@ class PowerListTest(unittest.TestCase):
     self.assertEqual(helpers.listOfPowers(['FRA', 'ITA', 'RUS'], 'ENG', ['FRA']), 'you, Italy and Russia')
     self.assertEqual(helpers.listOfPowers(['FRA', 'ITA', 'RUS'], 'ENG', ['FRA', 'ITA']), 'you two and Russia')
     self.assertEqual(helpers.listOfPowers(['FRA', 'ITA', 'RUS'], 'ENG', ['TUR']), 'France, Italy and Russia')
+    self.assertEqual(helpers.listOfPowers(['AUS'], '', []), 'Austria-Hungary')
+    self.assertEqual(helpers.listOfPowers(['AUS'], '', ['AUS']), 'you')
+    self.assertEqual(helpers.listOfPowers(['AUS'], '', ['FRA']), 'Austria-Hungary')
+    self.assertEqual(helpers.listOfPowers(['AUS'], '', ['AUS', 'FRA']), 'Austria-Hungary')
+    self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS', 'FRA']), 'you two')
+    self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS']), 'you and France')
 
 class ParseTest(unittest.TestCase):
   """ Tests parsing of various quasi-compliant DAIDE strings. """

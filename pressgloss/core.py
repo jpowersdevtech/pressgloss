@@ -667,7 +667,7 @@ class PressPeace(PressMessage):
                          ' between ' + helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers) + '.'
         else:
           self.english = 'I ' + random.choice(['propose', 'request']) + ' that ' + \
-                         helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, 'Subjective') + ' ' + \
+                         helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
                          random.choice(['form', 'sign', 'agree to', 'establish']) + ' a ' + \
                          random.choice(['peace treaty', 'peace deal', 'non-agression pact', 'cease-fire']) + '.'
       # (YES (PRP (PCE
@@ -863,7 +863,7 @@ class PressAlliance(PressMessage):
                          ' against ' + helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers) + '.'
         else:
           self.english = 'I ' + random.choice(['propose', 'request']) + ' that ' + \
-                         helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers) + ' ' + \
+                         helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
                          random.choice(['form', 'sign', 'agree to', 'establish']) + ' ' + \
                          random.choice(['an alliance', 'a joint military operation', 'military cooperation', 'a military coalition']) + \
                          ' against ' + helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers) + '.'
@@ -934,7 +934,7 @@ class PressAlliance(PressMessage):
           self.english = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
                          random.choice(['are not in', 'do not have']) + ' ' + \
                          random.choice(['a current', 'an active', 'a']) + ' ' + \
-                         random.choice(['alliance', 'joint military operation', 'military coalition']) + 'against' + \
+                         random.choice(['alliance', 'joint military operation', 'military coalition']) + ' against ' + \
                          helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers) + '.'
           self.english = self.english.replace(' a alliance', ' an alliance')
         # (HUH (FCT (NOT (ALY
@@ -1198,7 +1198,7 @@ class PressDMZ(PressMessage):
     :rtype: str
     """
 
-    self.simpleenglish = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers) + ' form a DMZ in ' + helpers.listOfProvinces(self.provinces) + '.'
+    self.simpleenglish = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' form a DMZ in ' + helpers.listOfProvinces(self.provinces) + '.'
 
     return self.simpleenglish
 
@@ -1251,8 +1251,10 @@ class PressDraw(PressMessage):
     """
 
     powersgloss = ''
+    subjpowersgloxx = ''
     if self.powers is not None:
       powersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers)
+      subjpowersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective')
 
     if self.container.operator == 'PRP':
       # (PRP (DRW
@@ -1307,7 +1309,7 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that we do not draw.'
           else:
-            self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that ' + powersgloss + ' not pursue a draw.'
+            self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that ' + subjpowersgloss + ' not pursue a draw.'
         # (HUH (PRP (NOT (DRW
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your proposal about a draw.'
@@ -1317,7 +1319,7 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'I am not pursuing a draw.'
           else:
-            self.english = powersgloss + ' are not pursuing a draw.'
+            self.english = subjpowersgloss + ' are not pursuing a draw.'
         # (HUH (FCT (NOT (DRW
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a draw.'
@@ -1328,19 +1330,19 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that we should pursue a draw.'
           else:
-            self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + powersgloss + ' should pursue a draw.'
+            self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + subjpowersgloss + ' should pursue a draw.'
         # (YES (PRP (NAR (DRW
         elif self.container.container.container.operator == 'YES':
           if self.powers is None:
             self.english = 'I ' + random.choice(['agree', 'concur']) + ' that it is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that we should pursue a draw.'
           else:
-            self.english = 'I ' + random.choice(['agree', 'concur']) + ' that it is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + powersgloss + ' should pursue a draw.'
+            self.english = 'I ' + random.choice(['agree', 'concur']) + ' that it is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + subjpowersgloss + ' should pursue a draw.'
         # (REJ (PRP (NAR (DRW
         elif self.container.container.container.operator == 'REJ':
           if self.powers is None:
             self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that we should pursue a draw.'
           else:
-            self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that ' + powersgloss + ' should pursue a draw.'
+            self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that ' + subjpowersgloss + ' should pursue a draw.'
         # (CCL (PRP (NAR (DRW
         elif self.container.container.container.operator == 'CCL':
           if self.powers is None:
@@ -1356,7 +1358,7 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'It is unclear if we are in a good draw position.'
           else:
-            self.english = 'It is unclear if ' + powersgloss + ' are in a good draw position.'
+            self.english = 'It is unclear if ' + subjpowersgloss + ' are in a good draw position.'
         # (HUH (FCT (NAR (DRW
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a draw.'
@@ -1366,7 +1368,7 @@ class PressDraw(PressMessage):
         if self.powers is None:
           self.english = 'We are in a good draw position.'
         else:
-          self.english = powersgloss + ' are in a good draw position.'
+          self.english = subjpowersgloss + ' are in a good draw position.'
       # (HUH (FCT (DRW
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a draw.'
@@ -1916,7 +1918,7 @@ class PressIf(PressMessage):
       # (YES (PRP (IFF
       elif self.container.container.operator == 'YES':
         self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' ' + self.antecedent.formsimpleenglish() + \
-                       ' and whne it\'s done, I will execute the following: ' + self.consequent.formsimpleenglish()
+                       ' and when it\'s done, I will execute the following: ' + self.consequent.formsimpleenglish()
       # (REJ (PRP (IFF
       elif self.container.container.operator == 'REJ':
         self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \

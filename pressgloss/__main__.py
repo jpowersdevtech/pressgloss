@@ -51,12 +51,18 @@ def main(): # type: () -> None
       english = PRESSGLOSS.daide2gloss(lesArgs.daide, tones)
       print(english)
   elif lesArgs.operation == 'random':
+    legaltones = [tone for tone in helpers.tonelist if tone not in ['Urgent', 'Expert', 'Obsequious', 'Haughty', 'PigLatin']]
+    print('DAIDE,Tones,Gloss')
     for citer in range(0, iterations):
-      tones = random.sample(helpers.tonelist, random.randint(1, 3))
-      utterance = PRESSGLOSS.PressUtterance(None, tones)
-      print(utterance.daide + ' --> ' + utterance.english)
+      curtones = [random.choice(legaltones)]
+      if random.choice([True, False]):
+        curtones.append('Urgent')
+      if random.choice([True, False]):
+        curtones.append('Expert')
+      utterance = PRESSGLOSS.PressUtterance(None, curtones)
+      print('"' + utterance.daide + '","' + ';'.join(curtones) + '","' + utterance.english + '"')
   elif lesArgs.operation == 'expound':
-    print('DAIDE,Tones,English')
+    print('DAIDE,Tones,Gloss')
     legaltones = [tone for tone in helpers.tonelist if tone not in ['Urgent', 'Expert', 'Obsequious', 'Haughty', 'PigLatin']]
     for citer in range(0, iterations):
       tones = [random.choice(legaltones)]
@@ -70,8 +76,12 @@ def main(): # type: () -> None
     app = create_app()
     app.run(debug=True, host='0.0.0.0')
   elif lesArgs.operation == 'test':
-    exprlist = helpers.daide2lists(lesArgs.daide)
-    print(str(len(exprlist)))
+    print(helpers.listOfPowers(['AUS'], '', []))
+    print(helpers.listOfPowers(['AUS'], '', ['AUS']))
+    print(helpers.listOfPowers(['AUS'], '', ['FRA']))
+    print(helpers.listOfPowers(['AUS'], '', ['FRA', 'AUS']))
+    print(helpers.listOfPowers(['FRA', 'AUS'], '', ['FRA', 'AUS']))
+    print(helpers.listOfPowers(['FRA', 'AUS'], '', ['AUS']))
 
 if __name__ == '__main__':
   main()
