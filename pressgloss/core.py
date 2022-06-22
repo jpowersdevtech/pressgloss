@@ -2395,6 +2395,10 @@ class PressMoveInto(PressMessage):
     :rtype: str
     """
 
+    if len(self.unit) < 3:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
+
     self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          ' moves their ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -2568,6 +2572,10 @@ class PressSupportMove(PressMessage):
     :return: the English expression
     :rtype: str
     """
+
+    if len(self.supporter) != 3 or len(self.supported) != 3:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
 
     self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
                          ' provides support with their ' + \
