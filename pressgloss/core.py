@@ -1925,8 +1925,10 @@ class PressIf(PressMessage):
                        ' the condition that ' + self.antecedent.formsimpleenglish() + ' should lead to ' + self.consequent.formsimpleenglish()
       # (CCL (PRP (IFF
       elif self.container.container.operator == 'CCL':
-        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of ' + \
-                       self.antecedent.formsimpleenglish() + ' for ' + self.consequent.formsimpleenglish()
+        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that if ' + \
+                       self.antecedent.formsimpleenglish() + ' then ' + self.consequent.formsimpleenglish()
+        if self.alternative is not None:
+          self.english += ' else ' + self.alternative.formsimpleenglish()
       # (HUH (PRP (IFF
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your quid pro quo.'
