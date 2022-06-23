@@ -17,6 +17,7 @@ import random
 # pressgloss imports
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
+import pressgloss.gamelog as GAMELOG
 import pressgloss.daideapp as DAIDEAPP
 from . import create_app
 
@@ -26,6 +27,11 @@ from . import create_app
 # python -m pressgloss --operation translate --daide "FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))" --tones "Objective,Expert"
 # python -m pressgloss --operation test --daide "FRM ( ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))"
 # python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
+# python -m pressgloss --operation prettifygamefile --input c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.json --output c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.html
+# python -m pressgloss --operation analyzelogs --input c:\data\shade\data_20220526\games
+
+# aws s3 --profile=shade ls s3://jataware-diplomacy/
+# aws s3 --profile=shade cp s3://jataware-diplomacy/data-2022-05-21T16:00:01.zip c:\data\shade\data_2.zip
 
 def main(): # type: () -> None
   logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
@@ -34,6 +40,9 @@ def main(): # type: () -> None
   leParser.add_argument('--number', help='How many expressions to create.')
   leParser.add_argument('--daide', help='The DAIDE format press to use.')
   leParser.add_argument('--tones', help='The tones to use.')
+  leParser.add_argument('--input', help='An input file or folder.')
+  leParser.add_argument('--output', help='An output file or folder.')
+
   lesArgs = leParser.parse_args()
   if not hasattr(lesArgs, 'operation') or lesArgs.operation is None:
     logging.error('pressgloss needs to know what to do - maybe translate?')
@@ -75,6 +84,12 @@ def main(): # type: () -> None
   elif lesArgs.operation == 'app':
     app = create_app()
     app.run(debug=True, host='0.0.0.0')
+  elif lesArgs.operation == 'prettifygamefile':
+    GAMELOG.prettifygamefile(lesArgs.input, lesArgs.output)
+  elif lesArgs.operation == 'analyzelogs':
+    interestinggames = GAMELOG.analyzebackup(lesArgs.input)
+    for curgame in interestinggames:
+      GAMELOG.prettifygamefile(curgame, curgame)
   elif lesArgs.operation == 'test':
     print(helpers.listOfPowers(['AUS'], '', []))
     print(helpers.listOfPowers(['AUS'], '', ['AUS']))
