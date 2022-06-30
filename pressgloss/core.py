@@ -1160,7 +1160,7 @@ class PressAlliance(PressMessage):
     if self.container.operator == "NOT":  #For example, NOT ( PRP ( ALY
       self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers,
                                                 case='Subjective') + ' ' + \
-                           random.choice(['will not form', 'will not sign', 'disagrees to', 'will not establish']) + ' ' + \
+                           random.choice(['will not form', 'will not sign', 'will not establish']) + ' ' + \
                            random.choice(['an alliance', 'a joint military operation', 'military cooperation',
                                           'a military coalition']) + ' against ' + \
                            helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers)
@@ -2313,7 +2313,7 @@ class PressNot(PressMessage):
     :rtype: str
     """
 
-    self.simpleenglish = self.proposition.formlistenglish() + ' is not happening'
+    self.simpleenglish = self.proposition.formclauseenglish() + '.' #+ ' is not happening'
 
     return self.simpleenglish
 
@@ -2621,7 +2621,7 @@ class PressHold(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator == "NOT":
+    if self.container.container.operator == "NOT":
       self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                            ' is free to move their ' + \
                            helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -2736,7 +2736,7 @@ class PressMoveInto(PressMessage):
       return self.simpleenglish
 
 
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          ' does not move their ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -2857,7 +2857,7 @@ class PressSupportHold(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
                            ' does not provide support with their ' + \
                            helpers.unitdict[self.supporter[1]]['Objective'] + \
@@ -3005,7 +3005,7 @@ class PressSupportMove(PressMessage):
       return self.simpleenglish
 
 
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
                          ' does not provide support with their ' + \
                          helpers.unitdict[self.supporter[1]]['Objective'] + \
@@ -3142,7 +3142,7 @@ class PressConvoy(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator == "NOT":
+    if self.container.container.operator == "NOT":
       self.simpleenglish = helpers.powerdict[self.convoyunit[0]]['Objective'] + \
                            '\'s ' + \
                            helpers.unitdict[self.convoyunit[1]]['Objective'] + \
@@ -3260,7 +3260,7 @@ class PressConvoyVia(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator == "NOT":
+    if self.container.container.operator == "NOT":
       self.simpleenglish = helpers.powerdict[self.convoyedunit[0]]['Objective'] + \
                          '\'s ' + \
                          helpers.unitdict[self.convoyedunit[1]]['Objective'] + \
@@ -3361,7 +3361,7 @@ class PressRetreat(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          '\'s ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -3454,7 +3454,7 @@ class PressDisband(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          '\'s ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -3545,7 +3545,7 @@ class PressBuild(PressMessage):
     :return: the English expression
     :rtype: str
     """
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          ' does not build a new ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -3637,7 +3637,7 @@ class PressRemove(PressMessage):
     :rtype: str
     """
 
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          ' does not their ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -3725,7 +3725,7 @@ class PressWaive(PressMessage):
     :rtype: str
     """
 
-    if self.container.operator== "NOT":
+    if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.power]['Objective'] + \
                          ' does not waive their build turn.'
     else:
