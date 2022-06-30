@@ -1772,7 +1772,7 @@ class PressSolo(PressMessage):
       self.simpleenglish = 'there will be '
     self.simpleenglish +=  'a solo win by ' + helpers.listOfPowers(self.winner, self.utterance.frompower, self.utterance.topowers)
 
-    return ""
+    return self.simpleenglish
 
   def formDAIDE(self): # type () -> str
     """
