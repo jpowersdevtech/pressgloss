@@ -154,7 +154,7 @@ class PressMessage:
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -165,6 +165,20 @@ class PressMessage:
     """
 
     self.simpleenglish = 'A DAIDE expression.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = 'A DAIDE clause.'
 
     return self.simpleenglish
 
@@ -219,7 +233,7 @@ class PressFact(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -229,7 +243,21 @@ class PressFact(PressMessage):
 
     """
 
-    self.simpleenglish = self.details.formsimpleenglish()
+    self.simpleenglish = self.details.formlistenglish()
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -284,7 +312,7 @@ class PressProposal(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -294,7 +322,21 @@ class PressProposal(PressMessage):
 
     """
 
-    self.simpleenglish = self.details.formsimpleenglish()
+    self.simpleenglish = self.details.formlistenglish()
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -348,7 +390,7 @@ class PressAccept(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -359,6 +401,20 @@ class PressAccept(PressMessage):
     """
 
     self.simpleenglish = 'I accept your proposal.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -412,7 +468,7 @@ class PressReject(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -423,6 +479,20 @@ class PressReject(PressMessage):
     """
 
     self.simpleenglish = 'I reject your proposal.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -476,7 +546,7 @@ class PressCancel(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -487,6 +557,20 @@ class PressCancel(PressMessage):
     """
 
     self.simpleenglish = 'I wish to cancel my last message.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -538,7 +622,7 @@ class PressHuh(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -549,6 +633,20 @@ class PressHuh(PressMessage):
     """
 
     self.simpleenglish = 'I did not understand your message.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -600,7 +698,7 @@ class PressIgnore(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -611,6 +709,20 @@ class PressIgnore(PressMessage):
     """
 
     self.simpleenglish = self.formenglish()
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -784,11 +896,11 @@ class PressPeace(PressMessage):
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a peace treaty.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement about this peace deal, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -801,6 +913,27 @@ class PressPeace(PressMessage):
     self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
                          random.choice(['form', 'sign', 'agree to', 'establish']) + ' a ' + \
                          random.choice(['peace treaty', 'peace deal', 'non-agression pact', 'cease-fire']) + '.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English statement about this peace deal, without any context like proposals, negations, etc.
+    Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English statement
+    :rtype: str
+
+    """
+    if self.container.operator == "NOT":
+      self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers,
+                                                case='Subjective') + ' ' + \
+                           random.choice(['will not form', 'refuses', 'disagree to', 'will not establish']) + ' a ' + \
+                           random.choice(['peace treaty', 'peace deal', 'non-agression pact', 'cease-fire'])
+    else:
+      self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
+                         random.choice(['form', 'sign', 'agree to', 'establish']) + ' a ' + \
+                         random.choice(['peace treaty', 'peace deal', 'non-agression pact', 'cease-fire'])
 
     return self.simpleenglish
 
@@ -994,11 +1127,11 @@ class PressAlliance(PressMessage):
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about an alliance.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type: () -> str
+  def formlistenglish(self): # type: () -> str
     """
     Creates a simple English statement about this alliance, without any context like proposals, negations, etc.
     Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
@@ -1012,6 +1145,30 @@ class PressAlliance(PressMessage):
                          random.choice(['form', 'sign', 'agree to', 'establish']) + ' ' + \
                          random.choice(['an alliance', 'a joint military operation', 'military cooperation', 'a military coalition']) + ' against ' + \
                          helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers) + '.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English statement about this alliance, without any context like proposals, negations, etc.
+    Useful for lists of conjunctions or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English statement
+    :rtype: str
+
+    """
+    if self.container.operator == "NOT":  #For example, NOT ( PRP ( ALY
+      self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers,
+                                                case='Subjective') + ' ' + \
+                           random.choice(['will not form', 'will not sign', 'disagrees to', 'will not establish']) + ' ' + \
+                           random.choice(['an alliance', 'a joint military operation', 'military cooperation',
+                                          'a military coalition']) + ' against ' + \
+                           helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers)
+    else:
+      self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
+                         random.choice(['form', 'sign', 'agree to', 'establish']) + ' ' + \
+                         random.choice(['an alliance', 'a joint military operation', 'military cooperation', 'a military coalition']) + ' against ' + \
+                         helpers.listOfPowers(self.opponents, self.utterance.frompower, self.utterance.topowers)
 
     return self.simpleenglish
 
@@ -1186,11 +1343,11 @@ class PressDMZ(PressMessage):
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a DMZ.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the DMZ in the context of a sender, recipients and desired tone.
 
@@ -1199,6 +1356,20 @@ class PressDMZ(PressMessage):
     """
 
     self.simpleenglish = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' form a DMZ in ' + helpers.listOfProvinces(self.provinces) + '.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the DMZ in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator == "NOT":
+      self.simpleenglish = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' will not form a DMZ in ' + helpers.listOfProvinces(self.provinces) + ''
+    else:
+      self.simpleenglish = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' form a DMZ in ' + helpers.listOfProvinces(self.provinces) + ''
 
     return self.simpleenglish
 
@@ -1373,11 +1544,11 @@ class PressDraw(PressMessage):
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a draw.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the DMZ in the context of a sender, recipients and desired tone.
 
@@ -1387,6 +1558,25 @@ class PressDraw(PressMessage):
 
     if self.powers is None:
       self.simpleenglish = 'a draw'
+    else:
+      self.simpleenglish = 'a draw between ' + helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers)
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the DMZ in the context of a sender, recipients and desired tone.
+
+    :return: the simple English expression
+    :rtype: str
+    """
+
+    if self.powers is None and self.container.operator == "NOT":
+      self.simpleenglish = 'no draw'
+    elif self.powers is None:
+      self.simpleenglish = 'a draw'
+    elif self.container.operator == "NOT":
+      self.simpleenglish = 'no draw between ' + helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers)
     else:
       self.simpleenglish = 'a draw between ' + helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers)
 
@@ -1558,11 +1748,11 @@ class PressSolo(PressMessage):
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a solo win.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the DMZ in the context of a sender, recipients and desired tone.
 
@@ -1573,6 +1763,16 @@ class PressSolo(PressMessage):
     self.simpleenglish = 'a solo win by ' + helpers.listOfPowers(self.winner, self.utterance.frompower, self.utterance.topowers)
 
     return self.simpleenglish
+
+  def formclauseenglish(self):
+
+    if self.container.operator == "NOT":
+      self.simpleenglish = 'there will not be '
+    else:
+      self.simpleenglish = 'there will be '
+    self.simpleenglish +=  'a solo win by ' + helpers.listOfPowers(self.winner, self.utterance.frompower, self.utterance.topowers)
+
+    return ""
 
   def formDAIDE(self): # type () -> str
     """
@@ -1623,17 +1823,17 @@ class PressAnd(PressMessage):
       # (PRP (AND
       if self.container.container is None:
         self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
-                       ' all of the following: ' + self.formsimpleenglish()
+                       ' all of the following: ' + self.formlistenglish()
       # (YES (PRP (AND
       elif self.container.container.operator == 'YES':
-        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' all of the following: ' + self.formsimpleenglish()
+        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' all of the following: ' + self.formlistenglish()
       # (REJ (PRP (AND
       elif self.container.container.operator == 'REJ':
         self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \
-                       ' all of the following: ' + self.formsimpleenglish()
+                       ' all of the following: ' + self.formlistenglish()
       # (CCL (PRP (AND
       elif self.container.container.operator == 'CCL':
-        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of the following: ' + self.formsimpleenglish()
+        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of the following: ' + self.formlistenglish()
       # (HUH (PRP (AND
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your list of proposals.'
@@ -1641,23 +1841,23 @@ class PressAnd(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (AND
         if self.container.container.container is None:
-          self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' the following: ' + self.formsimpleenglish()
+          self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' the following: ' + self.formlistenglish()
         # (YES (PRP (NOT (AND
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that none of the following are desirable: ' + self.formsimpleenglish()
+          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that none of the following are desirable: ' + self.formlistenglish()
         # (REJ (PRP (NOT (AND
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'I ' + random.choice(['disagree', 'reject']) + ' that none of the following are desirable: ' + self.formsimpleenglish()
+          self.english = 'I ' + random.choice(['disagree', 'reject']) + ' that none of the following are desirable: ' + self.formlistenglish()
         # (CCL (PRP (NOT (AND
         elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal rejecting the following: ' + self.formsimpleenglish()
+          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal rejecting the following: ' + self.formlistenglish()
         # (HUH (PRP (NOT (AND
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of proposals.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NOT (AND
         if self.container.container.container is None:
-          self.english = 'The following conditions are not true: ' + self.formsimpleenglish()
+          self.english = 'The following conditions are not true: ' + self.formlistenglish()
         # (HUH (FCT (NOT (AND
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of statements.'
@@ -1665,39 +1865,39 @@ class PressAnd(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (AND
         if self.container.container.container is None:
-          self.english = 'I ' + random.choice(['am ambivalent about', 'am unsure about', 'am not convinced of']) + ' the following: ' + self.formsimpleenglish()
+          self.english = 'I ' + random.choice(['am ambivalent about', 'am unsure about', 'am not convinced of']) + ' the following: ' + self.formlistenglish()
         # (YES (PRP (NAR (AND
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I am also ' + random.choice(['ambivalent about', 'unsure about', 'not convinced of']) + ' the following: ' + self.formsimpleenglish()
+          self.english = 'I am also ' + random.choice(['ambivalent about', 'unsure about', 'not convinced of']) + ' the following: ' + self.formlistenglish()
         # (REJ (PRP (NAR (AND
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'No, I ' + random.choice(['reject', 'oppose']) + ' your ambivalence about: ' + self.formsimpleenglish()
+          self.english = 'No, I ' + random.choice(['reject', 'oppose']) + ' your ambivalence about: ' + self.formlistenglish()
         # (CCL (PRP (NAR (AND
         elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my ambivalence about the following: ' + self.formsimpleenglish()
+          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my ambivalence about the following: ' + self.formlistenglish()
         # (HUH (PRP (NAR (AND
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of proposals.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NAR (AND
         if self.container.container.container is None:
-          self.english = 'It is unclear if the following are true: ' + self.formsimpleenglish()
+          self.english = 'It is unclear if the following are true: ' + self.formlistenglish()
         # (HUH (FCT (NAR (AND
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of statements.'
     elif self.container.operator == 'FCT':
       # (FCT (AND
       if self.container.container is None:
-        self.english = 'The following are all true: ' + self.formsimpleenglish()
+        self.english = 'The following are all true: ' + self.formlistenglish()
       # (HUH (FCT (AND
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your list of statements.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the conjunction in the context of a sender, recipients and desired tone.
 
@@ -1707,8 +1907,22 @@ class PressAnd(PressMessage):
 
     self.simpleenglish = '<br><ul>'
     for curConj in self.conjuncts:
-      self.simpleenglish += '<li>' + helpers.initcap(curConj.formsimpleenglish()) + '</li>'
+      self.simpleenglish += '<li>' + helpers.initcap(curConj.formlistenglish()) + '</li>'
     self.simpleenglish += '</ul>'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -1761,17 +1975,17 @@ class PressOr(PressMessage):
       # (PRP (ORR
       if self.container.container is None:
         self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
-                       ' that you choose one of the following options: ' + self.formsimpleenglish()
+                       ' that you choose one of the following options: ' + self.formlistenglish()
       # (YES (PRP (ORR
       elif self.container.container.operator == 'YES':
-        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' one of the following: ' + self.formsimpleenglish()
+        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' one of the following: ' + self.formlistenglish()
       # (REJ (PRP (ORR
       elif self.container.container.operator == 'REJ':
         self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \
-                       ' any of the following: ' + self.formsimpleenglish()
+                       ' any of the following: ' + self.formlistenglish()
       # (CCL (PRP (ORR
       elif self.container.container.operator == 'CCL':
-        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of a choice from the following: ' + self.formsimpleenglish()
+        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of a choice from the following: ' + self.formlistenglish()
       # (HUH (PRP (ORR
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your list of proposals.'
@@ -1779,23 +1993,23 @@ class PressOr(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (ORR
         if self.container.container.container is None:
-          self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' any of the following: ' + self.formsimpleenglish()
+          self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' any of the following: ' + self.formlistenglish()
         # (YES (PRP (NOT (ORR
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that none of the following are desirable: ' + self.formsimpleenglish()
+          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that none of the following are desirable: ' + self.formlistenglish()
         # (REJ (PRP (NOT (ORR
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'I ' + random.choice(['disagree', 'reject']) + ' that none of the following are desirable: ' + self.formsimpleenglish()
+          self.english = 'I ' + random.choice(['disagree', 'reject']) + ' that none of the following are desirable: ' + self.formlistenglish()
         # (CCL (PRP (NOT (ORR
         elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal rejecting the following: ' + self.formsimpleenglish()
+          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal rejecting the following: ' + self.formlistenglish()
         # (HUH (PRP (NOT (ORR
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of proposals.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NOT (ORR
         if self.container.container.container is None:
-          self.english = 'One of the following conditions are not true: ' + self.formsimpleenglish()
+          self.english = 'One of the following conditions are not true: ' + self.formlistenglish()
         # (HUH (FCT (NOT (ORR
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of statements.'
@@ -1803,39 +2017,39 @@ class PressOr(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (ORR
         if self.container.container.container is None:
-          self.english = 'I ' + random.choice(['am ambivalent about', 'am unsure about', 'am not convinced of']) + ' one of the following: ' + self.formsimpleenglish()
+          self.english = 'I ' + random.choice(['am ambivalent about', 'am unsure about', 'am not convinced of']) + ' one of the following: ' + self.formlistenglish()
         # (YES (PRP (NAR (ORR
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I am also ' + random.choice(['ambivalent about', 'unsure about', 'not convinced of']) + ' one the following: ' + self.formsimpleenglish()
+          self.english = 'I am also ' + random.choice(['ambivalent about', 'unsure about', 'not convinced of']) + ' one the following: ' + self.formlistenglish()
         # (REJ (PRP (NAR (ORR
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'No, I ' + random.choice(['reject', 'oppose']) + ' your ambivalence about any of the following: ' + self.formsimpleenglish()
+          self.english = 'No, I ' + random.choice(['reject', 'oppose']) + ' your ambivalence about any of the following: ' + self.formlistenglish()
         # (CCL (PRP (NAR (ORR
         elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my ambivalence about one of the following: ' + self.formsimpleenglish()
+          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my ambivalence about one of the following: ' + self.formlistenglish()
         # (HUH (PRP (NAR (ORR
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of proposals.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NAR (ORR
         if self.container.container.container is None:
-          self.english = 'It is unclear if each of the following are true: ' + self.formsimpleenglish()
+          self.english = 'It is unclear if each of the following are true: ' + self.formlistenglish()
         # (HUH (FCT (NAR (ORR
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your list of statements.'
     elif self.container.operator == 'FCT':
       # (FCT (ORR
       if self.container.container is None:
-        self.english = 'One of the following is true: ' + self.formsimpleenglish()
+        self.english = 'One of the following is true: ' + self.formlistenglish()
       # (HUH (FCT (ORR
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your list of statements.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the disjunction in the context of a sender, recipients and desired tone.
 
@@ -1845,8 +2059,22 @@ class PressOr(PressMessage):
 
     self.simpleenglish = '<br><ul>'
     for curDisj in self.disjuncts:
-      self.simpleenglish += '<li>' + helpers.initcap(curDisj.formsimpleenglish()) + '</li>'
+      self.simpleenglish += '<li>' + helpers.initcap(curDisj.formlistenglish()) + '</li>'
     self.simpleenglish += '</ul>'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -1910,25 +2138,25 @@ class PressIf(PressMessage):
       if self.container.container is None:
         if random.choice([True, False]):
           self.english = 'Here\'s my ' + random.choice(['proposal', 'proposed deal', 'offer']) + \
-                         ': if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish() + '.'
+                         ': if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish() + '.'
         else:
-          self.english = 'Would you consider ' + self.consequent.formsimpleenglish() + ' if ' + self.antecedent.formsimpleenglish() + '?'
+          self.english = 'Would you consider ' + self.consequent.formclauseenglish() + ' if ' + self.antecedent.formclauseenglish() + '?'
         if self.alternative is not None:
-          self.english += ' If not this, then perhaps ' + self.antecedent.formsimpleenglish() + '?'
+          self.english += ' If not this, then perhaps ' + self.antecedent.formclauseenglish() + '?'
       # (YES (PRP (IFF
       elif self.container.container.operator == 'YES':
-        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' ' + self.antecedent.formsimpleenglish() + \
-                       ' and when it\'s done, I will execute the following: ' + self.consequent.formsimpleenglish()
+        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' ' + self.antecedent.formclauseenglish() + \
+                       ' and when it\'s done, I will execute the following: ' + self.consequent.formclauseenglish()
       # (REJ (PRP (IFF
       elif self.container.container.operator == 'REJ':
         self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \
-                       ' the condition that ' + self.antecedent.formsimpleenglish() + ' should lead to ' + self.consequent.formsimpleenglish()
+                       ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
       # (CCL (PRP (IFF
       elif self.container.container.operator == 'CCL':
         self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that if ' + \
-                       self.antecedent.formsimpleenglish() + ' then ' + self.consequent.formsimpleenglish()
+                       self.antecedent.formclauseenglish() + ' then ' + self.consequent.formclauseenglish()
         if self.alternative is not None:
-          self.english += ' else ' + self.alternative.formsimpleenglish()
+          self.english += ' otherwise ' + self.alternative.formclauseenglish()
       # (HUH (PRP (IFF
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your quid pro quo.'
@@ -1937,25 +2165,25 @@ class PressIf(PressMessage):
         # (PRP (NOT (IFF
         if self.container.container.container is None:
           self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' the following trade: ' + \
-                         self.antecedent.formsimpleenglish() + ' for ' + self.consequent.formsimpleenglish()
+                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
         # (YES (PRP (NOT (IFF
         elif self.container.container.container.operator == 'YES':
           self.english = 'I ' + random.choice(['agree', 'concur']) + ' that the following trade is not desirable: ' + \
-                         self.antecedent.formsimpleenglish() + ' for ' + self.consequent.formsimpleenglish()
+                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
         # (REJ (PRP (NOT (IFF
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'I still want ' + self.consequent.formsimpleenglish() + ' whether or not you want ' + self.antecedent.formsimpleenglish()
+          self.english = 'I still want ' + self.consequent.formclauseenglish() + ' whether or not you want ' + self.antecedent.formclauseenglish()
         # (CCL (PRP (NOT (IFF
         elif self.container.container.container.operator == 'CCL':
           self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal rejecting ' + \
-                         self.antecedent.formsimpleenglish() + ' for ' + self.consequent.formsimpleenglish()
+                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
         # (HUH (PRP (NOT (IFF
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your trade offer.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NOT (IFF
         if self.container.container.container is None:
-          self.english = 'It is not the case that if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish()
+          self.english = 'It is not the case that if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish()
         # (HUH (FCT (NOT (IFF
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about the trade.'
@@ -1963,42 +2191,42 @@ class PressIf(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (IFF
         if self.container.container.container is None:
-          self.english = 'If ' + self.antecedent.formsimpleenglish() + ', then maybe ' + self.consequent.formsimpleenglish()
+          self.english = 'If ' + self.antecedent.formclauseenglish() + ', then maybe ' + self.consequent.formclauseenglish()
         # (YES (PRP (NAR (IFF
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I agree, it may be that if ' + self.antecedent.formsimpleenglish() + ', then maybe ' + self.consequent.formsimpleenglish()
+          self.english = 'I agree, it may be that if ' + self.antecedent.formclauseenglish() + ', then maybe ' + self.consequent.formclauseenglish()
         # (REJ (PRP (NAR (IFF
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'I disagree that if ' + self.antecedent.formsimpleenglish() + ', then maybe ' + self.consequent.formsimpleenglish()
+          self.english = 'I disagree that if ' + self.antecedent.formclauseenglish() + ', then maybe ' + self.consequent.formclauseenglish()
         # (CCL (PRP (NAR (IFF
         elif self.container.container.container.operator == 'CCL':
           self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of ' + \
-                         self.antecedent.formsimpleenglish() + ' for ' + self.consequent.formsimpleenglish()
+                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
         # (HUH (PRP (NAR (IFF
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your proposal of a quid pro quo.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NAR (IFF
         if self.container.container.container is None:
-          self.english = 'It is unclear that if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish()
+          self.english = 'It is unclear that if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish()
         # (HUH (FCT (NAR (IFF
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a trade.'
     elif self.container.operator == 'FCT':
       # (FCT (IFF
       if self.container.container is None:
-        self.english = 'I believe that if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish()
+        self.english = 'I believe that if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish()
         if self.alternative is not None:
-          self.english += ' If not this, then ' + self.antecedent.formsimpleenglish() + '.'
+          self.english += ' If not this, then ' + self.antecedent.formclauseenglish() + '.'
       # (HUH (FCT (IFF
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a trade.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formclauseenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the conditional in the context of a sender, recipients and desired tone.
 
@@ -2006,9 +2234,23 @@ class PressIf(PressMessage):
     :rtype: str
     """
 
-    self.simpleenglish = 'if ' + self.antecedent.formsimpleenglish() + ', then ' + self.consequent.formsimpleenglish()
+    self.simpleenglish = 'if ' + self.antecedent.formlistenglish() + ', then ' + self.consequent.formlistenglish()
     if self.alternative is not None:
-      self.simpleenglish += ', otherwise ' + self.alternative.formsimpleenglish()
+      self.simpleenglish += ', otherwise ' + self.alternative.formlistenglish()
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type: () -> str
+    """
+    Creates a simple English clause, without any context like proposals, negations, etc.
+    Useful for conditional statements or other contexts in which simplicity is valued over flavor.
+
+    :return: the simple English clause
+    :rtype: str
+
+    """
+
+    self.simpleenglish = self.formlistenglish()
 
     return self.simpleenglish
 
@@ -2063,7 +2305,7 @@ class PressNot(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the negation in the context of a sender, recipients and desired tone.
 
@@ -2071,7 +2313,19 @@ class PressNot(PressMessage):
     :rtype: str
     """
 
-    self.simpleenglish = self.proposition.formsimpleenglish() + ' is not happening'
+    self.simpleenglish = self.proposition.formlistenglish() + ' is not happening'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self):  # type () -> str
+    """
+    Creates an English expression about the negation in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    self.simpleenglish = self.proposition.formclauseenglish()
 
     return self.simpleenglish
 
@@ -2122,7 +2376,7 @@ class PressNar(PressMessage):
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the missing evidence in the context of a sender, recipients and desired tone.
 
@@ -2130,7 +2384,19 @@ class PressNar(PressMessage):
     :rtype: str
     """
 
-    self.simpleenglish = 'it is uncertain that ' + self.proposition.formsimpleenglish()
+    self.simpleenglish = 'it is uncertain that ' + self.proposition.formlistenglish()
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the missing evidence in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    self.simpleenglish = 'it is uncertain that ' + self.proposition.formclauseenglish()
 
     return self.simpleenglish
 
@@ -2179,16 +2445,16 @@ class PressMoveExecute(PressMessage):
     if self.container.operator == 'PRP':
       # (PRP (XDO
       if self.container.container is None:
-        self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' this move: ' + self.details.formsimpleenglish()
+        self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' this move: ' + self.details.formlistenglish()
       # (YES (PRP (XDO
       elif self.container.container.operator == 'YES':
-        self.english = 'I ' + random.choice(['agree to', 'concur with', 'accept']) + ' the move: ' + self.details.formsimpleenglish()
+        self.english = 'I ' + random.choice(['agree to', 'concur with', 'accept']) + ' the move: ' + self.details.formlistenglish()
       # (REJ (PRP (XDO
       elif self.container.container.operator == 'REJ':
-        self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of']) + ' the move: ' + self.details.formsimpleenglish()
+        self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of']) + ' the move: ' + self.details.formlistenglish()
       # (CCL (PRP (XDO
       elif self.container.container.operator == 'CCL':
-        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of the move: ' + self.details.formsimpleenglish()
+        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of the move: ' + self.details.formlistenglish()
       # (HUH (PRP (XDO
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your move proposal.'
@@ -2196,23 +2462,23 @@ class PressMoveExecute(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (XDO
         if self.container.container.container is None:
-          self.english = 'I do not want the following move to happen: ' + self.details.formsimpleenglish()
+          self.english = 'I do not want the following move to happen: ' + self.details.formlistenglish()
         # (YES (PRP (NOT (XDO
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that this move will not happen: ' + self.details.formsimpleenglish()
+          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that this move will not happen: ' + self.details.formlistenglish()
         # (REJ (PRP (NOT (XDO
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'I do not promise that I won\'t make this move: ' + self.details.formsimpleenglish()
+          self.english = 'I do not promise that I won\'t make this move: ' + self.details.formlistenglish()
         # (CCL (PRP (NOT (XDO
         elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my objection to the move: ' + self.details.formsimpleenglish()
+          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my objection to the move: ' + self.details.formlistenglish()
         # (HUH (PRP (NOT (XDO
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your proposal about a move.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NOT (XDO
         if self.container.container.container is None:
-          self.english = 'It is unlikely that this move will occur: ' + self.details.formsimpleenglish()
+          self.english = 'It is unlikely that this move will occur: ' + self.details.formlistenglish()
         # (HUH (FCT (NOT (XDO
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a move.'
@@ -2220,39 +2486,39 @@ class PressMoveExecute(PressMessage):
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (XDO
         if self.container.container.container is None:
-          self.english = 'I am not sure about the move: ' + self.details.formsimpleenglish()
+          self.english = 'I am not sure about the move: ' + self.details.formlistenglish()
         # (YES (PRP (NAR (XDO
         elif self.container.container.container.operator == 'YES':
-          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that we should be hesitant about the move: ' + self.details.formsimpleenglish()
+          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that we should be hesitant about the move: ' + self.details.formlistenglish()
         # (REJ (PRP (NAR (XDO
         elif self.container.container.container.operator == 'REJ':
-          self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that we should be sure about the move: ' + self.details.formsimpleenglish()
+          self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that we should be sure about the move: ' + self.details.formlistenglish()
         # (CCL (PRP (NAR (XDO
         elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my hesitance about the move: ' + self.details.formsimpleenglish()
+          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my hesitance about the move: ' + self.details.formlistenglish()
         # (HUH (PRP (NAR (XDO
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your proposal about a move.'
       elif self.container.container.operator == 'FCT':
         # (FCT (NAR (XDO
         if self.container.container.container is None:
-          self.english = 'It is unclear if this move will happen: ' + self.details.formsimpleenglish()
+          self.english = 'It is unclear if this move will happen: ' + self.details.formlistenglish()
         # (HUH (FCT (NAR (XDO
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a move.'
     elif self.container.operator == 'FCT':
       # (FCT (XDO
       if self.container.container is None:
-        self.english = 'This move will happen: ' + self.details.formsimpleenglish()
+        self.english = 'This move will happen: ' + self.details.formlistenglish()
       # (HUH (FCT (XDO
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a move.'
     else:
-      self.english = self.formsimpleenglish()
+      self.english = self.formlistenglish()
 
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the missing evidence in the context of a sender, recipients and desired tone.
 
@@ -2260,7 +2526,19 @@ class PressMoveExecute(PressMessage):
     :rtype: str
     """
 
-    self.simpleenglish = self.details.formsimpleenglish()
+    self.simpleenglish = self.details.formlistenglish()
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the missing evidence in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    self.simpleenglish = self.details.formclauseenglish()
 
     return self.simpleenglish
 
@@ -2311,10 +2589,10 @@ class PressHold(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the hold in the context of a sender, recipients and desired tone.
 
@@ -2333,6 +2611,34 @@ class PressHold(PressMessage):
       if self.unit[1] == 'FLT':
         unittype = 'F'
       self.simpleenglish += ' (' + unittype + ' ' + self.unit[2] + ' H).'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the hold in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator == "NOT":
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                           ' is free to move their ' + \
+                           helpers.unitdict[self.unit[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.unit[2]]['Objective'] + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                         ' holds their ' + \
+                         helpers.unitdict[self.unit[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.unit[2]]['Objective'] + ''
+
+    if 'Expert' in self.utterance.tones:
+      unittype = 'A'
+      if self.unit[1] == 'FLT':
+        unittype = 'F'
+      self.simpleenglish += ' (' + unittype + ' ' + self.unit[2] + ' H)'
 
     return self.simpleenglish
 
@@ -2386,10 +2692,10 @@ class PressMoveInto(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the move in the context of a sender, recipients and desired tone.
 
@@ -2414,6 +2720,44 @@ class PressMoveInto(PressMessage):
       if self.unit[1] == 'FLT':
         unittype = 'F'
       self.simpleenglish += ' (' + unittype + ' ' + self.unit[2] + ' -> ' + self.province + ').'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the move in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    if len(self.unit) < 3:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
+
+
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                         ' does not move their ' + \
+                         helpers.unitdict[self.unit[1]]['Objective'] + \
+                         ' from ' + \
+                         helpers.provincedict[self.unit[2]]['Objective'] + \
+                         ' to ' + \
+                         helpers.provincedict[self.province]['Objective'] + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                           ' moves their ' + \
+                           helpers.unitdict[self.unit[1]]['Objective'] + \
+                           ' from ' + \
+                           helpers.provincedict[self.unit[2]]['Objective'] + \
+                           ' to ' + \
+                           helpers.provincedict[self.province]['Objective'] + ''
+
+    if 'Expert' in self.utterance.tones:
+      unittype = 'A'
+      if self.unit[1] == 'FLT':
+        unittype = 'F'
+      self.simpleenglish += ' (' + unittype + ' ' + self.unit[2] + ' -> ' + self.province + ') '
 
     return self.simpleenglish
 
@@ -2472,10 +2816,10 @@ class PressSupportHold(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the hold support in the context of a sender, recipients and desired tone.
 
@@ -2503,6 +2847,49 @@ class PressSupportHold(PressMessage):
       if self.supported[1] == 'FLT':
         supportedtype = 'F'
       self.simpleenglish += ' (' + supportertype + ' ' + self.supporter[2] + ' S ' + supportedtype + ' ' + self.supported[2] + ' H).'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the hold support in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
+                           ' does not provide support with their ' + \
+                           helpers.unitdict[self.supporter[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.supporter[2]]['Objective'] + \
+                           ' for ' + \
+                           helpers.powerdict[self.supported[0]]['Objective'] + \
+                           ' to hold their ' + \
+                           helpers.unitdict[self.supported[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.supported[2]]['Objective'] + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
+                         ' provides support with their ' + \
+                         helpers.unitdict[self.supporter[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.supporter[2]]['Objective'] + \
+                         ' for ' + \
+                         helpers.powerdict[self.supported[0]]['Objective'] + \
+                         ' to hold their ' + \
+                         helpers.unitdict[self.supported[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.supported[2]]['Objective'] + ''
+
+    if 'Expert' in self.utterance.tones:
+      supportertype = 'A'
+      if self.supporter[1] == 'FLT':
+        supportertype = 'F'
+      supportedtype = 'A'
+      if self.supported[1] == 'FLT':
+        supportedtype = 'F'
+      self.simpleenglish += ' (' + supportertype + ' ' + self.supporter[2] + ' S ' + supportedtype + ' ' + self.supported[2] + ' H) '
 
     return self.simpleenglish
 
@@ -2564,10 +2951,10 @@ class PressSupportMove(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the move support in the context of a sender, recipients and desired tone.
 
@@ -2601,6 +2988,60 @@ class PressSupportMove(PressMessage):
       if self.supported[1] == 'FLT':
         supportedtype = 'F'
       self.simpleenglish += ' (' + supportertype + ' ' + self.supporter[2] + ' S ' + supportedtype + ' ' + self.supported[2] + ' -> ' + self.province + ').'
+
+    return self.simpleenglish
+
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the move support in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    if len(self.supporter) != 3 or len(self.supported) != 3:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
+
+
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
+                         ' does not provide support with their ' + \
+                         helpers.unitdict[self.supporter[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.supporter[2]]['Objective'] + \
+                         ' so ' + \
+                         helpers.powerdict[self.supported[0]]['Objective'] + \
+                         ' can move their ' + \
+                         helpers.unitdict[self.supported[1]]['Objective'] + \
+                         ' from ' + \
+                         helpers.provincedict[self.supported[2]]['Objective'] + \
+                         ' into ' + \
+                         helpers.provincedict[self.province]['Objective'] + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
+                           ' provides support with their ' + \
+                           helpers.unitdict[self.supporter[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.supporter[2]]['Objective'] + \
+                           ' so ' + \
+                           helpers.powerdict[self.supported[0]]['Objective'] + \
+                           ' can move their ' + \
+                           helpers.unitdict[self.supported[1]]['Objective'] + \
+                           ' from ' + \
+                           helpers.provincedict[self.supported[2]]['Objective'] + \
+                           ' into ' + \
+                           helpers.provincedict[self.province]['Objective'] + ''
+
+    if 'Expert' in self.utterance.tones:
+      supportertype = 'A'
+      if self.supporter[1] == 'FLT':
+        supportertype = 'F'
+      supportedtype = 'A'
+      if self.supported[1] == 'FLT':
+        supportedtype = 'F'
+      self.simpleenglish += ' (' + supportertype + ' ' + self.supporter[2] + ' S ' + supportedtype + ' ' + self.supported[2] + ' -> ' + self.province + ')'
 
     return self.simpleenglish
 
@@ -2662,10 +3103,10 @@ class PressConvoy(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the convoy in the context of a sender, recipients and desired tone.
 
@@ -2691,6 +3132,49 @@ class PressConvoy(PressMessage):
       convoytype = 'F'
       convoyedtype = 'A'
       self.simpleenglish += ' (' + convoytype + ' ' + self.convoyunit[2] + ' C ' + convoyedtype + ' ' + self.convoyedunit[2] + ' -> ' + self.province + ').'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the convoy in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator == "NOT":
+      self.simpleenglish = helpers.powerdict[self.convoyunit[0]]['Objective'] + \
+                           '\'s ' + \
+                           helpers.unitdict[self.convoyunit[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.convoyunit[2]]['Objective'] + \
+                           ' does not convoy ' + \
+                           helpers.powerdict[self.convoyedunit[0]]['Objective'] + \
+                           '\'s ' + \
+                           helpers.unitdict[self.convoyedunit[1]]['Objective'] + \
+                           ' from ' + \
+                           helpers.provincedict[self.convoyedunit[2]]['Objective'] + \
+                           ' into ' + \
+                           helpers.provincedict[self.province]['Objective'] + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.convoyunit[0]]['Objective'] + \
+                         '\'s ' + \
+                         helpers.unitdict[self.convoyunit[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.convoyunit[2]]['Objective'] + \
+                         ' convoys ' + \
+                         helpers.powerdict[self.convoyedunit[0]]['Objective'] + \
+                         '\'s ' + \
+                         helpers.unitdict[self.convoyedunit[1]]['Objective'] + \
+                         ' from ' + \
+                         helpers.provincedict[self.convoyedunit[2]]['Objective'] + \
+                         ' into ' + \
+                         helpers.provincedict[self.province]['Objective'] + ''
+
+    if 'Expert' in self.utterance.tones:
+      convoytype = 'F'
+      convoyedtype = 'A'
+      self.simpleenglish += ' (' + convoytype + ' ' + self.convoyunit[2] + ' C ' + convoyedtype + ' ' + self.convoyedunit[2] + ' -> ' + self.province + ') '
 
     return self.simpleenglish
 
@@ -2746,10 +3230,10 @@ class PressConvoyVia(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the convoy over water in the context of a sender, recipients and desired tone.
 
@@ -2766,6 +3250,36 @@ class PressConvoyVia(PressMessage):
                          helpers.provincedict[self.destination]['Objective'] + \
                          ' following this path: ' + \
                          helpers.listOfProvinces(self.searoute) + '.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the convoy over water in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator == "NOT":
+      self.simpleenglish = helpers.powerdict[self.convoyedunit[0]]['Objective'] + \
+                         '\'s ' + \
+                         helpers.unitdict[self.convoyedunit[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.convoyedunit[2]]['Objective'] + \
+                         ' does not move by convoy to ' + \
+                         helpers.provincedict[self.destination]['Objective'] + \
+                         ' following this path: ' + \
+                         helpers.listOfProvinces(self.searoute) + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.convoyedunit[0]]['Objective'] + \
+                           '\'s ' + \
+                           helpers.unitdict[self.convoyedunit[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.convoyedunit[2]]['Objective'] + \
+                           ' moves by convoy to ' + \
+                           helpers.provincedict[self.destination]['Objective'] + \
+                           ' following this path: ' + \
+                           helpers.listOfProvinces(self.searoute) + ''
 
     return self.simpleenglish
 
@@ -2819,10 +3333,10 @@ class PressRetreat(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the retreat in the context of a sender, recipients and desired tone.
 
@@ -2837,6 +3351,32 @@ class PressRetreat(PressMessage):
                          helpers.provincedict[self.unit[2]]['Objective'] + \
                          ' to ' + \
                          helpers.provincedict[self.destination]['Objective'] + '.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the retreat in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                         '\'s ' + \
+                         helpers.unitdict[self.unit[1]]['Objective'] + \
+                         ' does not retreat from ' + \
+                         helpers.provincedict[self.unit[2]]['Objective'] + \
+                         ' to ' + \
+                         helpers.provincedict[self.destination]['Objective'] + ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                           '\'s ' + \
+                           helpers.unitdict[self.unit[1]]['Objective'] + \
+                           ' retreats from ' + \
+                           helpers.provincedict[self.unit[2]]['Objective'] + \
+                           ' to ' + \
+                           helpers.provincedict[self.destination]['Objective'] + ''
 
     return self.simpleenglish
 
@@ -2887,10 +3427,10 @@ class PressDisband(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the disband in the context of a sender, recipients and desired tone.
 
@@ -2904,6 +3444,30 @@ class PressDisband(PressMessage):
                          ' in ' + \
                          helpers.provincedict[self.unit[2]]['Objective'] + \
                          ' retreats from the board.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the disband in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                         '\'s ' + \
+                         helpers.unitdict[self.unit[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.unit[2]]['Objective'] + \
+                         ' does not retreat from the board'
+    else:
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                           '\'s ' + \
+                           helpers.unitdict[self.unit[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.unit[2]]['Objective'] + \
+                           ' retreats from the board'
 
     return self.simpleenglish
 
@@ -2954,10 +3518,10 @@ class PressBuild(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the build in the context of a sender, recipients and desired tone.
 
@@ -2971,6 +3535,30 @@ class PressBuild(PressMessage):
                          ' in ' + \
                          helpers.provincedict[self.unit[2]]['Objective'] + \
                          '.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self):  # type () -> str
+    """
+    Creates an English expression about the build in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                         ' does not build a new ' + \
+                         helpers.unitdict[self.unit[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.unit[2]]['Objective'] + \
+                         ''
+    else:
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                           ' builds a new ' + \
+                           helpers.unitdict[self.unit[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.unit[2]]['Objective'] + \
+                           ''
 
     return self.simpleenglish
 
@@ -3021,10 +3609,10 @@ class PressRemove(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the remove in the context of a sender, recipients and desired tone.
 
@@ -3038,6 +3626,31 @@ class PressRemove(PressMessage):
                          ' in ' + \
                          helpers.provincedict[self.unit[2]]['Objective'] + \
                          ' from the board.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self):  # type () -> str
+    """
+    Creates an English expression about the remove in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                         ' does not their ' + \
+                         helpers.unitdict[self.unit[1]]['Objective'] + \
+                         ' in ' + \
+                         helpers.provincedict[self.unit[2]]['Objective'] + \
+                         ' from the board.'
+    else:
+      self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
+                           ' removes their ' + \
+                           helpers.unitdict[self.unit[1]]['Objective'] + \
+                           ' in ' + \
+                           helpers.provincedict[self.unit[2]]['Objective'] + \
+                           ' from the board.'
 
     return self.simpleenglish
 
@@ -3088,10 +3701,10 @@ class PressWaive(PressMessage):
     :rtype: str
     """
 
-    self.english = self.formsimpleenglish()
+    self.english = self.formlistenglish()
     return self.english
 
-  def formsimpleenglish(self): # type () -> str
+  def formlistenglish(self): # type () -> str
     """
     Creates an English expression about the waive in the context of a sender, recipients and desired tone.
 
@@ -3101,6 +3714,23 @@ class PressWaive(PressMessage):
 
     self.simpleenglish = helpers.powerdict[self.power]['Objective'] + \
                          ' waives their build turn.'
+
+    return self.simpleenglish
+
+  def formclauseenglish(self): # type () -> str
+    """
+    Creates an English expression about the waive in the context of a sender, recipients and desired tone.
+
+    :return: the English expression
+    :rtype: str
+    """
+
+    if self.container.operator== "NOT":
+      self.simpleenglish = helpers.powerdict[self.power]['Objective'] + \
+                         ' does not waive their build turn.'
+    else:
+      self.simpleenglish = helpers.powerdict[self.power]['Objective'] + \
+                           ' waives their build turn.'
 
     return self.simpleenglish
 
