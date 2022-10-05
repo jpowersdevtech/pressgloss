@@ -203,8 +203,15 @@ def daide2lists(daide): # type: (str) -> []
   """
   Convert DAIDE formatted syntax to JSON-like nested lists
 
+  Example: FRM ( ENG) (FRA ITA) (PRP (ALY (ENG  FRA ITA)VSS(RUS TUR) ))
+  yields ["FRM", ["ENG"], ["FRA", "ITA"], ["PRP", ["ALY", ["ENG", "FRA", "ITA"], "VSS", ["RUS", "TUR"]]]]
+
   :param daide: a press utterance in DAIDE syntax (with From and To info)
   :type daide: str
+
+  :return: a nested list representation resulting from replacing DAIDE parentheses with JSON brackets
+  :rtype: []
+
   """
 
   retlist = []
@@ -220,8 +227,12 @@ def daide2lists(daide): # type: (str) -> []
   metamorphosis = re.sub(r'([A-Z])\(', r'\1 (', metamorphosis) # FRM (ENG) (FRA ITA) (PRP (ALY (ENG  FRA ITA) VSS (RUS TUR)))
   metamorphosis = re.sub(r' +', r' ', metamorphosis) # (FRM (ENG) (FRA ITA) (PRP (ALY (ENG FRA ITA) VSS (RUS TUR))))
 
+  # handle the 4 coasts - unsure if DAIDE really specifies it this way, but was observed in the wild
+  metamorphosis = re.sub(r'\(([A-Z]+) NCS\)', r'\1NCS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPANCS))))
+  metamorphosis = re.sub(r'\(([A-Z]+) SCS\)', r'\1SCS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA SCS))))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPASCS))))
+
   # transformations to JSON
-  metamorphosis = re.sub(r'([A-Z]{3})', r'"\1"', metamorphosis) # ("FRM" ("ENG") ("FRA" "ITA") ("PRP" ("ALY" ("ENG" "FRA" "ITA") "VSS" ("RUS" "TUR"))))
+  metamorphosis = re.sub(r'([A-Z]+)', r'"\1"', metamorphosis) # ("FRM" ("ENG") ("FRA" "ITA") ("PRP" ("ALY" ("ENG" "FRA" "ITA") "VSS" ("RUS" "TUR"))))
   metamorphosis = re.sub(r' ', r', ', metamorphosis) # ("FRM", ("ENG"), ("FRA", "ITA"), ("PRP", ("ALY", ("ENG", "FRA", "ITA"), "VSS", ("RUS", "TUR"))))
   metamorphosis = re.sub(r'\(', r'[', metamorphosis) # ["FRM", ["ENG"), ["FRA", "ITA"), ["PRP", ["ALY", ["ENG", "FRA", "ITA"), "VSS", ["RUS", "TUR"))))
   metamorphosis = re.sub(r'\)', r']', metamorphosis) # ["FRM", ["ENG"], ["FRA", "ITA"], ["PRP", ["ALY", ["ENG", "FRA", "ITA"], "VSS", ["RUS", "TUR"]]]]
@@ -230,6 +241,114 @@ def daide2lists(daide): # type: (str) -> []
     retlist = json.loads(metamorphosis)
   except ValueError:
     retlist = []
+
+  return retlist
+
+def shorthand2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) -> []
+  """
+  Translates a Paquette-style move shorthand to a nested list representation compatible
+  with those parsed by the DAIDE expression parsers
+
+  :param owner: the trigram of the owner of the units mentioned in the shorthand
+  :type owner: str
+  :param shorthand: a space-delimited move shorthand such as F NWG C A NWY - EDI or A IRO R MAO
+  :type shorthand: str
+  :param thirdparty: trigram of the owner of a supported or convoyed unit if the supported unit is of a different power than the owner
+  :type thirdparty: str
+
+  :return: a DAIDE XDO expression representing the move such as XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI) or XDO ((ENG AMY IRO) RTO MAO)
+
+  """
+
+  cleansh = shorthand.strip().upper()
+  shwords = cleansh.strip().split()
+
+  retlist = ["XDO", []]
+
+  # F NWG C A NWY - EDI => XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI)
+  if ' C ' in cleansh:
+    target = owner
+    if thirdparty != '':
+      target = thirdparty
+    retlist[1].append([owner, 'FLT', shwords[1]])
+    retlist[1].append('CVY')
+    retlist[1].append([target, 'AMY', shwords[4]])
+    retlist[1].append('CTO')
+    retlist[1].append(shwords[6])
+  # A IRO R MAO => XDO ((ENG AMY IRO) RTO MAO)
+  elif ' R ' in cleansh:
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('RTO')
+    retlist[1].append(shwords[3])
+  # A IRO D => XDO ((ENG AMY IRO) DSB)
+  elif cleansh.endswith(' D'):
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('DSB')
+  # A LON B => XDO ((ENG AMY LON) BLD)
+  elif cleansh.endswith(' B'):
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('BLD')
+  # A LON H => XDO ((ENG AMY LON) HLD)
+  elif cleansh.endswith(' H'):
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('HLD')
+  # A IRI - MAO VIA => XDO ((ENG AMY IRI) CTO MAO VIA (UNK))
+  elif cleansh.endswith(' VIA'):
+    retlist[1].append([owner, 'AMY', shwords[1]])
+    retlist[1].append('CTO')
+    retlist[1].append(shwords[3])
+    retlist[1].append('VIA')
+    retlist[1].append(['UNK'])
+  # A WAL S F MAO - IRI => XDO ((ENG AMY WAL) SUP (FRA FLT MAO) MTO IRI)
+  elif ' S ' in cleansh and ' - ' in cleansh:
+    target = owner
+    if thirdparty != '':
+      target = thirdparty
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    tarunittype = 'AMY'
+    if shwords[3] == 'F':
+      tarunittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('SUP')
+    retlist[1].append([target, tarunittype, shwords[4]])
+    retlist[1].append('MTO')
+    retlist[1].append(shwords[6])
+  # A WAL S F LON => XDO ((ENG AMY WAL) SUP (FRA FLT LON))
+  elif ' S ' in cleansh:
+    target = owner
+    if thirdparty != '':
+      target = thirdparty
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    tarunittype = 'AMY'
+    if shwords[3] == 'F':
+      tarunittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('SUP')
+    retlist[1].append([target, tarunittype, shwords[4]])
+  # F IRI - MAO => XDO ((ENG FLT IRI) MTO MAO)
+  elif ' - ' in cleansh:
+    unittype = 'AMY'
+    if cleansh.startswith('F '):
+      unittype = 'FLT'
+    retlist[1].append([owner, unittype, shwords[1]])
+    retlist[1].append('MTO')
+    retlist[1].append(shwords[3])
 
   return retlist
 

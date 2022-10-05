@@ -3810,7 +3810,7 @@ def messageFactory(utterance, container, daidelists): # type: (PressUtterance, P
     return PressSupportMove(utterance, container, daidelists)
   elif len(daidelists) == 5 and daidelists[1] == 'CVY' and daidelists[3] == 'CTO':
     return PressConvoy(utterance, container, daidelists)
-  elif len(daidelists) == 5 and daidelists[1] == 'CVY' and daidelists[3] == 'VIA':
+  elif len(daidelists) == 5 and daidelists[1] == 'CTO' and daidelists[3] == 'VIA':
     return PressConvoyVia(utterance, container, daidelists)
   elif len(daidelists) == 3 and daidelists[1] == 'RTO':
     return PressRetreat(utterance, container, daidelists)
@@ -3917,3 +3917,22 @@ def daide2gloss(daide, tones=None): # type: (str, []) -> str
   utterance = PressUtterance(daide, tones)
   utterance.formenglish()
   return utterance.english
+
+def shorthand2daide(owner, shorthand, thirdparty=''): # type: (str, str, str) -> str
+  """
+  Translates a Paquette-style move shorthand to a DAIDE XDO expression
+
+  :param owner: the trigram of the owner of the units mentioned in the shorthand
+  :type owner: str
+  :param shorthand: a space-delimited move shorthand such as F NWG C A NWY - EDI or A IRO R MAO
+  :type shorthand: str
+  :param thirdparty: trigram of the owner of a supported or convoyed unit if the supported unit is of a different power than the owner
+  :type thirdparty: str
+
+  :return: a DAIDE XDO expression representing the move such as XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI) or XDO ((ENG AMY IRO) RTO MAO)
+
+  """
+
+  shlists = helpers.shorthand2lists(owner, shorthand, thirdparty)
+  pme = PressMoveExecute(None, None, shlists)
+  return pme.formDAIDE()

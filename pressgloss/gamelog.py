@@ -53,7 +53,6 @@ def analyzebackup(inpath): # type: (str) -> []
               curtones = curtonesstr.split(',')
               for curtone in curtones:
                 tonesused[curtone] += 1
-              print('Trying to process: ' + curmessage['daide'] + ': ' + str(curtones))
               curdaide = PRESSGLOSS.PressUtterance(curmessage['daide'], curtones)
               messages += 1
               if 'Ahem' in curdaide.english:
@@ -63,8 +62,34 @@ def analyzebackup(inpath): # type: (str) -> []
                 if curdaide.content.details is not None:
                   daideoperators[curdaide.content.details.operator] += 1
             if len(messagelist) > 0 and curfullpath not in retset:
-              print('Found messages in ' + curfullpath)
               retset.add(curfullpath)
+        if 'status' in curgame and curgame['status'] == 'completed':
+          print(curfullpath + ' completed')
+          print('  won by ' + str(curgame['victory']))
+          print('  outcome: ' + str(curgame['outcome']))
+        else:
+          print(curfullpath + ' in progress')
+        ctrl2powers = {}
+        for curpower, powerinfo in curgame['powers'].items():
+          print(curpower + ':')
+          dummyct = 0
+          for ctrlid, ctrlname in powerinfo['controller'].items():
+            cleanname = ctrlname.strip().lower()
+            if cleanname == 'dummy':
+              dummyct += 1
+            if cleanname not in ctrl2powers:
+              ctrl2powers[cleanname] = set()
+            ctrl2powers[cleanname].add(curpower)
+          if len(powerinfo['controller']) == dummyct and dummyct > 0:
+            print('  Dummy')
+          elif dummyct > 0:
+            print('  Hybrid')
+          elif dummyct == 0:
+            print('  All Human')
+          else:
+            print('  Odd controller data')
+        print(str(ctrl2powers))
+        print('  ' + str(len(curgame['order_history'])) + ' seasons played')
 
   print('Press found in ' + str(len(retset)) + ' games.')
   print('  ' + str(messages) + ' messages found.')
