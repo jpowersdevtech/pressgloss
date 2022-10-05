@@ -1423,10 +1423,10 @@ class PressDraw(PressMessage):
     """
 
     powersgloss = ''
-    subjpowersgloxx = ''
+    subpowersgloss = ''
     if self.powers is not None:
       powersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers)
-      subjpowersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective')
+      subpowersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective')
 
     if self.container.operator == 'PRP':
       # (PRP (DRW
@@ -1481,7 +1481,7 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that we do not draw.'
           else:
-            self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that ' + subjpowersgloss + ' not pursue a draw.'
+            self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that ' + subpowersgloss + ' not pursue a draw.'
         # (HUH (PRP (NOT (DRW
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your proposal about a draw.'
@@ -1491,7 +1491,7 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'I am not pursuing a draw.'
           else:
-            self.english = subjpowersgloss + ' are not pursuing a draw.'
+            self.english = subpowersgloss + ' are not pursuing a draw.'
         # (HUH (FCT (NOT (DRW
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a draw.'
@@ -1502,19 +1502,19 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that we should pursue a draw.'
           else:
-            self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + subjpowersgloss + ' should pursue a draw.'
+            self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + subpowersgloss + ' should pursue a draw.'
         # (YES (PRP (NAR (DRW
         elif self.container.container.container.operator == 'YES':
           if self.powers is None:
             self.english = 'I ' + random.choice(['agree', 'concur']) + ' that it is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that we should pursue a draw.'
           else:
-            self.english = 'I ' + random.choice(['agree', 'concur']) + ' that it is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + subjpowersgloss + ' should pursue a draw.'
+            self.english = 'I ' + random.choice(['agree', 'concur']) + ' that it is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that ' + subpowersgloss + ' should pursue a draw.'
         # (REJ (PRP (NAR (DRW
         elif self.container.container.container.operator == 'REJ':
           if self.powers is None:
             self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that we should pursue a draw.'
           else:
-            self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that ' + subjpowersgloss + ' should pursue a draw.'
+            self.english = 'No, I ' + random.choice(['think', 'believe']) + ' that ' + subpowersgloss + ' should pursue a draw.'
         # (CCL (PRP (NAR (DRW
         elif self.container.container.container.operator == 'CCL':
           if self.powers is None:
@@ -1530,7 +1530,7 @@ class PressDraw(PressMessage):
           if self.powers is None:
             self.english = 'It is unclear if we are in a good draw position.'
           else:
-            self.english = 'It is unclear if ' + subjpowersgloss + ' are in a good draw position.'
+            self.english = 'It is unclear if ' + subpowersgloss + ' are in a good draw position.'
         # (HUH (FCT (NAR (DRW
         elif self.container.container.container.operator == 'HUH':
           self.english = 'I do not understand your statement about a draw.'
@@ -1540,7 +1540,7 @@ class PressDraw(PressMessage):
         if self.powers is None:
           self.english = 'We are in a good draw position.'
         else:
-          self.english = subjpowersgloss + ' are in a good draw position.'
+          self.english = subpowersgloss + ' are in a good draw position.'
       # (HUH (FCT (DRW
       elif self.container.container.operator == 'HUH':
         self.english = 'I do not understand your statement about a draw.'
@@ -2651,7 +2651,8 @@ class PressHold(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.unit) + ') HLD'
+    retstr = '(' + ' '.join(self.unit) + ') HLD'
+    return helpers.coastalize(retstr)
 
 class PressMoveInto(PressMessage):
   """ The game-related content of a move. """
@@ -2770,7 +2771,8 @@ class PressMoveInto(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.unit) + ') MTO ' + self.province
+    retstr = '(' + ' '.join(self.unit) + ') MTO ' + self.province
+    return helpers.coastalize(retstr)
 
 class PressSupportHold(PressMessage):
   """ The game-related content of a hold support. """
@@ -2902,7 +2904,8 @@ class PressSupportHold(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.supporter) + ') SUP (' + ' '.join(self.supported) + ')'
+    retstr = '(' + ' '.join(self.supporter) + ') SUP (' + ' '.join(self.supported) + ')'
+    return helpers.coastalize(retstr)
 
 class PressSupportMove(PressMessage):
   """ The game-related content of a move support. """
@@ -3054,7 +3057,8 @@ class PressSupportMove(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.supporter) + ') SUP (' + ' '.join(self.supported) + ') MTO ' + self.province
+    retstr = '(' + ' '.join(self.supporter) + ') SUP (' + ' '.join(self.supported) + ') MTO ' + self.province
+    return helpers.coastalize(retstr)
 
 class PressConvoy(PressMessage):
   """ The game-related content of a convoy. """
@@ -3187,7 +3191,8 @@ class PressConvoy(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.convoyunit) + ') CVY (' + ' '.join(self.convoyedunit) + ') CTO ' + self.province
+    retstr = '(' + ' '.join(self.convoyunit) + ') CVY (' + ' '.join(self.convoyedunit) + ') CTO ' + self.province
+    return helpers.coastalize(retstr)
 
 class PressConvoyVia(PressMessage):
   """ The game-related content of a convoy over water. """
@@ -3292,7 +3297,8 @@ class PressConvoyVia(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.convoyedunit) + ') CTO ' + self.destination + ' VIA (' + ' '.join(self.searoute) + ')'
+    retstr = '(' + ' '.join(self.convoyedunit) + ') CTO ' + self.destination + ' VIA (' + ' '.join(self.searoute) + ')'
+    return helpers.coastalize(retstr)
 
 class PressRetreat(PressMessage):
   """ The game-related content of a retreat. """
@@ -3389,7 +3395,8 @@ class PressRetreat(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.unit) + ') RTO ' + self.destination
+    retstr = '(' + ' '.join(self.unit) + ') RTO ' + self.destination
+    return helpers.coastalize(retstr)
 
 class PressDisband(PressMessage):
   """ The game-related content of a disband. """
@@ -3480,7 +3487,8 @@ class PressDisband(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.unit) + ') DSB'
+    retstr = '(' + ' '.join(self.unit) + ') DSB'
+    return helpers.coastalize(retstr)
 
 class PressBuild(PressMessage):
   """ The game-related content of a build. """
@@ -3571,7 +3579,8 @@ class PressBuild(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.unit) + ') BLD'
+    retstr = '(' + ' '.join(self.unit) + ') BLD'
+    return helpers.coastalize(retstr)
 
 class PressRemove(PressMessage):
   """ The game-related content of a remove. """
@@ -3663,7 +3672,8 @@ class PressRemove(PressMessage):
     :rtype: str
     """
 
-    return '(' + ' '.join(self.unit) + ') REM'
+    retstr = '(' + ' '.join(self.unit) + ') REM'
+    return helpers.coastalize(retstr)
 
 class PressWaive(PressMessage):
   """ The game-related content of a waive. """

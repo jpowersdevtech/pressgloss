@@ -30,6 +30,27 @@ sealist = [curdata['trigram'] for curdata in refData if curdata['Sea'] == '1' or
 supplylist = [curdata['trigram'] for curdata in refData if curdata['Supply'] == '1']
 tonelist = ['Haughty', 'Objective', 'Urgent', 'Obsequious', 'PigLatin', 'Hostile', 'Friendly', 'Fearful', 'Confident', 'Empathetic', 'Upset', 'Expert']
 
+def coastalize(instr): # type: (str) -> str
+  """
+  Replaces the internal 6-character representation of coasts with DAIDE
+  parentheticals.
+
+  :param instr: a DAIDE expression that might have 6-character coast representations
+  :type instr: str
+
+  :return: a DAIDE expression with coasts as parentheticals
+  :rtype: str
+
+  """
+
+  retstr = instr
+  retstr = retstr.replace('SPANCS', '(SPA NCS)')
+  retstr = retstr.replace('SPASCS', '(SPA SCS)')
+  retstr = retstr.replace('STPNCS', '(STP NCS)')
+  retstr = retstr.replace('STPSCS', '(STP SCS)')
+
+  return retstr
+
 def initcap(instr): # type: (str) -> str
   """
   Creates a sentence case string
@@ -261,6 +282,14 @@ def shorthand2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) ->
   """
 
   cleansh = shorthand.strip().upper()
+  cleansh = cleansh.replace('SPA/NCS', 'SPANCS')
+  cleansh = cleansh.replace('SPA/N', 'SPANCS')
+  cleansh = cleansh.replace('SPA/SCS', 'SPASCS')
+  cleansh = cleansh.replace('SPA/S', 'SPASCS')
+  cleansh = cleansh.replace('STP/NCS', 'STPNCS')
+  cleansh = cleansh.replace('STP/N', 'STPNCS')
+  cleansh = cleansh.replace('STP/SCS', 'STPSCS')
+  cleansh = cleansh.replace('STP/S', 'STPSCS')
   shwords = cleansh.strip().split()
 
   retlist = ["XDO", []]

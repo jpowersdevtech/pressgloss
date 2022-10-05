@@ -91,9 +91,6 @@ def main(): # type: () -> None
     interestinggames = GAMELOG.analyzebackup(lesArgs.input)
     for curgame in interestinggames:
       GAMELOG.prettifygamefile(curgame, curgame)
-  elif lesArgs.operation == 'sh2daide':
-    daide = PRESSGLOSS.shorthand2daide(lesArgs.shorthand)
-    print(daide)
   elif lesArgs.operation == 'test':
     print(PRESSGLOSS.shorthand2daide('ENG', 'A WAL S F MAO - IRI'))
     print(PRESSGLOSS.shorthand2daide('ENG', 'A WAL S F MAO - IRI', 'FRA'))
