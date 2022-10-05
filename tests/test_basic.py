@@ -16,6 +16,7 @@ shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) C
                   'A IRI - MAO VIA': 'XDO ((ENG AMY IRI) CTO MAO VIA (UNK))',
                   'A WAL S F MAO - IRI': 'XDO ((ENG AMY WAL) SUP (FRA FLT MAO) MTO IRI)',
                   'A WAL S F LON': 'XDO ((ENG AMY WAL) SUP (FRA FLT LON))',
+                  'A WAL S F SPA/N': 'XDO ((ENG AMY WAL) SUP (FRA FLT (SPA NCS)))',
                   'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)'}
 
 parsetests = ['FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))',
@@ -253,6 +254,7 @@ moveexprs = [
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA SCS))))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (STP NCS))))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (STP SCS))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY (STP NCS)) MTO (SPA NCS))))',
               'FRM (FRA) (ENG) (PRP (DMZ (FRA ENG) (LVP YOR)))',
               'FRM (FRA) (ENG) (PRP (DMZ (FRA ENG ITA) (LVP YOR)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) SUP (FRA AMY YOR) MTO LON)))',
