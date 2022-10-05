@@ -8,6 +8,16 @@ import unittest
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
 
+shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI)',
+                  'A IRO R MAO': 'XDO ((ENG AMY IRO) RTO MAO)',
+                  'A IRO D': 'XDO ((ENG AMY IRO) DSB)',
+                  'A LON B': 'XDO ((ENG AMY LON) BLD)',
+                  'A LON H': 'XDO ((ENG AMY LON) HLD)',
+                  'A IRI - MAO VIA': 'XDO ((ENG AMY IRI) CTO MAO VIA (UNK))',
+                  'A WAL S F MAO - IRI': 'XDO ((ENG AMY WAL) SUP (FRA FLT MAO) MTO IRI)',
+                  'A WAL S F LON': 'XDO ((ENG AMY WAL) SUP (FRA FLT LON))',
+                  'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)'}
+
 parsetests = ['FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA)))',
@@ -239,6 +249,10 @@ soloexprs = [
 moveexprs = [
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) HLD)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA SCS))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (STP NCS))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (STP SCS))))',
               'FRM (FRA) (ENG) (PRP (DMZ (FRA ENG) (LVP YOR)))',
               'FRM (FRA) (ENG) (PRP (DMZ (FRA ENG ITA) (LVP YOR)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) SUP (FRA AMY YOR) MTO LON)))',
@@ -459,6 +473,12 @@ class PowerListTest(unittest.TestCase):
     self.assertEqual(helpers.listOfPowers(['AUS'], '', ['AUS', 'FRA']), 'Austria-Hungary')
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS', 'FRA']), 'you two')
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS']), 'you and France')
+
+class ShorthandTest(unittest.TestCase):
+  """ Tests conversion of Paquette shorthand to DAIDE """
+  def test(self):
+    for cursh, curdaide in shorthandtests.items():
+      self.assertEqual(PRESSGLOSS.shorthand2daide('ENG', cursh, 'FRA'), curdaide)
 
 class ParseTest(unittest.TestCase):
   """ Tests parsing of various quasi-compliant DAIDE strings. """

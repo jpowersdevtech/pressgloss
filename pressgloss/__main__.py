@@ -23,6 +23,7 @@ from . import create_app
 
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Haughty,Urgent"
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Objective"
+# python -m pressgloss --operation translate --daide "FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))" --tones "Objective"
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (AND (PCE (FRA ITA)) (XDO ((ENG AMY LVP) RTO YOR))))" --tones "Objective"
 # python -m pressgloss --operation translate --daide "FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))" --tones "Objective,Expert"
 # python -m pressgloss --operation test --daide "FRM ( ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))"
@@ -90,13 +91,12 @@ def main(): # type: () -> None
     interestinggames = GAMELOG.analyzebackup(lesArgs.input)
     for curgame in interestinggames:
       GAMELOG.prettifygamefile(curgame, curgame)
+  elif lesArgs.operation == 'sh2daide':
+    daide = PRESSGLOSS.shorthand2daide(lesArgs.shorthand)
+    print(daide)
   elif lesArgs.operation == 'test':
-    print(helpers.listOfPowers(['AUS'], '', []))
-    print(helpers.listOfPowers(['AUS'], '', ['AUS']))
-    print(helpers.listOfPowers(['AUS'], '', ['FRA']))
-    print(helpers.listOfPowers(['AUS'], '', ['FRA', 'AUS']))
-    print(helpers.listOfPowers(['FRA', 'AUS'], '', ['FRA', 'AUS']))
-    print(helpers.listOfPowers(['FRA', 'AUS'], '', ['AUS']))
+    print(PRESSGLOSS.shorthand2daide('ENG', 'A WAL S F MAO - IRI'))
+    print(PRESSGLOSS.shorthand2daide('ENG', 'A WAL S F MAO - IRI', 'FRA'))
 
 if __name__ == '__main__':
   main()

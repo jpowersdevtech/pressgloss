@@ -53,7 +53,10 @@ MUN,Province,Munich,Munich,Munich,Munchner,0,0,1
 NAF,Province,North Africa,North Africa,North Africa,North African,0,1,0
 NAO,Province,the North Atlantic,the North Atlantic,the North Atlantic,North Atlantic,1,0,0
 NAP,Province,Naples,Naples,Naples,Neapolitan,0,1,1
-NCS,Province,the North Coast,the North Coast,the North Coast,North Coaster,0,1,0
+SPANCS,Province,the North Coast of Spain,the North Coast of Spain,the North Coast of Spain,Spanish North Coaster,0,1,0
+SPASCS,Province,the South Coast of Spain,the South Coast of Spain,the South Coast of Spain,Spanish South Coaster,0,1,0
+STPNCS,Province,the North Coast of St. Petersburg,the North Coast of St. Petersburg,the North Coast of St. Petersburg,St. Petersburg North Coaster,0,1,0
+STPSCS,Province,the South Coast of St. Petersburg,the South Coast of St. Petersburg,the South Coast of St. Petersburg,St. Petersburg South Coaster,0,1,0
 NTH,Province,the North Sea,the North Sea,the North Sea,North Sea,1,0,0
 NWG,Province,the Norwegian Sea,the Norwegian Sea,the Norwegian Sea,Norwegian Sea,1,0,0
 NWY,Province,Norway,Norway,Norway,Norwegian,0,1,1
@@ -86,3 +89,4 @@ WAL,Province,Wales,Wales,Wales,Welsh,0,1,0
 WAR,Province,Warsaw,Warsaw,Warsaw,Varsovian,0,0,1
 WES,Province,the Western Mediterranean,the Western Mediterranean,the Western Mediterranean,Western Mediterranean,1,0,0
 YOR,Province,Yorkshire,Yorkshire,Yorkshire,Yorkish,0,1,0
+UNK,Province,Unknown,Unknown,Unknown,Unknown,0,0,0
