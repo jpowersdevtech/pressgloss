@@ -57,6 +57,8 @@ SPANCS,Province,the North Coast of Spain,the North Coast of Spain,the North Coas
 SPASCS,Province,the South Coast of Spain,the South Coast of Spain,the South Coast of Spain,Spanish South Coaster,0,1,0
 STPNCS,Province,the North Coast of St. Petersburg,the North Coast of St. Petersburg,the North Coast of St. Petersburg,St. Petersburg North Coaster,0,1,0
 STPSCS,Province,the South Coast of St. Petersburg,the South Coast of St. Petersburg,the South Coast of St. Petersburg,St. Petersburg South Coaster,0,1,0
+BULECS,Province,the East Coast of Bulgaria,the East Coast of Bulgaria,the East Coast of Bulgaria,Bulgarian East Coaster,0,1,0
+BULSCS,Province,the South Coast of Bulgaria,the South Coast of Bulgaria,the South Coast of Bulgaria,Bulgarian South Coaster,0,1,0
 NTH,Province,the North Sea,the North Sea,the North Sea,North Sea,1,0,0
 NWG,Province,the Norwegian Sea,the Norwegian Sea,the Norwegian Sea,Norwegian Sea,1,0,0
 NWY,Province,Norway,Norway,Norway,Norwegian,0,1,1

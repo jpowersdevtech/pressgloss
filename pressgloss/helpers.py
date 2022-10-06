@@ -44,10 +44,7 @@ def coastalize(instr): # type: (str) -> str
   """
 
   retstr = instr
-  retstr = retstr.replace('SPANCS', '(SPA NCS)')
-  retstr = retstr.replace('SPASCS', '(SPA SCS)')
-  retstr = retstr.replace('STPNCS', '(STP NCS)')
-  retstr = retstr.replace('STPSCS', '(STP SCS)')
+  retstr = re.sub(r'([A-Z]{3})([ENS])CS', r'(\1 \2CS)', retstr)
 
   return retstr
 
@@ -248,9 +245,8 @@ def daide2lists(daide): # type: (str) -> []
   metamorphosis = re.sub(r'([A-Z])\(', r'\1 (', metamorphosis) # FRM (ENG) (FRA ITA) (PRP (ALY (ENG  FRA ITA) VSS (RUS TUR)))
   metamorphosis = re.sub(r' +', r' ', metamorphosis) # (FRM (ENG) (FRA ITA) (PRP (ALY (ENG FRA ITA) VSS (RUS TUR))))
 
-  # handle the 4 coasts - unsure if DAIDE really specifies it this way, but was observed in the wild
-  metamorphosis = re.sub(r'\(([A-Z]+) NCS\)', r'\1NCS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPANCS))))
-  metamorphosis = re.sub(r'\(([A-Z]+) SCS\)', r'\1SCS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA SCS))))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPASCS))))
+  # handle the coasts - unsure if DAIDE really specifies it this way, but was observed in the wild
+  metamorphosis = re.sub(r'\(([A-Z]+) ([ENS])CS\)', r'\1\2CS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPANCS))))
 
   # transformations to JSON
   metamorphosis = re.sub(r'([A-Z]+)', r'"\1"', metamorphosis) # ("FRM" ("ENG") ("FRA" "ITA") ("PRP" ("ALY" ("ENG" "FRA" "ITA") "VSS" ("RUS" "TUR"))))
@@ -282,14 +278,8 @@ def shorthand2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) ->
   """
 
   cleansh = shorthand.strip().upper()
-  cleansh = cleansh.replace('SPA/NCS', 'SPANCS')
-  cleansh = cleansh.replace('SPA/N', 'SPANCS')
-  cleansh = cleansh.replace('SPA/SCS', 'SPASCS')
-  cleansh = cleansh.replace('SPA/S', 'SPASCS')
-  cleansh = cleansh.replace('STP/NCS', 'STPNCS')
-  cleansh = cleansh.replace('STP/N', 'STPNCS')
-  cleansh = cleansh.replace('STP/SCS', 'STPSCS')
-  cleansh = cleansh.replace('STP/S', 'STPSCS')
+  cleansh = re.sub(r'([A-Z]+)/([ENS])CS', r'\1\2CS', cleansh)
+  cleansh = re.sub(r'([A-Z]+)/([ENS])', r'\1\2CS', cleansh)
   shwords = cleansh.strip().split()
 
   retlist = ["XDO", []]
