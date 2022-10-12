@@ -48,6 +48,24 @@ def coastalize(instr): # type: (str) -> str
 
   return retstr
 
+def datccoastalize(instr): # type: (str) -> str
+  """
+  Replaces the internal 6-character representation of coasts with DATC
+  notation.
+
+  :param instr: a DAIDE expression that might have 6-character coast representations
+  :type instr: str
+
+  :return: a DATC expression with coasts in shorthand
+  :rtype: str
+
+  """
+
+  retstr = instr
+  retstr = re.sub(r'([A-Z]{3})([ENS])CS', r'\1/\2', retstr)
+
+  return retstr
+
 def initcap(instr): # type: (str) -> str
   """
   Creates a sentence case string
@@ -261,9 +279,9 @@ def daide2lists(daide): # type: (str) -> []
 
   return retlist
 
-def shorthand2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) -> []
+def datc2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) -> []
   """
-  Translates a Paquette-style move shorthand to a nested list representation compatible
+  Translates a DATC move shorthand to a nested list representation compatible
   with those parsed by the DAIDE expression parsers
 
   :param owner: the trigram of the owner of the units mentioned in the shorthand
@@ -273,7 +291,8 @@ def shorthand2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) ->
   :param thirdparty: trigram of the owner of a supported or convoyed unit if the supported unit is of a different power than the owner
   :type thirdparty: str
 
-  :return: a DAIDE XDO expression representing the move such as XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI) or XDO ((ENG AMY IRO) RTO MAO)
+  :return: a list form of a DAIDE XDO expression representing the move such as
+           ['XDO', [['ENG', 'FLT', 'NWG'], 'CVY', ['FRA', 'AMY', 'NWY'], 'CTO', 'EDI']
 
   """
 
