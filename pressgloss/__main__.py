@@ -92,8 +92,7 @@ def main(): # type: () -> None
     for curgame in interestinggames:
       GAMELOG.prettifygamefile(curgame, curgame)
   elif lesArgs.operation == 'test':
-    print(PRESSGLOSS.shorthand2daide('ENG', 'A WAL S F MAO - IRI'))
-    print(PRESSGLOSS.shorthand2daide('ENG', 'A WAL S F MAO - IRI', 'FRA'))
+    print(PRESSGLOSS.datc2daide([('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]))
 
 if __name__ == '__main__':
   main()

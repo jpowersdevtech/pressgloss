@@ -20,6 +20,9 @@ shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) C
                   'A BUL/E S F SPA': 'XDO ((ENG AMY (BUL ECS)) SUP (FRA FLT SPA))',
                   'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)'}
 
+conjunctshorthandtest = [('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]
+conjunctshorthandanswer = 'AND (XDO ((ENG AMY WAL) SUP (ENG FLT MAO) MTO IRI)) (XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI))'
+
 parsetests = ['FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA)))',
@@ -479,10 +482,15 @@ class PowerListTest(unittest.TestCase):
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS']), 'you and France')
 
 class ShorthandTest(unittest.TestCase):
-  """ Tests conversion of Paquette shorthand to DAIDE """
+  """ Tests conversion of DATC shorthand to DAIDE """
   def test(self):
     for cursh, curdaide in shorthandtests.items():
-      self.assertEqual(PRESSGLOSS.shorthand2daide('ENG', cursh, 'FRA'), curdaide)
+      curdatc = [('ENG', cursh, 'FRA')]
+      self.assertEqual(PRESSGLOSS.datc2daide(curdatc), curdaide)
+      self.assertEqual(PRESSGLOSS.daide2datc(curdaide)[0], cursh)
+    self.assertEqual(PRESSGLOSS.datc2daide(conjunctshorthandtest), conjunctshorthandanswer)
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[0], conjunctshorthandtest[0][1])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[1], conjunctshorthandtest[1][1])
 
 class ParseTest(unittest.TestCase):
   """ Tests parsing of various quasi-compliant DAIDE strings. """
