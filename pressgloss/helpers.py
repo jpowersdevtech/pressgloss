@@ -44,7 +44,7 @@ def coastalize(instr): # type: (str) -> str
   """
 
   retstr = instr
-  retstr = re.sub(r'([A-Z]{3})([ENS])CS', r'(\1 \2S)', retstr)
+  retstr = re.sub(r'([A-Z]{3})([ENS]C)S', r'(\1 \2)', retstr)
 
   return retstr
 
