@@ -16,8 +16,8 @@ shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) C
                   'A IRI - MAO VIA': 'XDO ((ENG AMY IRI) CTO MAO VIA (UNK))',
                   'A WAL S F MAO - IRI': 'XDO ((ENG AMY WAL) SUP (FRA FLT MAO) MTO IRI)',
                   'A WAL S F LON': 'XDO ((ENG AMY WAL) SUP (FRA FLT LON))',
-                  'A WAL S F SPA/N': 'XDO ((ENG AMY WAL) SUP (FRA FLT (SPA NCS)))',
-                  'A BUL/E S F SPA': 'XDO ((ENG AMY (BUL ECS)) SUP (FRA FLT SPA))',
+                  'A WAL S F SPA/NC': 'XDO ((ENG AMY WAL) SUP (FRA FLT (SPA NCS)))',
+                  'A BUL/EC S F SPA': 'XDO ((ENG AMY (BUL ECS)) SUP (FRA FLT SPA))',
                   'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)'}
 
 conjunctshorthandtest = [('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]
@@ -487,10 +487,15 @@ class ShorthandTest(unittest.TestCase):
     for cursh, curdaide in shorthandtests.items():
       curdatc = [('ENG', cursh, 'FRA')]
       self.assertEqual(PRESSGLOSS.datc2daide(curdatc), curdaide)
-      self.assertEqual(PRESSGLOSS.daide2datc(curdaide)[0], cursh)
+      self.assertEqual(PRESSGLOSS.daide2datc(curdaide)[0][1], cursh)
+      self.assertEqual(PRESSGLOSS.daide2datc(curdaide)[0][0], 'ENG')
     self.assertEqual(PRESSGLOSS.datc2daide(conjunctshorthandtest), conjunctshorthandanswer)
-    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[0], conjunctshorthandtest[0][1])
-    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[1], conjunctshorthandtest[1][1])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[0][0], conjunctshorthandtest[0][0])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[0][1], conjunctshorthandtest[0][1])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[0][2], conjunctshorthandtest[0][2])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[1][0], conjunctshorthandtest[1][0])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[1][1], conjunctshorthandtest[1][1])
+    self.assertEqual(PRESSGLOSS.daide2datc(conjunctshorthandanswer)[1][2], conjunctshorthandtest[1][2])
 
 class ParseTest(unittest.TestCase):
   """ Tests parsing of various quasi-compliant DAIDE strings. """

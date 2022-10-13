@@ -193,16 +193,16 @@ class PressMessage:
 
     return self.operator
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
-    return ''
+    return ('', '', '')
 
 class PressFact(PressMessage):
   """ The game-related content of a fact. """
@@ -2564,12 +2564,12 @@ class PressMoveExecute(PressMessage):
 
     return 'XDO ' + '(' + self.details.formDAIDE() + ')'
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
@@ -2676,19 +2676,21 @@ class PressHold(PressMessage):
     retstr = '(' + ' '.join(self.unit) + ') HLD'
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
     unittype = 'A'
     if self.unit[1] == 'FLT':
       unittype = 'F'
-    return unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' H'
+    shstr = unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' H'
+
+    return (self.unit[0], shstr, '')
 
 class PressMoveInto(PressMessage):
   """ The game-related content of a move. """
@@ -2810,19 +2812,21 @@ class PressMoveInto(PressMessage):
     retstr = '(' + ' '.join(self.unit) + ') MTO ' + self.province
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
     unittype = 'A'
     if self.unit[1] == 'FLT':
       unittype = 'F'
-    return unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' - ' + helpers.datccoastalize(self.province)
+    shstr = unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' - ' + helpers.datccoastalize(self.province)
+
+    return (self.unit[0], shstr, '')
 
 class PressSupportHold(PressMessage):
   """ The game-related content of a hold support. """
@@ -2957,12 +2961,12 @@ class PressSupportHold(PressMessage):
     retstr = '(' + ' '.join(self.supporter) + ') SUP (' + ' '.join(self.supported) + ')'
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
@@ -2972,7 +2976,12 @@ class PressSupportHold(PressMessage):
     supportedtype = 'A'
     if self.supported[1] == 'FLT':
       supportedtype = 'F'
-    return supportertype + ' ' + helpers.datccoastalize(self.supporter[2]) + ' S ' + supportedtype + ' ' + helpers.datccoastalize(self.supported[2])
+    thirdparty = ''
+    if self.supporter[0] != self.supported[0]:
+      thirdparty = self.supported[0]
+    shstr = supportertype + ' ' + helpers.datccoastalize(self.supporter[2]) + ' S ' + supportedtype + ' ' + helpers.datccoastalize(self.supported[2])
+
+    return (self.supporter[0], shstr, thirdparty)
 
 class PressSupportMove(PressMessage):
   """ The game-related content of a move support. """
@@ -3126,12 +3135,12 @@ class PressSupportMove(PressMessage):
     retstr = '(' + ' '.join(self.supporter) + ') SUP (' + ' '.join(self.supported) + ') MTO ' + self.province
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
@@ -3141,7 +3150,12 @@ class PressSupportMove(PressMessage):
     supportedtype = 'A'
     if self.supported[1] == 'FLT':
       supportedtype = 'F'
-    return supportertype + ' ' + helpers.datccoastalize(self.supporter[2]) + ' S ' + supportedtype + ' ' + helpers.datccoastalize(self.supported[2]) + ' - ' + helpers.datccoastalize(self.province)
+    thirdparty = ''
+    if self.supporter[0] != self.supported[0]:
+      thirdparty = self.supported[0]
+    shstr = supportertype + ' ' + helpers.datccoastalize(self.supporter[2]) + ' S ' + supportedtype + ' ' + helpers.datccoastalize(self.supported[2]) + ' - ' + helpers.datccoastalize(self.province)
+
+    return (self.supporter[0], shstr, thirdparty)
 
 class PressConvoy(PressMessage):
   """ The game-related content of a convoy. """
@@ -3277,18 +3291,22 @@ class PressConvoy(PressMessage):
     retstr = '(' + ' '.join(self.convoyunit) + ') CVY (' + ' '.join(self.convoyedunit) + ') CTO ' + self.province
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
     convoytype = 'F'
     convoyedtype = 'A'
-    return convoytype + ' ' + helpers.datccoastalize(self.convoyunit[2]) + ' C ' + convoyedtype + ' ' + helpers.datccoastalize(self.convoyedunit[2]) + ' - ' + helpers.datccoastalize(self.province)
+    thirdparty = ''
+    if self.convoyunit[0] != self.convoyedunit[0]:
+      thirdparty = self.convoyedunit[0]
+    shstr = convoytype + ' ' + helpers.datccoastalize(self.convoyunit[2]) + ' C ' + convoyedtype + ' ' + helpers.datccoastalize(self.convoyedunit[2]) + ' - ' + helpers.datccoastalize(self.province)
+    return (self.convoyunit[0], shstr, thirdparty)
 
 class PressConvoyVia(PressMessage):
   """ The game-related content of a convoy over water. """
@@ -3396,17 +3414,19 @@ class PressConvoyVia(PressMessage):
     retstr = '(' + ' '.join(self.convoyedunit) + ') CTO ' + self.destination + ' VIA (' + ' '.join(self.searoute) + ')'
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
     convoyedtype = 'A'
-    return convoyedtype + ' ' + helpers.datccoastalize(self.convoyedunit[2]) + ' - ' + helpers.datccoastalize(self.destination) + ' VIA'
+    shstr = convoyedtype + ' ' + helpers.datccoastalize(self.convoyedunit[2]) + ' - ' + helpers.datccoastalize(self.destination) + ' VIA'
+
+    return (self.convoyedunit[0], shstr, '')
 
 class PressRetreat(PressMessage):
   """ The game-related content of a retreat. """
@@ -3506,19 +3526,21 @@ class PressRetreat(PressMessage):
     retstr = '(' + ' '.join(self.unit) + ') RTO ' + self.destination
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
     unittype = 'A'
     if self.unit[1] == 'FLT':
       unittype = 'F'
-    return unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' R ' + helpers.datccoastalize(self.destination)
+    shstr = unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' R ' + helpers.datccoastalize(self.destination)
+
+    return (self.unit[0], shstr, '')
 
 class PressDisband(PressMessage):
   """ The game-related content of a disband. """
@@ -3612,19 +3634,21 @@ class PressDisband(PressMessage):
     retstr = '(' + ' '.join(self.unit) + ') DSB'
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
     :return: the DATC string
-    :rtype: str
+    :rtype: (str, str, str)
 
     """
 
     unittype = 'A'
     if self.unit[1] == 'FLT':
       unittype = 'F'
-    return unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' D'
+    shstr = unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' D'
+
+    return (self.unit[0], shstr, '')
 
 class PressBuild(PressMessage):
   """ The game-related content of a build. """
@@ -3718,19 +3742,21 @@ class PressBuild(PressMessage):
     retstr = '(' + ' '.join(self.unit) + ') BLD'
     return helpers.coastalize(retstr)
 
-  def formDATC(self): # type: () -> str
+  def formDATC(self): # type: () -> (str, str, str)
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC string
-    :rtype: str
+    :return: the DATC triple
+    :rtype: (str, str, str)
 
     """
 
     unittype = 'A'
     if self.unit[1] == 'FLT':
       unittype = 'F'
-    return unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' B'
+    shstr = unittype + ' ' + helpers.datccoastalize(self.unit[2]) + ' B'
+
+    return (self.unit[0], shstr, '')
 
 class PressRemove(PressMessage):
   """ The game-related content of a remove. """
@@ -4111,7 +4137,7 @@ def daide2datc(daide): # type: (str) -> []
   :param daide: the DAIDE string, must be either XDO or an AND of only XDOs
   :type daide: str
 
-  :return: a list of DATC shorthand strings
+  :return: a list of DATC shorthand triples - (unit owner, move shorthand, third-party unit owner)
   :rtype: []
 
   """

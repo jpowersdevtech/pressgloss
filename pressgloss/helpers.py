@@ -296,6 +296,7 @@ def datc2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) -> []
   """
 
   cleansh = shorthand.strip().upper()
+  cleansh = re.sub(r'([A-Z]+)/([ENS])CS', r'\1\2CS', cleansh)
   cleansh = re.sub(r'([A-Z]+)/([ENS])C', r'\1\2CS', cleansh)
   cleansh = re.sub(r'([A-Z]+)/([ENS])', r'\1\2CS', cleansh)
   shwords = cleansh.strip().split()
