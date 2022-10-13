@@ -44,7 +44,7 @@ def coastalize(instr): # type: (str) -> str
   """
 
   retstr = instr
-  retstr = re.sub(r'([A-Z]{3})([ENS])CS', r'(\1 \2CS)', retstr)
+  retstr = re.sub(r'([A-Z]{3})([ENS]C)S', r'(\1 \2S)', retstr)
   return retstr
 
 def datccoastalize(instr): # type: (str) -> str
@@ -61,7 +61,7 @@ def datccoastalize(instr): # type: (str) -> str
   """
 
   retstr = instr
-  retstr = re.sub(r'([A-Z]{3})([ENS]C)S', r'\1/\2', retstr)
+  retstr = re.sub(r'([A-Z]{3})([ENS])CS', r'\1/\2C', retstr)
 
   return retstr
 
@@ -296,7 +296,7 @@ def datc2lists(owner, shorthand, thirdparty=''): # type: (str, str, str) -> []
   """
 
   cleansh = shorthand.strip().upper()
-  cleansh = re.sub(r'([A-Z]+)/([ENS])CS', r'\1\2CS', cleansh)
+  cleansh = re.sub(r'([A-Z]+)/([ENS])C', r'\1\2CS', cleansh)
   cleansh = re.sub(r'([A-Z]+)/([ENS])', r'\1\2CS', cleansh)
   shwords = cleansh.strip().split()
 
