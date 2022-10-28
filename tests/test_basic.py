@@ -20,6 +20,9 @@ shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) C
                   'A BUL/EC S F SPA': 'XDO ((ENG AMY (BUL ECS)) SUP (FRA FLT SPA))',
                   'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)'}
 
+baddaidetests = {'XDO ((ENG AMY WAL) SUP (FRA FLT SPA/NC))': 'A WAL S F SPA/NC',
+                 'XDO ((ENG AMY WAL) SUP (FRA FLT SPA/NCS))': 'A WAL S F SPA/NC'}
+
 conjunctshorthandtest = [('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]
 conjunctshorthandanswer = 'AND (XDO ((ENG AMY WAL) SUP (ENG FLT MAO) MTO IRI)) (XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI))'
 
@@ -255,6 +258,8 @@ moveexprs = [
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) HLD)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (BUL ECS))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPA/NC)))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPA/NCS)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA SCS))))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (STP NCS))))',
@@ -480,6 +485,13 @@ class PowerListTest(unittest.TestCase):
     self.assertEqual(helpers.listOfPowers(['AUS'], '', ['AUS', 'FRA']), 'Austria-Hungary')
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS', 'FRA']), 'you two')
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS']), 'you and France')
+
+class BadDAIDETest(unittest.TestCase):
+  """ Tests some non-standard DAIDE coast symbols """
+  def test(self):
+    for curdaide, cursh in baddaidetests.items():
+      self.assertEqual(PRESSGLOSS.daide2datc(curdaide)[0][1], cursh)
+      self.assertEqual(PRESSGLOSS.daide2datc(curdaide)[0][0], 'ENG')
 
 class ShorthandTest(unittest.TestCase):
   """ Tests conversion of DATC shorthand to DAIDE """

@@ -29,6 +29,16 @@ unitlist = list(unitdict.keys())
 sealist = [curdata['trigram'] for curdata in refData if curdata['Sea'] == '1' or curdata['Coast'] == '1']
 supplylist = [curdata['trigram'] for curdata in refData if curdata['Supply'] == '1']
 tonelist = ['Haughty', 'Objective', 'Urgent', 'Obsequious', 'PigLatin', 'Hostile', 'Friendly', 'Fearful', 'Confident', 'Empathetic', 'Upset', 'Expert']
+powername2sym = {
+                 'FRANCE': 'FRA',
+                 'AUSTRIA': 'AUS',
+                 'GERMANY': 'GER',
+                 'TURKEY': 'TUR',
+                 'ENGLAND': 'ENG',
+                 'RUSSIA': 'RUS',
+                 'ITALY': 'ITA',
+                 'GLOBAL': 'ITA FRA GER AUS TUR RUS ENG'
+                }
 
 def coastalize(instr): # type: (str) -> str
   """
@@ -264,6 +274,7 @@ def daide2lists(daide): # type: (str) -> []
 
   # handle the coasts - unsure if DAIDE really specifies it this way, but was observed in the wild
   metamorphosis = re.sub(r'\(([A-Z]+) ([ENS])CS\)', r'\1\2CS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPANCS))))
+  metamorphosis = re.sub(r'([A-Z]+)/([ENS])CS?', r'\1\2CS', metamorphosis) # (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPA/NC)))) to (FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPANCS))))
 
   # transformations to JSON
   metamorphosis = re.sub(r'([A-Z]+)', r'"\1"', metamorphosis) # ("FRM" ("ENG") ("FRA" "ITA") ("PRP" ("ALY" ("ENG" "FRA" "ITA") "VSS" ("RUS" "TUR"))))

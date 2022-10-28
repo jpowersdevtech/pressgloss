@@ -11,6 +11,7 @@ from flask import Blueprint
 
 # pressgloss imports
 import pressgloss.core as PRESSGLOSS
+import pressgloss.gamelog as GAMELOG
 import pressgloss.helpers as helpers
 
 landingpage = Blueprint('landingpage', __name__, template_folder='templates')
@@ -23,6 +24,22 @@ def index(): # type: () -> str
   """
 
   return flask.render_template('index.html')
+
+@theapi.route('/annotategamelog', methods=['POST'])
+def annotategamelog(): # type: () -> Response
+  """
+  Annotate a Diplomacy game log with glosses for each message containing only DAIDE
+
+  :return: A Flask Response with type JSON containing the game log with annotations.
+  :rtype: Response
+  """
+
+  if flask.request.method == 'POST':
+    reqdict = flask.request.get_json(force=True)
+    results = GAMELOG.annotatelog(reqdict)
+    return flask.jsonify(results)
+
+  return flask.jsonify({})
 
 @theapi.route('/daide2gloss', methods=['POST'])
 def daide2gloss(): # type: () -> Response

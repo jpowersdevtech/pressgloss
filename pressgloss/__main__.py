@@ -30,6 +30,7 @@ from . import create_app
 # python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
 # python -m pressgloss --operation prettifygamefile --input c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.json --output c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.html
 # python -m pressgloss --operation analyzelogs --input c:\data\shade\data_20220526\games
+# python -m pressgloss --operation analyzegym --input c:\data\shade\botgamelogs
 
 # aws s3 --profile=shade ls s3://jataware-diplomacy/
 # aws s3 --profile=shade cp s3://jataware-diplomacy/data-2022-05-21T16:00:01.zip c:\data\shade\data_2.zip
@@ -91,6 +92,9 @@ def main(): # type: () -> None
     interestinggames = GAMELOG.analyzebackup(lesArgs.input)
     for curgame in interestinggames:
       GAMELOG.prettifygamefile(curgame, curgame)
+  elif lesArgs.operation == 'analyzegym':
+    interestinggames = GAMELOG.analyzegym(lesArgs.input)
+    print('There were ' + str(len(interestinggames)) + ' game files found.')
   elif lesArgs.operation == 'test':
     print(PRESSGLOSS.datc2daide([('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]))
 
