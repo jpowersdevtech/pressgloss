@@ -998,6 +998,10 @@ class PressAlliance(PressMessage):
     :rtype: str
     """
 
+    if self.container is None:
+      self.english = 'Ahem.'
+      return self.english
+
     if self.container.operator == 'PRP':
       # (PRP (ALY
       if self.container.container is None:
@@ -2623,6 +2627,10 @@ class PressHold(PressMessage):
     :rtype: str
     """
 
+    if self.unit[2] not in helpers.provincedict:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
+
     self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          ' holds their ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -2743,7 +2751,7 @@ class PressMoveInto(PressMessage):
     :rtype: str
     """
 
-    if len(self.unit) < 3:
+    if len(self.unit) < 3 or self.province not in helpers.provincedict or self.unit[2] not in helpers.provincedict:
       self.simpleenglish = 'Ahem.'
       return self.simpleenglish
 
@@ -2883,6 +2891,10 @@ class PressSupportHold(PressMessage):
     :return: the English expression
     :rtype: str
     """
+
+    if self.supporter[2] not in helpers.provincedict or self.supported[2] not in helpers.provincedict:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
 
     self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
                          ' provides support with their ' + \
@@ -3042,7 +3054,7 @@ class PressSupportMove(PressMessage):
     :rtype: str
     """
 
-    if len(self.supporter) != 3 or len(self.supported) != 3:
+    if len(self.supporter) != 3 or len(self.supported) != 3 or self.province not in helpers.provincedict or self.supporter[2] not in helpers.provincedict or self.supported[2] not in helpers.provincedict:
       self.simpleenglish = 'Ahem.'
       return self.simpleenglish
 
@@ -3215,6 +3227,10 @@ class PressConvoy(PressMessage):
     :return: the English expression
     :rtype: str
     """
+
+    if self.province not in helpers.provincedict or self.convoyunit[2] not in helpers.provincedict or self.convoyedunit[2] not in helpers.provincedict:
+      self.simpleenglish = 'Ahem.'
+      return self.simpleenglish
 
     self.simpleenglish = helpers.powerdict[self.convoyunit[0]]['Objective'] + \
                          '\'s ' + \
@@ -4100,8 +4116,13 @@ def daide2gloss(daide, tones=None): # type: (str, []) -> str
 
   if daide is None or len(daide.strip()) < 3:
     return 'Ahem.'
-  utterance = PressUtterance(daide, tones)
-  utterance.formenglish()
+
+  try:
+    utterance = PressUtterance(daide, tones)
+    utterance.formenglish()
+  except Exception as e:
+    return 'Ahem.'
+
   return utterance.english
 
 def datc2daide(datcs): # type: ([]) -> str
