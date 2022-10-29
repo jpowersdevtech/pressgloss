@@ -40,6 +40,17 @@ powername2sym = {
                  'GLOBAL': 'ITA FRA GER AUS TUR RUS ENG'
                 }
 
+def getresourcefolder(): # type: () -> str
+  """
+  Returns the path of the folder that module resources
+  are stored in.
+  """
+
+  this_dir, this_filename = os.path.split(__file__)
+  resourcePath = os.path.join(this_dir, 'resources')
+
+  return resourcePath
+
 def coastalize(instr): # type: (str) -> str
   """
   Replaces the internal 6-character representation of coasts with DAIDE

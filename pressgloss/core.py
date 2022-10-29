@@ -88,7 +88,10 @@ class PressUtterance:
     if self.content is None:
       self.english = 'Ahem.'
     else:
-      self.english = self.content.formenglish()
+      try:
+        self.english = self.content.formenglish()
+      except Exception as e:
+        self.english = 'Ahem.'
 
   def formDAIDE(self): # type () -> str
     """
@@ -3495,6 +3498,10 @@ class PressRetreat(PressMessage):
     :rtype: str
     """
 
+    if self.unit[2] not in helpers.provincedict or self.destination not in helpers.provincedict:
+      self.simpleenglish = 'Ahme.'
+      return self.simpleenglish
+
     self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          '\'s ' + \
                          helpers.unitdict[self.unit[1]]['Objective'] + \
@@ -3605,6 +3612,10 @@ class PressDisband(PressMessage):
     :return: the English expression
     :rtype: str
     """
+
+    if self.unit[2] not in helpers.provincedict:
+      self.simpleenglish = 'Ahme.'
+      return self.simpleenglish
 
     self.simpleenglish = helpers.powerdict[self.unit[0]]['Objective'] + \
                          '\'s ' + \

@@ -38,7 +38,7 @@ from . import create_app
 def main(): # type: () -> None
   logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
   leParser = argparse.ArgumentParser()
-  leParser.add_argument('--operation', help='What do you want to do? (translate|random|app|test)')
+  leParser.add_argument('--operation', help='What do you want to do? (translate|random|app|test|analyzelogs|analyzegym)')
   leParser.add_argument('--number', help='How many expressions to create.')
   leParser.add_argument('--daide', help='The DAIDE format press to use.')
   leParser.add_argument('--tones', help='The tones to use.')

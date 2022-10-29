@@ -3,10 +3,13 @@
 
 # Standard library imports
 import unittest
+import os
+import json
 
 # pressgloss imports
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
+import pressgloss.gamelog as GAMELOG
 
 shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI)',
                   'A IRO R MAO': 'XDO ((ENG AMY IRO) RTO MAO)',
@@ -485,6 +488,26 @@ class PowerListTest(unittest.TestCase):
     self.assertEqual(helpers.listOfPowers(['AUS'], '', ['AUS', 'FRA']), 'Austria-Hungary')
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS', 'FRA']), 'you two')
     self.assertEqual(helpers.listOfPowers(['AUS', 'FRA'], '', ['AUS']), 'you and France')
+
+class GameLogTest(unittest.TestCase):
+  """ Tests some non-standard DAIDE coast symbols """
+  def test(self):
+    testlogs = ['umd_jata_cynn_1.json', 'umd_jata_cynn_2.json', 'umd_jata_cynn_3.json', 'umd_jata_cynn_4.json']
+    numberofmsgs = [2378, 1772, 1902, 3592]
+    resourcedir = helpers.getresourcefolder()
+
+    for clogfile in range(len(testlogs)):
+      curlogfile = testlogs[clogfile]
+      curpath = os.path.join(resourcedir, curlogfile)
+      with open(curpath, 'r', encoding='UTF-8') as curf:
+        curgame = json.load(curf)
+      annotated = GAMELOG.annotatelog(curgame)
+      self.assertTrue('phases' in annotated, 'Each game log should have phases')
+      totmsg = 0
+      for curphase in annotated['phases']:
+        if 'messages' in curphase:
+          totmsg += len(curphase['messages'])
+      self.assertEqual(totmsg, numberofmsgs[clogfile], 'The number of messages in ' + testlogs[clogfile] + ' should be ' + str(numberofmsgs[clogfile]))
 
 class BadDAIDETest(unittest.TestCase):
   """ Tests some non-standard DAIDE coast symbols """

@@ -74,11 +74,17 @@ def annotatelog(inlog): # type: ({}) -> {}
             curutterance.formenglish()
             curpress = curutterance.english
             if 'Ahem' in curpress:
-              curmessage['message'] = curcontent + ': Not DAIDE.'
+              curmessage['message'] = curcontent + ':\nNot glossable DAIDE.'
             else:
-              curmessage['message'] = curcontent + ': ' + curpress
+              curpress = curpress.replace('<ul>', '\n')
+              curpress = curpress.replace('</ul>', '')
+              curpress = curpress.replace('<li>', '* ')
+              curpress = curpress.replace('</li>', '\n')
+              curpress = curpress.replace('<br>', '\n')
+              curpress = curpress.replace('<br/>', '\n')
+              curmessage['message'] = curcontent + ':\n' + curpress
           else:
-            curmessage['message'] += ': Global messages not glossed.'
+            curmessage['message'] += ':\nGlobal messages not glossed.'
 
   return retdict
 
@@ -121,11 +127,7 @@ def analyzegym(inpath): # type: (str) -> []
           prtyfile = file.replace('.json', '_pretty.json')
           fullprettypath = os.path.join(root, prtyfile)
           prettifygamefile(curfullpath, fullprettypath)
-          curid = curgame['id']
-          newid = curid + '_gloss'
-          curgame['id'] = newid
           for curphase in curgame['phases']:
-            phasename = curphase['name']
             if 'messages' in curphase:
               for curmessage in curphase['messages']:
                 messages += 1
@@ -146,16 +148,12 @@ def analyzegym(inpath): # type: (str) -> []
                   curpress = curutterance.english
                   if 'Ahem' in curpress:
                     daideerrors += 1
-                    curmessage['message'] = curcontent + ': Not DAIDE.'
                     powerdaideuse[cursender]['Error'] += 1
-                  else:
-                    curmessage['message'] = curcontent + ': ' + curpress
-                else:
-                  curmessage['message'] += ': Global messages not glossed.'
+          curglossgame = annotatelog(curgame)
           glossfile = file.replace('.json', '_gloss.json')
           fullglosspath = os.path.join(root, glossfile)
           with open(fullglosspath, 'w', encoding='UTF-8') as of:
-            json.dump(curgame, of, indent=2)
+            json.dump(curglossgame, of, indent=2)
           print(curfullpath)
           print('  ' + str(messages) + ' messages sent')
           print('  ' + str(daideerrors) + ' DAIDE errors')
