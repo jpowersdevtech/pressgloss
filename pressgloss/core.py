@@ -200,12 +200,21 @@ class PressMessage:
     """
     Create a DATC shorthand representation of this move
 
-    :return: the DATC triple
+    :return: the DATC triple (mover, move, other participant)
     :rtype: (str, str, str)
 
     """
 
     return ('', '', '')
+
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.details is not None:
+      self.details.swimthechannel()
 
 class PressFact(PressMessage):
   """ The game-related content of a fact. """
@@ -230,6 +239,7 @@ class PressFact(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -309,6 +319,7 @@ class PressProposal(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -387,6 +398,7 @@ class PressAccept(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -465,6 +477,7 @@ class PressReject(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -543,6 +556,7 @@ class PressCancel(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -621,6 +635,7 @@ class PressHuh(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -697,6 +712,7 @@ class PressIgnore(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -776,6 +792,7 @@ class PressPeace(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.allies = thelists[1]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -992,6 +1009,7 @@ class PressAlliance(PressMessage):
       self.operator = thelists[0]
       self.allies = thelists[1]
       self.opponents = thelists[3]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -1228,6 +1246,7 @@ class PressDMZ(PressMessage):
       self.operator = thelists[0]
       self.powers = thelists[1]
       self.provinces = thelists[2]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -1237,7 +1256,7 @@ class PressDMZ(PressMessage):
     :rtype: str
     """
 
-    powersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers)
+    powersgloss = helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective')
     provincesgloss = helpers.listOfProvinces(self.provinces)
     if self.container.operator == 'PRP':
       # (PRP (DMZ
@@ -1402,6 +1421,16 @@ class PressDMZ(PressMessage):
 
     return 'DMZ (' + ' '.join(self.powers) + ') (' + ' '.join(self.provinces) + ')'
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if 'ENG' in self.provinces:
+      self.provinces.remove('ENG')
+      self.provinces.append('ECH')
+
 class PressDraw(PressMessage):
   """ The game-related content of a draw. """
 
@@ -1431,6 +1460,7 @@ class PressDraw(PressMessage):
         self.powers = thelists[1]
       else:
         self.powers = None
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -1639,6 +1669,7 @@ class PressSolo(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.winner = thelists[1]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -1829,6 +1860,7 @@ class PressAnd(PressMessage):
       self.operator = thelists[0]
       for cConj in range(1, len(thelists)):
         self.conjuncts.append(messageFactory(utterance, self, thelists[cConj]))
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -1955,6 +1987,15 @@ class PressAnd(PressMessage):
 
     return 'AND ' + ' '.join(['(' + curconj.formDAIDE() + ')' for curconj in self.conjuncts])
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    for conj in self.conjuncts:
+      conj.swimthechannel()
+
 class PressOr(PressMessage):
   """ The game-related content of a disjunction. """
 
@@ -1981,6 +2022,7 @@ class PressOr(PressMessage):
       self.operator = thelists[0]
       for cDisj in range(1, len(thelists)):
         self.disjuncts.append(messageFactory(utterance, self, thelists[cDisj]))
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2107,6 +2149,15 @@ class PressOr(PressMessage):
 
     return 'ORR ' + ' '.join(['(' + curdisj.formDAIDE() + ')' for curdisj in self.disjuncts])
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    for disj in self.disjuncts:
+      disj.swimthechannel()
+
 class PressIf(PressMessage):
   """ The game-related content of a conditional. """
 
@@ -2138,11 +2189,13 @@ class PressIf(PressMessage):
       self.antecedent = messageFactory(utterance, self, thelists[1])
       self.consequent = messageFactory(utterance, self, thelists[2])
       self.alternative = None
+      self.swimthechannel()
     elif len(thelists) == 5:
       self.operator = thelists[0]
       self.antecedent = messageFactory(utterance, self, thelists[1])
       self.consequent = messageFactory(utterance, self, thelists[2])
       self.alternative = messageFactory(utterance, self, thelists[4])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2287,6 +2340,17 @@ class PressIf(PressMessage):
 
     return retval
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    self.antecedent.swimthechannel()
+    self.consequent.swimthechannel()
+    if self.alternative is not None:
+      self.alternative.swimthechannel()
+
 class PressNot(PressMessage):
   """ The game-related content of a negation. """
 
@@ -2311,6 +2375,7 @@ class PressNot(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.proposition = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2358,6 +2423,14 @@ class PressNot(PressMessage):
 
     return 'NOT ' + '(' + self.proposition.formDAIDE() + ')'
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    self.proposition.swimthechannel()
+
 class PressNar(PressMessage):
   """ The game-related content of missing evidence. """
 
@@ -2382,6 +2455,7 @@ class PressNar(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.proposition = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2429,6 +2503,14 @@ class PressNar(PressMessage):
 
     return 'NAR ' + '(' + self.proposition.formDAIDE() + ')'
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    self.proposition.swimthechannel()
+
 class PressMoveExecute(PressMessage):
   """ The game-related content of an executable move. """
 
@@ -2452,6 +2534,7 @@ class PressMoveExecute(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2610,6 +2693,7 @@ class PressHold(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[1]
       self.unit = thelists[0]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2703,6 +2787,15 @@ class PressHold(PressMessage):
 
     return (self.unit[0], shstr, '')
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.unit[2] == 'ENG':
+      self.unit[2] = 'ECH'
+
 class PressMoveInto(PressMessage):
   """ The game-related content of a move. """
 
@@ -2734,6 +2827,7 @@ class PressMoveInto(PressMessage):
       self.operator = thelists[1]
       self.unit = thelists[0]
       self.province = thelists[2]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2839,6 +2933,17 @@ class PressMoveInto(PressMessage):
 
     return (self.unit[0], shstr, '')
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.unit[2] == 'ENG':
+      self.unit[2] = 'ECH'
+    if self.province == 'ENG':
+      self.province = 'ECH'
+
 class PressSupportHold(PressMessage):
   """ The game-related content of a hold support. """
 
@@ -2875,6 +2980,7 @@ class PressSupportHold(PressMessage):
       self.operator = thelists[1]
       self.supporter = thelists[0]
       self.supported = thelists[2]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -2998,6 +3104,17 @@ class PressSupportHold(PressMessage):
 
     return (self.supporter[0], shstr, thirdparty)
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.supporter[2] == 'ENG':
+      self.supporter[2] = 'ECH'
+    if self.supported[2] == 'ENG':
+      self.supported[2] = 'ECH'
+
 class PressSupportMove(PressMessage):
   """ The game-related content of a move support. """
 
@@ -3037,6 +3154,7 @@ class PressSupportMove(PressMessage):
       self.supporter = thelists[0]
       self.supported = thelists[2]
       self.province = thelists[4]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3172,6 +3290,19 @@ class PressSupportMove(PressMessage):
 
     return (self.supporter[0], shstr, thirdparty)
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.supporter[2] == 'ENG':
+      self.supporter[2] = 'ECH'
+    if self.supported[2] == 'ENG':
+      self.supported[2] = 'ECH'
+    if self.province == 'ENG':
+      self.province = 'ECH'
+
 class PressConvoy(PressMessage):
   """ The game-related content of a convoy. """
 
@@ -3211,6 +3342,7 @@ class PressConvoy(PressMessage):
       self.convoyunit = thelists[0]
       self.convoyedunit = thelists[2]
       self.province = thelists[4]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3327,6 +3459,19 @@ class PressConvoy(PressMessage):
     shstr = convoytype + ' ' + helpers.datccoastalize(self.convoyunit[2]) + ' C ' + convoyedtype + ' ' + helpers.datccoastalize(self.convoyedunit[2]) + ' - ' + helpers.datccoastalize(self.province)
     return (self.convoyunit[0], shstr, thirdparty)
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.convoyunit[2] == 'ENG':
+      self.convoyunit[2] = 'ECH'
+    if self.convoyedunit[2] == 'ENG':
+      self.convoyedunit[2] = 'ECH'
+    if self.province == 'ENG':
+      self.province = 'ECH'
+
 class PressConvoyVia(PressMessage):
   """ The game-related content of a convoy over water. """
 
@@ -3360,6 +3505,7 @@ class PressConvoyVia(PressMessage):
       self.convoyedunit = thelists[0]
       self.destination = thelists[2]
       self.searoute = thelists[4]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3447,6 +3593,19 @@ class PressConvoyVia(PressMessage):
 
     return (self.convoyedunit[0], shstr, '')
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.convoyedunit[2] == 'ENG':
+      self.convoyedunit[2] = 'ECH'
+    if self.destination == 'ENG':
+      self.destination = 'ECH'
+    if 'ENG' in self.searoute:
+      self.searoute = list(map(lambda x: x.replace('ENG', 'ECH'), self.searoute))
+
 class PressRetreat(PressMessage):
   """ The game-related content of a retreat. """
 
@@ -3478,6 +3637,7 @@ class PressRetreat(PressMessage):
       self.operator = thelists[1]
       self.unit = thelists[0]
       self.destination = thelists[2]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3565,6 +3725,17 @@ class PressRetreat(PressMessage):
 
     return (self.unit[0], shstr, '')
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.unit[2] == 'ENG':
+      self.unit[2] = 'ECH'
+    if self.destination == 'ENG':
+      self.destination = 'ECH'
+
 class PressDisband(PressMessage):
   """ The game-related content of a disband. """
 
@@ -3593,6 +3764,7 @@ class PressDisband(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[1]
       self.unit = thelists[0]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3677,6 +3849,15 @@ class PressDisband(PressMessage):
 
     return (self.unit[0], shstr, '')
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.unit[2] == 'ENG':
+      self.unit[2] = 'ECH'
+
 class PressBuild(PressMessage):
   """ The game-related content of a build. """
 
@@ -3705,6 +3886,7 @@ class PressBuild(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[1]
       self.unit = thelists[0]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3785,6 +3967,15 @@ class PressBuild(PressMessage):
 
     return (self.unit[0], shstr, '')
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.unit[2] == 'ENG':
+      self.unit[2] = 'ECH'
+
 class PressRemove(PressMessage):
   """ The game-related content of a remove. """
 
@@ -3813,6 +4004,7 @@ class PressRemove(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[1]
       self.unit = thelists[0]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -3878,6 +4070,15 @@ class PressRemove(PressMessage):
     retstr = '(' + ' '.join(self.unit) + ') REM'
     return helpers.coastalize(retstr)
 
+  def swimthechannel(self): # type: () -> None
+    """
+    Changes references to the English Channel as ENG to ECH to avoid misunderstanding the province vs the power
+
+    """
+
+    if self.unit[2] == 'ENG':
+      self.unit[2] = 'ECH'
+
 class PressWaive(PressMessage):
   """ The game-related content of a waive. """
 
@@ -3906,6 +4107,7 @@ class PressWaive(PressMessage):
     elif len(thelists) == 2:
       self.operator = thelists[1]
       self.power = thelists[0]
+      self.swimthechannel()
 
   def formenglish(self): # type () -> str
     """
@@ -4152,7 +4354,8 @@ def datc2daide(datcs): # type: ([]) -> str
   alldatc = []
   for curdatc in datcs:
     if len(curdatc) == 3:
-      datclists = helpers.datc2lists(curdatc[0], curdatc[1], curdatc[2])
+      cleandatc = curdatc[1].replace('ENG', 'ECH')
+      datclists = helpers.datc2lists(curdatc[0], cleandatc, curdatc[2])
       alldatc.append(datclists)
   if len(alldatc) == 1:
     pme = PressMoveExecute(None, None, alldatc[0])
