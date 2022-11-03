@@ -21,13 +21,18 @@ shorthandtests = {'F NWG C A NWY - EDI': 'XDO ((ENG FLT NWG) CVY (FRA AMY NWY) C
                   'A WAL S F LON': 'XDO ((ENG AMY WAL) SUP (FRA FLT LON))',
                   'A WAL S F SPA/NC': 'XDO ((ENG AMY WAL) SUP (FRA FLT (SPA NCS)))',
                   'A BUL/EC S F SPA': 'XDO ((ENG AMY (BUL ECS)) SUP (FRA FLT SPA))',
-                  'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)'}
+                  'F IRI - MAO': 'XDO ((ENG FLT IRI) MTO MAO)',
+                  'F IRI - ECH': 'XDO ((ENG FLT IRI) MTO ECH)'}
 
 baddaidetests = {'XDO ((ENG AMY WAL) SUP (FRA FLT SPA/NC))': 'A WAL S F SPA/NC',
+                 'XDO ((ENG AMY WAL) SUP (FRA FLT ENG))': 'A WAL S F ECH',
                  'XDO ((ENG AMY WAL) SUP (FRA FLT SPA/NCS))': 'A WAL S F SPA/NC'}
 
 conjunctshorthandtest = [('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]
 conjunctshorthandanswer = 'AND (XDO ((ENG AMY WAL) SUP (ENG FLT MAO) MTO IRI)) (XDO ((ENG FLT NWG) CVY (FRA AMY NWY) CTO EDI))'
+
+channeltest = 'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO ENG)))'
+channelanswer = 'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO ECH)))'
 
 parsetests = ['FRM (ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))',
               'FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA) ))',
@@ -43,6 +48,7 @@ dmzexprs = [
             'FRM (FRA) (ENG) (PRP (NOT (DMZ (FRA ENG ITA) (LVP YOR))))',
             'FRM (FRA) (ENG) (PRP (NOT (DMZ (FRA ENG ITA) (LVP YOR))))',
             'FRM (FRA) (ENG) (PRP (NOT (DMZ (FRA ENG) (LVP YOR))))',
+            'FRM (FRA) (ENG) (PRP (NOT (DMZ (FRA ENG) (LVP ENG YOR))))',
             'FRM (FRA) (ENG) (PRP (NAR (DMZ (FRA ENG) (LVP YOR))))',
             'FRM (FRA) (ENG) (PRP (NAR (DMZ (FRA ENG ITA) (LVP YOR))))',
             'FRM (FRA) (ENG) (YES (PRP (DMZ (FRA ENG) (LVP YOR))))',
@@ -261,6 +267,8 @@ moveexprs = [
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) HLD)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (BUL ECS))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO ENG)))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO ECH)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPA/NC)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO SPA/NCS)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO (SPA NCS))))',
@@ -274,6 +282,8 @@ moveexprs = [
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) SUP (FRA AMY YOR))))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY YOR) CTO LON VIA (NAO IRI NTH))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY YOR) CTO LON VIA (NAO ENG NTH))))',
+              'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY YOR) CTO LON VIA (NAO ECH NTH))))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) RTO YOR)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) DSB)))',
               'FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) BLD)))',
@@ -358,6 +368,8 @@ moveexprs = [
               'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY LVP) SUP (FRA AMY YOR))))))',
               'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON)))))',
               'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY YOR) CTO LON VIA (NAO IRI NTH))))))',
+              'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY YOR) CTO LON VIA (NAO ENG NTH))))))',
+              'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY YOR) CTO LON VIA (NAO ECH NTH))))))',
               'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY LVP) RTO YOR)))))',
               'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY LVP) DSB)))))',
               'FRM (FRA) (ENG) (REJ (PRP (NOT (XDO ((ENG AMY LVP) BLD)))))',
@@ -462,6 +474,12 @@ badexprs = [
             'BORK BORK BORK',
             ''
            ]
+
+class ChannelTest(unittest.TestCase):
+  """ Test for non-standard English Channel trigram. """
+  def test(self):
+    channelutterance = PRESSGLOSS.PressUtterance(channeltest, [])
+    self.assertEqual(channelutterance.formDAIDE(), channelanswer)
 
 class PowerListTest(unittest.TestCase):
   """ Tests building lists of countries from trigrams. """

@@ -40,6 +40,28 @@ powername2sym = {
                  'GLOBAL': 'ITA FRA GER AUS TUR RUS ENG'
                 }
 
+def writeCSV(outpath, data, headers=None): # type: (str, [], []) -> None
+  """
+  Writes a list of dictionaries to a CSV file.  Each dictionary
+  must have exactly the headers as keys.
+
+  :param outpath: the location on disk to write the file
+  :type outpath: str
+  :param data: the list of dictionaries that will become rows
+  :type data: []
+  :param headers: the list of column headers.  If none is provided, use the list of keys from the first dictionary in data.
+  :type headers: []
+  """
+
+  useheaders = headers
+  if headers is None or len(headers) == 0:
+    useheaders = list(data[0].keys())
+
+  with open(outpath, 'w', encoding='utf-8', newline='') as outfile:
+    writer = csv.DictWriter(outfile, fieldnames=useheaders)
+    writer.writeheader()
+    writer.writerows(data)
+
 def getresourcefolder(): # type: () -> str
   """
   Returns the path of the folder that module resources

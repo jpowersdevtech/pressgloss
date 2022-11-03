@@ -25,6 +25,35 @@ def prettifygamefile(inpath, outpath): # type: (str, str) -> None
   with open(outpath, 'w', encoding='UTF-8') as of:
     json.dump(curgame, of, indent=2)
 
+def extractdatc(incontent): # type: (PRESSGLOSS.PressMessage) -> []
+  """
+  Returns a list of DATC shorthands for any XDOs contained within the message.  Does not understand negation at this time.
+
+  :param incontent: the DAIDE message
+  :type incontent PRESSGLOSS.PressMessage
+
+  :return: a list of DATC shorthands
+  :rtype: []
+
+  """
+
+  if incontent.operator == 'XDO':
+    return [incontent.formDATC()[1]]
+  elif incontent.operator in ['PRP', 'YES']:
+    return extractdatc(incontent.details)
+  elif incontent.operator == 'AND':
+    retlist = []
+    for curconj in incontent.conjuncts:
+      retlist.extend(extractdatc(curconj))
+    return retlist
+  elif incontent.operator == 'ORR':
+    retlist = []
+    for curdisj in incontent.disjuncts:
+      retlist.extend(extractdatc(curdisj))
+    return retlist
+
+  return []
+
 def operatorcounts(incontent): # type: (PRESSGLOSS.PressMessage) -> Counter
   """
   Counts the uses of each DAIDE operator in the message.
@@ -41,6 +70,17 @@ def operatorcounts(incontent): # type: (PRESSGLOSS.PressMessage) -> Counter
   retct[incontent.operator] += 1
   if incontent.details is not None:
     retct += operatorcounts(incontent.details)
+  if incontent.operator == 'AND':
+    for curconj in incontent.conjuncts:
+      retct += operatorcounts(curconj)
+  elif incontent.operator == 'ORR':
+    for curdisj in incontent.disjuncts:
+      retct += operatorcounts(curdisj)
+  elif incontent.operator == 'IFF':
+    retct += operatorcounts(incontent.antecedent)
+    retct += operatorcounts(incontent.consequent)
+    if incontent.alternative is not None:
+      retct += operatorcounts(incontent.alternative)
 
   return retct
 
@@ -88,6 +128,88 @@ def annotatelog(inlog): # type: ({}) -> {}
 
   return retdict
 
+def findPromises(ingame): # type: ({}) -> []
+  """
+  Analyzes moves and DAIDE press to find instances of cooperation on XDO proposals and/or acceptances.
+
+  :param ingame: a parsed JSON game log
+  :type ingame: {}
+
+  :return: a list of descriptions of moves and actors, and if they had been previously proposed and/or accepted.
+  :rtype: []
+
+  """
+
+  retlist = []
+
+  if 'phases' in ingame:
+    datc2proposals = {}
+    datc2accepts = {}
+    for curphase in ingame['phases']:
+      if 'messages' in curphase:
+        for curmessage in curphase['messages']:
+          cursender = curmessage['sender']
+          cursendersym = helpers.powername2sym[cursender]
+          currecipient = curmessage['recipient']
+          currecsym = helpers.powername2sym[currecipient]
+          if currecipient != 'GLOBAL':
+            curcontent = curmessage['message']
+            curdaide = 'FRM (' + cursendersym + ') (' + currecsym + ') (' + curcontent + ')'
+            curutterance = PRESSGLOSS.PressUtterance(curdaide, ['Objective', 'Expert'])
+            curutterance.formenglish()
+            curpress = curutterance.english
+            if 'Ahem' not in curpress:
+              if curutterance.content.operator == 'PRP':
+                datcs = extractdatc(curutterance.content)
+                for curdatc in datcs:
+                  moverkey = currecsym + '::' + curdatc
+                  requesterdict = {'Mover Power': currecsym,
+                                   'Move': curdatc,
+                                   'Requester Power': cursendersym,
+                                   'Request Phase': curphase['name']}
+                  if moverkey not in datc2proposals:
+                    datc2proposals[moverkey] = []
+                  datc2proposals[moverkey].append(requesterdict)
+              elif curutterance.content.operator == 'YES':
+                datcs = extractdatc(curutterance.content)
+                for curdatc in datcs:
+                  moverkey = cursendersym + '::' + curdatc
+                  accepterdict = {'Accepter Power': cursendersym,
+                                  'Accept Phase': curphase['name']}
+                  if moverkey not in datc2accepts:
+                    datc2accepts[moverkey] = []
+                  datc2accepts[moverkey].append(accepterdict)
+      if 'orders' in curphase:
+        for powername, curorders in curphase['orders'].items():
+          if curorders is not None:
+            powersym = helpers.powername2sym[powername]
+            for curorder in curorders:
+              basemovedict = {'Game': ingame['id'],
+                              'Mover Power': powersym,
+                              'Move': curorder,
+                              'Move Phase': curphase['name']}
+              if powersym + '::' + curorder in datc2proposals:
+                for curpropsal in datc2proposals[powersym + '::' + curorder]:
+                  curmovedict = {key: val for key, val in basemovedict.items()}
+                  curmovedict.update(curpropsal)
+                  if powersym + '::' + curorder in datc2accepts:
+                    for curaccept in datc2accepts[powersym + '::' + curorder]:
+                      curaccdict = {key: val for key, val in curmovedict.items()}
+                      curaccdict.update(curaccept)
+                      retlist.append(curaccdict)
+                  else:
+                    curmovedict['Accepter Power'] = ''
+                    curmovedict['Accept Phase'] = ''
+                    retlist.append(curmovedict)
+              else:
+                basemovedict['Requester Power'] = ''
+                basemovedict['Request Phase'] = ''
+                basemovedict['Accepter Power'] = ''
+                basemovedict['Accept Phase'] = ''
+                retlist.append(basemovedict)
+
+  return retlist
+
 def analyzegym(inpath): # type: (str) -> []
   """
   Searches through a folder for game logs and returns a list of paths to those which might be interesting for analysis.
@@ -103,12 +225,15 @@ def analyzegym(inpath): # type: (str) -> []
 
   retset = set()
 
+  promises = []
   for root, dirs, files in os.walk(os.path.abspath(inpath)):
     for file in files:
       curfullpath = os.path.join(root, file)
       if file.endswith('.json') and '_pretty.json' not in file and '_gloss.json' not in file:
+        print('Processing ' + file)
         with open(curfullpath, 'r', encoding='UTF-8') as jf:
           curgame = json.load(jf)
+        promises.extend(findPromises(curgame))
         if 'phases' in curgame:
           daideoperators = Counter()
           powerdaideuse = {'FRANCE': Counter(),
@@ -163,6 +288,8 @@ def analyzegym(inpath): # type: (str) -> []
           print('  DAIDE usage ' +  str(daideoperators.most_common()))
           for curpower, curdaideuse in powerdaideuse.items():
             print('  ' + curpower + ' DAIDE usage ' + str(curdaideuse.most_common()))
+
+  helpers.writeCSV(os.path.join(inpath, 'moves.csv'), promises)
 
   return list(retset)
 
