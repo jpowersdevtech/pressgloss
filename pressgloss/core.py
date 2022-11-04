@@ -2196,6 +2196,11 @@ class PressIf(PressMessage):
       self.consequent = messageFactory(utterance, self, thelists[2])
       self.alternative = messageFactory(utterance, self, thelists[4])
       self.swimthechannel()
+    else:
+      self.operator = thelists[0]
+      self.antecedent = None
+      self.consequent = None
+      self.alternative = None
 
   def formenglish(self): # type () -> str
     """
@@ -2346,8 +2351,10 @@ class PressIf(PressMessage):
 
     """
 
-    self.antecedent.swimthechannel()
-    self.consequent.swimthechannel()
+    if self.antecedent is not None:
+      self.antecedent.swimthechannel()
+    if self.consequent is not None:
+      self.consequent.swimthechannel()
     if self.alternative is not None:
       self.alternative.swimthechannel()
 

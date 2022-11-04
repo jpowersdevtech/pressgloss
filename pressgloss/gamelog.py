@@ -67,6 +67,11 @@ def operatorcounts(incontent): # type: (PRESSGLOSS.PressMessage) -> Counter
   """
 
   retct = Counter()
+  if incontent is None or incontent.operator is None:
+    if incontent is not None and incontent.details is not None:
+      retct += operatorcounts(incontent.details)
+    return retct
+
   retct[incontent.operator] += 1
   if incontent.details is not None:
     retct += operatorcounts(incontent.details)
@@ -184,16 +189,17 @@ def findPromises(ingame): # type: ({}) -> []
           if curorders is not None:
             powersym = helpers.powername2sym[powername]
             for curorder in curorders:
+              cleanorder = curorder.replace('ENG', 'ECH')
               basemovedict = {'Game': ingame['id'],
                               'Mover Power': powersym,
-                              'Move': curorder,
+                              'Move': cleanorder,
                               'Move Phase': curphase['name']}
-              if powersym + '::' + curorder in datc2proposals:
-                for curpropsal in datc2proposals[powersym + '::' + curorder]:
+              if powersym + '::' + cleanorder in datc2proposals:
+                for curpropsal in datc2proposals[powersym + '::' + cleanorder]:
                   curmovedict = {key: val for key, val in basemovedict.items()}
                   curmovedict.update(curpropsal)
-                  if powersym + '::' + curorder in datc2accepts:
-                    for curaccept in datc2accepts[powersym + '::' + curorder]:
+                  if powersym + '::' + cleanorder in datc2accepts:
+                    for curaccept in datc2accepts[powersym + '::' + cleanorder]:
                       curaccdict = {key: val for key, val in curmovedict.items()}
                       curaccdict.update(curaccept)
                       retlist.append(curaccdict)
