@@ -32,7 +32,7 @@ class PressUtterance:
       self.topowers = []
       tolist = [curpower for curpower in helpers.powerlist if curpower != self.frompower]
       self.topowers = random.sample(tolist, random.randint(1, 4))
-      contentword = random.choice(['PRP', 'FCT', 'YES', 'REJ', 'HUH', 'BWX', 'CCL'])
+      contentword = random.choice(['PRP', 'FCT', 'YES', 'REJ', 'HUH', 'BWX', 'CCL', 'IFF'])
       self.content = randomFactory(self, None, contentword)
       self.daide = self.formDAIDE()
     else:
@@ -234,7 +234,7 @@ class PressFact(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'FCT'
-      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR', 'IFF'])
+      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR'])
       self.details = randomFactory(utterance, self, contentword)
     elif len(thelists) == 2:
       self.operator = thelists[0]
@@ -314,7 +314,7 @@ class PressProposal(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'PRP'
-      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR', 'IFF'])
+      contentword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR'])
       self.details = randomFactory(utterance, self, contentword)
     elif len(thelists) == 2:
       self.operator = thelists[0]
@@ -552,7 +552,8 @@ class PressCancel(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'CCL'
-      self.details = randomFactory(utterance, self, 'PRP')
+      contentword = random.choice(['PRP', 'IFF', 'YES'])
+      self.details = randomFactory(utterance, self, contentword)
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
@@ -631,7 +632,7 @@ class PressHuh(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'HUH'
-      self.details = randomFactory(utterance, self, random.choice(['PRP', 'FCT']))
+      self.details = randomFactory(utterance, self, random.choice(['PRP', 'FCT', 'IFF']))
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
@@ -708,7 +709,7 @@ class PressIgnore(PressMessage):
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
       self.operator = 'BWX'
-      self.details = randomFactory(utterance, self, 'PRP')
+      self.details = randomFactory(utterance, self, random.choice(['PRP', 'FCT', 'IFF']))
     elif len(thelists) == 2:
       self.operator = thelists[0]
       self.details = messageFactory(utterance, self, thelists[1])
@@ -957,6 +958,7 @@ class PressPeace(PressMessage):
     :rtype: str
 
     """
+
     if self.container.operator == "NOT":
       self.simpleenglish = helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers,
                                                 case='Subjective') + ' ' + \
@@ -2175,15 +2177,13 @@ class PressIf(PressMessage):
 
     super().__init__(utterance, container)
     if thelists is None or len(thelists) == 0:
-      self.operator = 'AND'
-      anteword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR'])
+      self.operator = 'IFF'
+      anteword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR', 'AND', 'ORR'])
       self.antecedent = randomFactory(utterance, self, anteword)
-      consword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR'])
-      self.consequent = randomFactory(utterance, self, consword)
+      self.consequent = randomFactory(utterance, self, 'PRP')
       self.alternative = None
       if random.choice([True, False]):
-        altword = random.choice(['PCE', 'ALY', 'DMZ', 'SLO', 'DRW', 'XDO', 'NOT', 'NAR'])
-        self.alternative = randomFactory(utterance, self, altword)
+        self.alternative = randomFactory(utterance, self, 'PRP')
     elif len(thelists) == 3:
       self.operator = thelists[0]
       self.antecedent = messageFactory(utterance, self, thelists[1])
@@ -2210,96 +2210,18 @@ class PressIf(PressMessage):
     :rtype: str
     """
 
-    if self.container.operator == 'PRP':
-      # (PRP (IFF
-      if self.container.container is None:
-        if random.choice([True, False]):
-          self.english = 'Here\'s my ' + random.choice(['proposal', 'proposed deal', 'offer']) + \
-                         ': if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish() + '.'
-        else:
-          self.english = 'Would you consider ' + self.consequent.formclauseenglish() + ' if ' + self.antecedent.formclauseenglish() + '?'
-        if self.alternative is not None:
-          self.english += ' If not this, then perhaps ' + self.antecedent.formclauseenglish() + '?'
-      # (YES (PRP (IFF
-      elif self.container.container.operator == 'YES':
-        self.english = 'I ' + random.choice(['agree to', 'concur with', 'will accept']) + ' ' + self.antecedent.formclauseenglish() + \
-                       ' and when it\'s done, I will execute the following: ' + self.consequent.formclauseenglish()
-      # (REJ (PRP (IFF
-      elif self.container.container.operator == 'REJ':
-        self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \
-                       ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
-      # (CCL (PRP (IFF
-      elif self.container.container.operator == 'CCL':
-        self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal that if ' + \
-                       self.antecedent.formclauseenglish() + ' then ' + self.consequent.formclauseenglish()
-        if self.alternative is not None:
-          self.english += ' otherwise ' + self.alternative.formclauseenglish()
-      # (HUH (PRP (IFF
-      elif self.container.container.operator == 'HUH':
-        self.english = 'I do not understand your quid pro quo.'
-    elif self.container.operator == 'NOT':
-      if self.container.container.operator == 'PRP':
-        # (PRP (NOT (IFF
-        if self.container.container.container is None:
-          self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' the following trade: ' + \
-                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
-        # (YES (PRP (NOT (IFF
-        elif self.container.container.container.operator == 'YES':
-          self.english = 'I ' + random.choice(['agree', 'concur']) + ' that the following trade is not desirable: ' + \
-                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
-        # (REJ (PRP (NOT (IFF
-        elif self.container.container.container.operator == 'REJ':
-          self.english = 'I still want ' + self.consequent.formclauseenglish() + ' whether or not you want ' + self.antecedent.formclauseenglish()
-        # (CCL (PRP (NOT (IFF
-        elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal rejecting ' + \
-                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
-        # (HUH (PRP (NOT (IFF
-        elif self.container.container.container.operator == 'HUH':
-          self.english = 'I do not understand your trade offer.'
-      elif self.container.container.operator == 'FCT':
-        # (FCT (NOT (IFF
-        if self.container.container.container is None:
-          self.english = 'It is not the case that if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish()
-        # (HUH (FCT (NOT (IFF
-        elif self.container.container.container.operator == 'HUH':
-          self.english = 'I do not understand your statement about the trade.'
-    elif self.container.operator == 'NAR':
-      if self.container.container.operator == 'PRP':
-        # (PRP (NAR (IFF
-        if self.container.container.container is None:
-          self.english = 'If ' + self.antecedent.formclauseenglish() + ', then maybe ' + self.consequent.formclauseenglish()
-        # (YES (PRP (NAR (IFF
-        elif self.container.container.container.operator == 'YES':
-          self.english = 'I agree, it may be that if ' + self.antecedent.formclauseenglish() + ', then maybe ' + self.consequent.formclauseenglish()
-        # (REJ (PRP (NAR (IFF
-        elif self.container.container.container.operator == 'REJ':
-          self.english = 'I disagree that if ' + self.antecedent.formclauseenglish() + ', then maybe ' + self.consequent.formclauseenglish()
-        # (CCL (PRP (NAR (IFF
-        elif self.container.container.container.operator == 'CCL':
-          self.english = 'I wish to ' + random.choice(['cancel', 'retract', 'take back']) + ' my proposal of ' + \
-                         self.antecedent.formclauseenglish() + ' for ' + self.consequent.formclauseenglish()
-        # (HUH (PRP (NAR (IFF
-        elif self.container.container.container.operator == 'HUH':
-          self.english = 'I do not understand your proposal of a quid pro quo.'
-      elif self.container.container.operator == 'FCT':
-        # (FCT (NAR (IFF
-        if self.container.container.container is None:
-          self.english = 'It is unclear that if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish()
-        # (HUH (FCT (NAR (IFF
-        elif self.container.container.container.operator == 'HUH':
-          self.english = 'I do not understand your statement about a trade.'
-    elif self.container.operator == 'FCT':
-      # (FCT (IFF
-      if self.container.container is None:
-        self.english = 'I believe that if ' + self.antecedent.formclauseenglish() + ', then ' + self.consequent.formclauseenglish()
-        if self.alternative is not None:
-          self.english += ' If not this, then ' + self.antecedent.formclauseenglish() + '.'
-      # (HUH (FCT (IFF
-      elif self.container.container.operator == 'HUH':
-        self.english = 'I do not understand your statement about a trade.'
-    else:
-      self.english = self.formclauseenglish()
+    if self.container is None:
+      self.english = 'If ' + self.antecedent.formlistenglish() + ' then ' + self.consequent.formenglish()
+      if self.alternative is not None:
+        self.english += ', otherwise ' + self.alternative.formenglish()
+    elif self.container.operator == 'REJ':
+      # (REJ (IFF
+      self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \
+                     ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
+    elif self.container.operator == 'YES':
+      # (REJ (IFF
+      self.english = 'I ' + random.choice(['accept', 'concur with', 'approve of', 'accept']) + \
+                     ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
 
     return self.english
 
@@ -2553,7 +2475,7 @@ class PressMoveExecute(PressMessage):
 
     if self.container.operator == 'PRP':
       # (PRP (XDO
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' this move: ' + self.details.formlistenglish()
       # (YES (PRP (XDO
       elif self.container.container.operator == 'YES':
@@ -2570,7 +2492,7 @@ class PressMoveExecute(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (XDO
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I do not want the following move to happen: ' + self.details.formlistenglish()
         # (YES (PRP (NOT (XDO
         elif self.container.container.container.operator == 'YES':
@@ -2594,7 +2516,7 @@ class PressMoveExecute(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (XDO
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I am not sure about the move: ' + self.details.formlistenglish()
         # (YES (PRP (NAR (XDO
         elif self.container.container.container.operator == 'YES':
@@ -3222,7 +3144,6 @@ class PressSupportMove(PressMessage):
     if len(self.supporter) != 3 or len(self.supported) != 3:
       self.simpleenglish = 'Ahem.'
       return self.simpleenglish
-
 
     if self.container.container.operator== "NOT":
       self.simpleenglish = helpers.powerdict[self.supporter[0]]['Objective'] + \
