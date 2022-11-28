@@ -466,6 +466,7 @@ moveexprs = [
 
 compositions = [
                'FRM (FRA) (ENG) (IFF (XDO ((ENG AMY LVP) MTO YOR)) (PRP (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON))))',
+               'FRM (FRA) (ENG) (IFF (XDO ((ENG AMY LVP) MTO YOR)) (PRP (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON))) ELS (XDO ((ENG AMY LVP) REM)))',
                'FRM (FRA) (ENG) (IFF (XDO ((ENG AMY LVP) MTO YOR)) (PRP (NOT (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON)))))',
                'FRM (FRA) (ENG) (IFF (NOT (XDO ((ENG AMY LVP) MTO YOR))) (PRP (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON))))',
                'FRM (FRA) (ENG) (REJ (IFF (XDO ((ENG AMY LVP) MTO YOR)) (PRP (XDO ((ENG FLT NTH) CVY (FRA AMY BRE) CTO LON)))))',
