@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""%pressgloss% library"""
+"""Pressgloss library"""
 
 # Standard library imports
 import logging
@@ -805,7 +805,7 @@ class PressPeace(PressMessage):
 
     if self.container.operator == 'PRP':
       # (PRP (PCE
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         if random.choice([True, False]):
           self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
                          ' a ' + random.choice(['peace treaty', 'peace deal', 'non-agression pact', 'cease-fire']) + \
@@ -836,7 +836,7 @@ class PressPeace(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (PCE
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I ' + random.choice(['propose', 'request']) + ' that ' + \
                          helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' ' + \
                          random.choice(['break', 'cancel', 'annul']) + ' ' + \
@@ -884,7 +884,7 @@ class PressPeace(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (PCE
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I ' + random.choice(['propose', 'request']) + ' that ' + \
                          helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' not ' + \
                          random.choice(['form', 'sign', 'agree to', 'establish']) + ' a ' + \
@@ -1027,7 +1027,7 @@ class PressAlliance(PressMessage):
 
     if self.container.operator == 'PRP':
       # (PRP (ALY
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         if random.choice([True, False]):
           self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
                          ' ' + random.choice(['an alliance', 'a joint military operation', 'military cooperation', 'a military coalition']) + \
@@ -1063,8 +1063,8 @@ class PressAlliance(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (ALY
-        if self.container.container.container is None:
-          self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' that ' + \
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
+          self.english = 'I ' + random.choice(['propose', 'request', 'ask']) + ' that ' + \
                          helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' not ' + \
                          random.choice(['form', 'sign', 'agree to']) + ' ' + \
                          random.choice(['an alliance', 'a joint military operation', 'military cooperation', 'a military coalition']) + ' against ' + \
@@ -1115,7 +1115,7 @@ class PressAlliance(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (ALY
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I ' + random.choice(['doubt', 'don\'t think', 'do not think']) + ' that ' + \
                          helpers.listOfPowers(self.allies, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' should ' + \
                          random.choice(['form', 'sign', 'agree to']) + ' ' + \
@@ -1262,7 +1262,7 @@ class PressDMZ(PressMessage):
     provincesgloss = helpers.listOfProvinces(self.provinces)
     if self.container.operator == 'PRP':
       # (PRP (DMZ
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         if 'you ' in powersgloss.lower() and 'and me' in powersgloss.lower():
           self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
                          ' we ' + random.choice(['stay out of', 'create a DMZ in', 'create a demilitarized zone in', 'keep out of']) + ' ' + \
@@ -1292,13 +1292,13 @@ class PressDMZ(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (DMZ
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           if random.choice([True, False]):
-            self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' that ' + \
+            self.english = 'I ' + random.choice(['propose', 'request', 'ask']) + ' that ' + \
                            powersgloss + ' have free movement into and through ' + \
                            provincesgloss + '.'
           else:
-            self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' that no ' + \
+            self.english = 'I ' + random.choice(['propose', 'request', 'ask']) + ' that no ' + \
                            random.choice(['DMZ', 'demilitarized zone', 'safe zone']) + ' exist in ' + \
                            provincesgloss + '.'
         # (YES (PRP (NOT (DMZ
@@ -1332,7 +1332,7 @@ class PressDMZ(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (DMZ
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I ' + random.choice(['doubt', 'don\'t think', 'do not think']) + ' that ' + \
                          helpers.listOfPowers(self.powers, self.utterance.frompower, self.utterance.topowers, case='Subjective') + ' should ' + \
                          random.choice(['form', 'sign', 'agree to']) + ' a ' + \
@@ -1480,7 +1480,7 @@ class PressDraw(PressMessage):
 
     if self.container.operator == 'PRP':
       # (PRP (DRW
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         if self.powers is None:
           self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + ' we pursue a draw.'
         else:
@@ -1509,7 +1509,7 @@ class PressDraw(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (DRW
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           if self.powers is None:
             self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + ' we do not pursue a draw.'
           else:
@@ -1548,7 +1548,7 @@ class PressDraw(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (DRW
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           if self.powers is None:
             self.english = 'It is ' + random.choice(['unclear', 'fuzzy', 'uncertain']) + ' that we should pursue a draw.'
           else:
@@ -1684,7 +1684,7 @@ class PressSolo(PressMessage):
     winnergloss = helpers.listOfPowers(self.winner, self.utterance.frompower, self.utterance.topowers)
     if self.container.operator == 'PRP':
       # (PRP (SLO
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         if winnergloss == 'me':
           self.english = 'I am ' + random.choice(['in a good position for a solo win', 'going for a solo win', 'not catchable - watch my solo win', 'just a matter of turns away from winning']) + '.'
         elif winnergloss == 'you':
@@ -1706,7 +1706,7 @@ class PressSolo(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (SLO
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           if winnergloss == 'me':
             self.english = 'I am ' + random.choice(['not in a good position for a solo win', 'not going for a solo win', 'not uncatchable - no solo win yet', 'still a ways from winning']) + '.'
           elif winnergloss == 'you':
@@ -1745,7 +1745,7 @@ class PressSolo(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (SLO
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           if winnergloss == 'me':
             self.english = 'I am ' + random.choice(['unsure about a solo win', 'on the fence about a solo win', 'not uncatchable - no solo win yet', 'still a ways from winning']) + '.'
           elif winnergloss == 'you':
@@ -1874,7 +1874,7 @@ class PressAnd(PressMessage):
 
     if self.container.operator == 'PRP':
       # (PRP (AND
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
                        ' all of the following: ' + self.formlistenglish()
       # (YES (PRP (AND
@@ -1893,7 +1893,7 @@ class PressAnd(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (AND
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' the following: ' + self.formlistenglish()
         # (YES (PRP (NOT (AND
         elif self.container.container.container.operator == 'YES':
@@ -1917,7 +1917,7 @@ class PressAnd(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (AND
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I ' + random.choice(['am ambivalent about', 'am unsure about', 'am not convinced of']) + ' the following: ' + self.formlistenglish()
         # (YES (PRP (NAR (AND
         elif self.container.container.container.operator == 'YES':
@@ -2036,7 +2036,7 @@ class PressOr(PressMessage):
 
     if self.container.operator == 'PRP':
       # (PRP (ORR
-      if self.container.container is None:
+      if self.container.container is None or self.container.container.operator == 'IFF':
         self.english = 'I ' + random.choice(['propose', 'request', 'offer']) + \
                        ' that you choose one of the following options: ' + self.formlistenglish()
       # (YES (PRP (ORR
@@ -2055,7 +2055,7 @@ class PressOr(PressMessage):
     elif self.container.operator == 'NOT':
       if self.container.container.operator == 'PRP':
         # (PRP (NOT (ORR
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I do not ' + random.choice(['want', 'desire', 'support']) + ' any of the following: ' + self.formlistenglish()
         # (YES (PRP (NOT (ORR
         elif self.container.container.container.operator == 'YES':
@@ -2079,7 +2079,7 @@ class PressOr(PressMessage):
     elif self.container.operator == 'NAR':
       if self.container.container.operator == 'PRP':
         # (PRP (NAR (ORR
-        if self.container.container.container is None:
+        if self.container.container.container is None or self.container.container.container.operator == 'IFF':
           self.english = 'I ' + random.choice(['am ambivalent about', 'am unsure about', 'am not convinced of']) + ' one of the following: ' + self.formlistenglish()
         # (YES (PRP (NAR (ORR
         elif self.container.container.container.operator == 'YES':
@@ -2218,8 +2218,12 @@ class PressIf(PressMessage):
       # (REJ (IFF
       self.english = 'I ' + random.choice(['reject', 'do not concur with', 'do not approve of', 'do not accept']) + \
                      ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
+    elif self.container.operator == 'CCL':
+      # (CCL (IFF
+      self.english = 'I ' + random.choice(['wish to retract', 'cancel', 'take back', 'no longer want']) + \
+                     ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
     elif self.container.operator == 'YES':
-      # (REJ (IFF
+      # (YES (IFF
       self.english = 'I ' + random.choice(['accept', 'concur with', 'approve of', 'accept']) + \
                      ' the condition that ' + self.antecedent.formclauseenglish() + ' should lead to ' + self.consequent.formclauseenglish()
 
@@ -2476,7 +2480,7 @@ class PressMoveExecute(PressMessage):
     if self.container.operator == 'PRP':
       # (PRP (XDO
       if self.container.container is None or self.container.container.operator == 'IFF':
-        self.english = 'I ' + random.choice(['propose', 'request', 'demand']) + ' this move: ' + self.details.formlistenglish()
+        self.english = 'I ' + random.choice(['propose', 'request', 'ask for']) + ' this move: ' + self.details.formlistenglish()
       # (YES (PRP (XDO
       elif self.container.container.operator == 'YES':
         self.english = 'I ' + random.choice(['agree to', 'concur with', 'accept']) + ' the move: ' + self.details.formlistenglish()

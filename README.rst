@@ -1,9 +1,10 @@
 ********************************
-pressgloss Library
+Pressgloss Library
 ********************************
 
-A Python library for converting formal Diplomacy Press language into human-readable
-glosses with tone.  Some functions are exposed as JSON POST API endpoints.
+A Python library for converting formal Diplomacy DAIDE Press language into
+human-readable glosses with tone.  Some functions are exposed as JSON POST
+API endpoints.
 
 ------------------------
 Install and run the app:
@@ -11,7 +12,7 @@ Install and run the app:
 
 pip install -r requirements.txt
 
-To start the Flask app:
+To start the Flask app locally,:
 
     python -m pressgloss --operation app
 
@@ -24,6 +25,10 @@ CLI:
 To translate a DAIDE expression:
 
     python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Haughty,Urgent"
+
+To generate 10 random DAIDE expressions, with glosses (random tones will also be selected):
+
+    python -m pressgloss --operation random --number 10
 
 To get the usage instructions:
 
@@ -87,6 +92,7 @@ Testing:
 
 To test, best to make sure coverage and unittest are installed, then from the
 parent directory, run
-coverage run --source pressgloss -m unittest tests.test_basic
+
+    coverage run --source pressgloss -m unittest tests.test_basic
 
 `DAIDE Specification <http://www.daide.org.uk/index.html>`_

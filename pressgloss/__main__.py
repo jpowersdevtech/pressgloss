@@ -28,6 +28,7 @@ from . import create_app
 # python -m pressgloss --operation translate --daide "FRM (FRA) (ENG) (PRP (XDO ((ENG AMY LVP) MTO YOR)))" --tones "Objective,Expert"
 # python -m pressgloss --operation test --daide "FRM ( ENG) (FRA  ITA) (PRP (PCE (FRA ITA) ))"
 # python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
+# python -m pressgloss --operation random --number 10
 # python -m pressgloss --operation prettifygamefile --input c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.json --output c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.html
 # python -m pressgloss --operation analyzelogs --input c:\data\shade\data_20220526\games
 # python -m pressgloss --operation analyzegym --input c:\data\shade\botgamelogs > c:\data\shade\botgamelogs\analysis.txt
