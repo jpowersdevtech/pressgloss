@@ -8,15 +8,135 @@ import copy
 import pressgloss.core as PRESSGLOSS
 from . import helpers
 
-def testmariadb():
+def analyzedblog(ingameid, resultspath): # type: (int, str) -> None
+  """
+  Analyze game logs from a database source (initialized by helper and
+  a command-line config argument).
+
+  :param ingameid: the ID of the game to analyze
+  :type ingameid: int
+  :param resultspath: a file location to write results
+  :type resultspath: str
+
+  """
 
   conn = helpers.getSQLConnection()
-  cur = conn.cursor()
-  cur.execute("SELECT * FROM jW_PlayerStates;")
-  for row in cur:
-    print(str(row))
-  cur.close()
+  # Show tables
+  # alltblcur = conn.cursor(prepared=True)
+  # alltblcur.execute('show tables;')
+  # results = alltblcur.fetchall()
+  # alltblcur.close()
+  # for curresult in results:
+  #   curtablename = str(curresult[0])
+  #   tblcur = conn.cursor(prepared=True)
+  #   tblcur.execute('describe ' + curtablename)
+  #   tblresults = tblcur.fetchall()
+  #   tblcur.close()
+  #   print('Table name: ' + curtablename)
+  #   for curcol in tblresults:
+  #     print('  ' + str(curcol))
+  #   print('')
+
+  # get game info from wd_games
+  gamecur = conn.cursor(prepared=True)
+  gamecur.execute('select * from wd_games where id=?', (ingameid,))
+  gamedata = helpers.cursor2dicts(gamecur)
+  gamecur.close()
+  if len(gamedata) != 1:
+    print('Strange results for game ' + str(ingameid))
+    return
+  variantid = gamedata[0]['variantID']
+
+  # get variant info from wd_variantinfo
+  variantcur = conn.cursor(prepared=True)
+  variantcur.execute('select * from wd_variantinfo where variantID=?', (variantid,))
+  variantdata = helpers.cursor2dicts(variantcur)
+  variantcur.close()
+  if len(variantdata) != 1:
+    print('String results for variant ' + str(variantid))
+    return
+  countrylabels = variantdata[0]['countriesList'].split(',')
+  mapid = variantdata[0]['mapID']
+  # get country mappings
+  index2countryname = {cCountry + 1: curLabel for cCountry, curLabel in enumerate(countrylabels)}
+
+  # get territory data
+  terrcur = conn.cursor(prepared=True)
+  terrcur.execute('select * from wd_territories where mapID=?', (mapid,))
+  terrdata = helpers.cursor2dicts(terrcur)
+  terrcur.close()
+  # get territory mappings
+  id2territory = {currow['id']: currow['name'] for currow in terrdata}
+
+  # get turndate data for inspection
+  # turncur = conn.cursor(prepared=True)
+  # turncur.execute('select * from wd_turndate where gameID=?', (ingameid,))
+  # turndata = helpers.cursor2dicts(turncur)
+  # turncur.close()
+  # print(str(turndata))
+
+  # get move data
+  movecur = conn.cursor(prepared=True)
+  movecur.execute('select * from wd_movesarchive where gameID=?', (ingameid,))
+  movedata = helpers.cursor2dicts(movecur)
+  movecur.close()
+
+  # apply country and territory labels to relevant columns
+  for curmove in movedata:
+    curmove['terrID'] = id2territory[curmove['terrID']]
+    curmove['countryID'] = index2countryname[curmove['countryID']]
+    if curmove['toTerrID'] is not None and curmove['toTerrID'] in id2territory:
+      curmove['toTerrID'] = id2territory[curmove['toTerrID']]
+    else:
+      curmove['toTerrID'] = ''
+    if curmove['fromTerrID'] is not None and curmove['fromTerrID'] in id2territory:
+      curmove['fromTerrID'] = id2territory[curmove['fromTerrID']]
+    else:
+      curmove['fromTerrID'] = ''
+
+  # get messages
+  messagecur = conn.cursor(prepared=True)
+  messagecur.execute('select * from wD_GameMessages where gameID=? order by id', (ingameid,))
+  messagedata = helpers.cursor2dicts(messagecur)
+  messagecur.close()
   conn.close()
+
+  # apply country labels to to and from columns
+  for curmessage in messagedata:
+    curmessage['fromCountryID'] = index2countryname[curmessage['fromCountryID']]
+    curmessage['toCountryID'] = index2countryname[curmessage['toCountryID']]
+
+  movecolset = set(list(movedata[0].keys()))
+  movecolset.remove('dislodged')
+  messagecolset = set(list(messagedata[0].keys()))
+  messagecolset.remove('id')
+  messagecolset.remove('phaseMarker')
+  messagecolset.remove('fromCountryID')
+  moveonly = movecolset.difference(messagecolset)
+  messageonly = messagecolset.difference(movecolset)
+
+  # create unified event list
+  events = []
+  for curmessage in messagedata:
+    for curcol in moveonly:
+      curmessage[curcol] = ''
+    del curmessage['id']
+    del curmessage['phaseMarker']
+    curmessage['eventtype'] = 'Message'
+    curmessage['countryID'] = curmessage.pop('fromCountryID')
+    curmessage['conversation'] = '-'.join(sorted([curmessage['countryID'], curmessage['toCountryID']]))
+    curmessage['message'] = helpers.html2text(curmessage['message'])
+    events.append(curmessage)
+  for curmove in movedata:
+    for curcol in messageonly:
+      curmove[curcol] = ''
+    del curmove['dislodged']
+    curmove['eventtype'] = 'Move'
+    curmove['conversation'] = ''
+    events.append(curmove)
+
+  print('Got ' + str(len(events)) + ' events')
+  helpers.writeCSV(resultspath, events, helpers.eventcols)
 
 def prettifygamefile(inpath, outpath): # type: (str, str) -> None
   """

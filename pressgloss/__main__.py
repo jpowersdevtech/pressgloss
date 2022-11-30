@@ -30,6 +30,7 @@ from . import create_app
 # python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
 # python -m pressgloss --operation random --number 10
 # python -m pressgloss --operation prettifygamefile --input c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.json --output c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.html
+# python -m pressgloss --operation analyzedblogs --config c:\data\shade\webdip.ini --gameid 34 --output c:\data\shade\dbanalysis.csv
 # python -m pressgloss --operation analyzelogs --input c:\data\shade\data_20220526\games
 # python -m pressgloss --operation analyzegym --input c:\data\shade\botgamelogs > c:\data\shade\botgamelogs\analysis.txt
 
@@ -43,6 +44,7 @@ def main(): # type: () -> None
   leParser.add_argument('--number', help='How many expressions to create.')
   leParser.add_argument('--daide', help='The DAIDE format press to use.')
   leParser.add_argument('--tones', help='The tones to use.')
+  leParser.add_argument('--gameid', help='The ID of a game to analyze.')
   leParser.add_argument('--input', help='An input file or folder.')
   leParser.add_argument('--output', help='An output file or folder.')
   leParser.add_argument('--config', help='A configuration file with various settings.')
@@ -99,8 +101,10 @@ def main(): # type: () -> None
   elif lesArgs.operation == 'analyzegym':
     interestinggames = GAMELOG.analyzegym(lesArgs.input)
     print('There were ' + str(len(interestinggames)) + ' game files found.')
+  elif lesArgs.operation == 'analyzedblogs':
+    GAMELOG.analyzedblog(int(lesArgs.gameid), lesArgs.output)
   elif lesArgs.operation == 'test':
-    GAMELOG.testmariadb()
+    print('testing')
 
 if __name__ == '__main__':
   main()
