@@ -10,6 +10,7 @@ import configparser
 
 # 3rd-party imports
 import mariadb
+from bs4 import BeautifulSoup
 
 # pressgloss imports
 import pressgloss.core
@@ -43,6 +44,9 @@ powername2sym = {
                  'ITALY': 'ITA',
                  'GLOBAL': 'ITA FRA GER AUS TUR RUS ENG'
                 }
+eventcols = ['gameID', 'turn', 'eventtype', 'conversation', 'countryID',
+             'toCountryID', 'timeSent', 'message', 'intentDeceive', 'suspectedIncomingDeception',
+             'type', 'unitType', 'terrID', 'fromTerrID', 'toTerrID', 'viaConvoy', 'success']
 configs = None
 
 def loadconfig(inpath): # type: (str) -> None
@@ -96,6 +100,42 @@ def getSQLConnection(): # type: () -> mariadb.Connection
     return None
 
   return retconn
+
+def cursor2dicts(thecursor): # type: (mariadb.Cursor) -> []
+  """
+  Converts a cursor from a SELECT query into a list of dicts with column name keys
+
+  :param thecursor: the cursor used to SELECT, assumed to already have been executed
+  :type thecursor: mariadb.Cursor
+
+  :return: a list of dictionaries with the results data
+  :rtype: []
+
+  """
+
+  colnames = [curcol[0] for curcol in thecursor.description]
+  data = [dict(zip(colnames, currow)) for currow in thecursor.fetchall()]
+
+  return data
+
+def html2text(inhtml): # type: (str) -> str
+  """
+  Strips HTML coding and replaces, if possible, with UTF-8 characters.
+  Removes newlines.
+
+  :param inhtml: text that might include HTML tags
+  :type inhtml: str
+
+  :return: UTF-8 text with no HTML or newlines
+  :rtype: str
+
+  """
+
+  parsed = BeautifulSoup(inhtml)
+  rettext = parsed.get_text()
+  rettext = rettext.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+
+  return rettext
 
 def writeCSV(outpath, data, headers=None): # type: (str, [], []) -> None
   """
