@@ -7,6 +7,11 @@
 *.sh
 *.bat
 
+# Possible secrets
+*.ini
+*.cfg
+*.conf
+
 # IDE
 .spyproject/
 .spyderproject/

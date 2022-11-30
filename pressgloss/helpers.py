@@ -6,6 +6,10 @@ import csv
 import json
 import re
 import random
+import configparser
+
+# 3rd-party imports
+import mariadb
 
 # pressgloss imports
 import pressgloss.core
@@ -39,6 +43,59 @@ powername2sym = {
                  'ITALY': 'ITA',
                  'GLOBAL': 'ITA FRA GER AUS TUR RUS ENG'
                 }
+configs = None
+
+def loadconfig(inpath): # type: (str) -> None
+  """
+  Loads config information from a file, makes available through
+  a global helpers variable
+
+  :param inpath: the path to the config file (probably .ini)
+  :type inpath: str
+
+  """
+
+  global configs
+
+  configs = configparser.ConfigParser()
+  configs.read(inpath)
+
+def getSQLConnection(): # type: () -> mariadb.Connection
+  """
+  Establishes a connection to the MariaDB using the information from the config file
+
+  :return: the connection to the database
+  :rtype: mariadb.Connection
+
+  """
+
+  global configs
+
+  myuser = 'root'
+  mypassword = ''
+  myhost = 'localhost'
+  myport = 3306
+  mydatabase = 'webdiplomacy'
+
+  if configs is not None and configs.has_section('mariadb'):
+    if configs.has_option('mariadb', 'user'):
+      myuser = str(configs.get('mariadb', 'user'))
+    if configs.has_option('mariadb', 'password'):
+      mypassword = str(configs.get('mariadb', 'password'))
+    if configs.has_option('mariadb', 'host'):
+      myhost = str(configs.get('mariadb', 'host'))
+    if configs.has_option('mariadb', 'port'):
+      myport = int(configs.get('mariadb', 'port'))
+    if configs.has_option('mariadb', 'database'):
+      mydatabase = str(configs.get('mariadb', 'database'))
+
+  try:
+    retconn = mariadb.connect(user=myuser, password=mypassword, host=myhost, port=myport, database=mydatabase)
+  except mariadb.Error as e:
+    print('Problem with the database: ' + str(e))
+    return None
+
+  return retconn
 
 def writeCSV(outpath, data, headers=None): # type: (str, [], []) -> None
   """

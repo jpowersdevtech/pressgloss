@@ -45,12 +45,15 @@ def main(): # type: () -> None
   leParser.add_argument('--tones', help='The tones to use.')
   leParser.add_argument('--input', help='An input file or folder.')
   leParser.add_argument('--output', help='An output file or folder.')
+  leParser.add_argument('--config', help='A configuration file with various settings.')
 
   lesArgs = leParser.parse_args()
   if not hasattr(lesArgs, 'operation') or lesArgs.operation is None:
     logging.error('pressgloss needs to know what to do - maybe translate?')
     leParser.print_help()
     sys.exit(2)
+  if hasattr(lesArgs, 'config') and lesArgs.config is not None:
+    helpers.loadconfig(lesArgs.config)
 
   iterations = 1
   if hasattr(lesArgs, 'number') and lesArgs.number is not None:
@@ -97,7 +100,7 @@ def main(): # type: () -> None
     interestinggames = GAMELOG.analyzegym(lesArgs.input)
     print('There were ' + str(len(interestinggames)) + ' game files found.')
   elif lesArgs.operation == 'test':
-    print(PRESSGLOSS.datc2daide([('ENG', 'A WAL S F MAO - IRI', ''), ('ENG', 'F NWG C A NWY - EDI', 'FRA')]))
+    GAMELOG.testmariadb()
 
 if __name__ == '__main__':
   main()

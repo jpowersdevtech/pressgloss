@@ -8,6 +8,16 @@ import copy
 import pressgloss.core as PRESSGLOSS
 from . import helpers
 
+def testmariadb():
+
+  conn = helpers.getSQLConnection()
+  cur = conn.cursor()
+  cur.execute("SELECT * FROM jW_PlayerStates;")
+  for row in cur:
+    print(str(row))
+  cur.close()
+  conn.close()
+
 def prettifygamefile(inpath, outpath): # type: (str, str) -> None
   """
   Reads a JSON game log file and writes it prettily to another file
