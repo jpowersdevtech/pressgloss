@@ -8,15 +8,17 @@ import copy
 import pressgloss.core as PRESSGLOSS
 from . import helpers
 
-def analyzedblog(ingameid, resultspath): # type: (int, str) -> None
+def analyzedblog(ingameid, eventspath, summarypath): # type: (int, str, str) -> None
   """
   Analyze game logs from a database source (initialized by helper and
   a command-line config argument).
 
   :param ingameid: the ID of the game to analyze
   :type ingameid: int
-  :param resultspath: a file location to write results
-  :type resultspath: str
+  :param eventspath: a file location to write event results
+  :type eventspath: str
+  :param summarypath: a file location to write summary results
+  :type summarypath: str
 
   """
 
@@ -101,10 +103,44 @@ def analyzedblog(ingameid, resultspath): # type: (int, str) -> None
   messagecur.close()
   conn.close()
 
-  # apply country labels to to and from columns
+  summaries = {}
+  # apply country labels to to and from columns, roll up behavior
   for curmessage in messagedata:
     curmessage['fromCountryID'] = index2countryname[curmessage['fromCountryID']]
     curmessage['toCountryID'] = index2countryname[curmessage['toCountryID']]
+    if curmessage['fromCountryID'] + '-' + curmessage['toCountryID'] not in summaries:
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']] = Counter()
+    if curmessage['fromCountryID'] + '_as_sender' not in summaries:
+      summaries[curmessage['fromCountryID'] + '_as_sender'] = Counter()
+    if curmessage['toCountryID'] + '_as_recipient' not in summaries:
+      summaries[curmessage['toCountryID'] + '_as_recipient'] = Counter()
+    summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['messages'] += 1
+    summaries[curmessage['fromCountryID'] + '_as_sender']['messages'] += 1
+    summaries[curmessage['toCountryID'] + '_as_recipient']['messages'] += 1
+    if curmessage['intentDeceive'] is None or curmessage['intentDeceive'] == 'no':
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['sent_honestly'] += 1
+      summaries[curmessage['fromCountryID'] + '_as_sender']['was_honest'] += 1
+      summaries[curmessage['toCountryID'] + '_as_recipient']['got_honest_messages'] += 1
+    elif curmessage['intentDeceive'] == 'unsure':
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['sent_uncertainly'] += 1
+      summaries[curmessage['fromCountryID'] + '_as_sender']['was_uncertain'] += 1
+      summaries[curmessage['toCountryID'] + '_as_recipient']['got_uncertain_messages'] += 1
+    else:
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['sent_deceptively'] += 1
+      summaries[curmessage['fromCountryID'] + '_as_sender']['was_deceptive'] += 1
+      summaries[curmessage['toCountryID'] + '_as_recipient']['got_deceptive_messages'] += 1
+    if curmessage['suspectedIncomingDeception'] is None or curmessage['suspectedIncomingDeception'] == '':
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['not_judged_by_recipient'] += 1
+      summaries[curmessage['fromCountryID'] + '_as_sender']['messages_not_judged'] += 1
+      summaries[curmessage['toCountryID'] + '_as_recipient']['did_not_judge_messages'] += 1
+    elif curmessage['intentDeceive'] == 'no':
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['judged_as_honest'] += 1
+      summaries[curmessage['fromCountryID'] + '_as_sender']['messages_judged_as_honest'] += 1
+      summaries[curmessage['toCountryID'] + '_as_recipient']['judged_messages_as_honest'] += 1
+    else:
+      summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['judged_as_deceptive'] += 1
+      summaries[curmessage['fromCountryID'] + '_as_sender']['messages_judged_as_deceptive'] += 1
+      summaries[curmessage['toCountryID'] + '_as_recipient']['judged_messages_as_deceptive'] += 1
 
   movecolset = set(list(movedata[0].keys()))
   movecolset.remove('dislodged')
@@ -136,7 +172,17 @@ def analyzedblog(ingameid, resultspath): # type: (int, str) -> None
     events.append(curmove)
 
   print('Got ' + str(len(events)) + ' events')
-  helpers.writeCSV(resultspath, events, helpers.eventcols)
+  helpers.writeCSV(eventspath, events, helpers.eventcols)
+
+  summarydata = []
+  for curkey, curval in summaries.items():
+    for curlabel, curstat in curval.items():
+      curdict = {}
+      curdict['Conversation'] = curkey
+      curdict['Annotation'] = curlabel
+      curdict['Count'] = curstat
+      summarydata.append(curdict)
+  helpers.writeCSV(summarypath, summarydata, ['Conversation', 'Annotation', 'Count'])
 
 def prettifygamefile(inpath, outpath): # type: (str, str) -> None
   """

@@ -131,7 +131,7 @@ def html2text(inhtml): # type: (str) -> str
 
   """
 
-  parsed = BeautifulSoup(inhtml)
+  parsed = BeautifulSoup(inhtml, features='html.parser')
   rettext = parsed.get_text()
   rettext = rettext.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
 
