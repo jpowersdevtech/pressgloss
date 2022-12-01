@@ -133,7 +133,7 @@ def analyzedblog(ingameid, eventspath, summarypath): # type: (int, str, str) -> 
       summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['not_judged_by_recipient'] += 1
       summaries[curmessage['fromCountryID'] + '_as_sender']['messages_not_judged'] += 1
       summaries[curmessage['toCountryID'] + '_as_recipient']['did_not_judge_messages'] += 1
-    elif curmessage['intentDeceive'] == 'no':
+    elif curmessage['suspectedIncomingDeception'] == 'no':
       summaries[curmessage['fromCountryID'] + '-' + curmessage['toCountryID']]['judged_as_honest'] += 1
       summaries[curmessage['fromCountryID'] + '_as_sender']['messages_judged_as_honest'] += 1
       summaries[curmessage['toCountryID'] + '_as_recipient']['judged_messages_as_honest'] += 1
