@@ -9,7 +9,6 @@ import random
 import configparser
 
 # 3rd-party imports
-import mariadb
 from bs4 import BeautifulSoup
 
 # pressgloss imports
@@ -63,60 +62,6 @@ def loadconfig(inpath): # type: (str) -> None
 
   configs = configparser.ConfigParser()
   configs.read(inpath)
-
-def getSQLConnection(): # type: () -> mariadb.Connection
-  """
-  Establishes a connection to the MariaDB using the information from the config file
-
-  :return: the connection to the database
-  :rtype: mariadb.Connection
-
-  """
-
-  global configs
-
-  myuser = 'root'
-  mypassword = ''
-  myhost = 'localhost'
-  myport = 3306
-  mydatabase = 'webdiplomacy'
-
-  if configs is not None and configs.has_section('mariadb'):
-    if configs.has_option('mariadb', 'user'):
-      myuser = str(configs.get('mariadb', 'user'))
-    if configs.has_option('mariadb', 'password'):
-      mypassword = str(configs.get('mariadb', 'password'))
-    if configs.has_option('mariadb', 'host'):
-      myhost = str(configs.get('mariadb', 'host'))
-    if configs.has_option('mariadb', 'port'):
-      myport = int(configs.get('mariadb', 'port'))
-    if configs.has_option('mariadb', 'database'):
-      mydatabase = str(configs.get('mariadb', 'database'))
-
-  try:
-    retconn = mariadb.connect(user=myuser, password=mypassword, host=myhost, port=myport, database=mydatabase)
-  except mariadb.Error as e:
-    print('Problem with the database: ' + str(e))
-    return None
-
-  return retconn
-
-def cursor2dicts(thecursor): # type: (mariadb.Cursor) -> []
-  """
-  Converts a cursor from a SELECT query into a list of dicts with column name keys
-
-  :param thecursor: the cursor used to SELECT, assumed to already have been executed
-  :type thecursor: mariadb.Cursor
-
-  :return: a list of dictionaries with the results data
-  :rtype: []
-
-  """
-
-  colnames = [curcol[0] for curcol in thecursor.description]
-  data = [dict(zip(colnames, currow)) for currow in thecursor.fetchall()]
-
-  return data
 
 def html2text(inhtml): # type: (str) -> str
   """
