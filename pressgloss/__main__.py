@@ -31,7 +31,6 @@ from . import create_app
 # python -m pressgloss --operation expound --number 100 --daide "FRM (ENG) (FRA) (PRP (PCE (FRA ENG)))"
 # python -m pressgloss --operation random --number 10
 # python -m pressgloss --operation prettifygamefile --input c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.json --output c:\data\shade\data\games\OliveJunglefowlRosalyn25_1651251697467.html
-# python -m pressgloss --operation analyzedblogs --config c:\data\shade\webdip.ini --gameid 34 --output c:\data\shade
 # python -m pressgloss --operation analyzelogs --input c:\data\shade\data_20220526\games
 # python -m pressgloss --operation analyzegym --input c:\data\shade\botgamelogs > c:\data\shade\botgamelogs\analysis.txt
 
@@ -102,8 +101,6 @@ def main(): # type: () -> None
   elif lesArgs.operation == 'analyzegym':
     interestinggames = GAMELOG.analyzegym(lesArgs.input)
     print('There were ' + str(len(interestinggames)) + ' game files found.')
-  elif lesArgs.operation == 'analyzedblogs':
-    GAMELOG.analyzedblog(int(lesArgs.gameid), os.path.join(lesArgs.output, 'events.csv'), os.path.join(lesArgs.output, 'summary.csv'))
   elif lesArgs.operation == 'test':
     print('testing')
 

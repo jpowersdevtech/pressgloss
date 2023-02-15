@@ -1,5 +1,4 @@
 setuptools
 coverage
 flask
-mariadb
 bs4
