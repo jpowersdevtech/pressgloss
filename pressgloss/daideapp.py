@@ -13,6 +13,7 @@ from flask import Blueprint
 import pressgloss.core as PRESSGLOSS
 import pressgloss.gamelog as GAMELOG
 import pressgloss.helpers as helpers
+import pressgloss.daide_translate as DAIDE
 
 landingpage = Blueprint('landingpage', __name__, template_folder='templates')
 theapi = Blueprint('theapi', __name__, template_folder='templates')
@@ -73,6 +74,24 @@ def randomdaide(): # type: () -> Response
     tones = random.sample(helpers.tonelist, random.randint(1, 3))
     utterance = PRESSGLOSS.PressUtterance(None, tones)
     results = {"daide": utterance.daide, "gloss": utterance.english}
+    return flask.jsonify(results)
+
+  return flask.jsonify({})
+
+@theapi.route('/gloss2daide', methods=['POST'])
+def gloss2daide(): # type: () -> Response
+  """
+  Handle GLOSS input from the page.  This will be a single gloss expression.
+
+  :return: A Flask Response with type JSON containing the DAIDE.
+  :rtype: Response
+  """
+
+  if flask.request.method == 'POST':
+    reqdict = flask.request.get_json(force=True)
+    englishtext = reqdict['englishtext']
+    thetones = reqdict['tones']
+    results = {"DAIDE": DAIDE.gloss2daide(englishtext, thetones)}
     return flask.jsonify(results)
 
   return flask.jsonify({})
