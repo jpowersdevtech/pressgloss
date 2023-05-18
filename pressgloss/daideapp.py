@@ -95,3 +95,14 @@ def gloss2daide(): # type: () -> Response
     return flask.jsonify(results)
 
   return flask.jsonify({})
+@theapi.route('/gloss2daidetune', methods=['POST'])
+def gloss2daidetune(): # type: () -> Response
+  """
+  Start training finetuned job for gloss2daide
+  """
+  if flask.request.method == 'POST':
+    reqdict = flask.request.get_json(force=True)
+    training_scope = reqdict[training_scope]
+    results = {"Output": DAIDE.gloss2daidetune(training_scope)}
+    return flask.jsonify(results)
+  return flask.jsonify({})

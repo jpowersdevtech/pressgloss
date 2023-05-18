@@ -92,7 +92,12 @@ class fine_tuned_model:
                 self.training_data = training_data
             
         
-    def fine_tune_model(self):
+    def fine_tune_model(self, n=0):
+        if n > self.data_size:
+             self.add_to_training_list(n-self.data_size)
+             self.data_size = n
+        helpers.dicts_to_jsonl(self.training_list, self.training_data)
+        
         open_ai_feedback_cmd = f'openai tools fine_tunes.prepare_data -f {self.training_data}.jsonl -q --assume-yes'
         tune_create_cmd = f'openai api fine_tunes.create -t "{self.training_data}_prepared_train.jsonl" -v "{self.training_data}_prepared_valid.jsonl" -m curie --assume-yes'
         feedback = subprocess.run(open_ai_feedback_cmd, shell=True, capture_output=True)
@@ -115,7 +120,7 @@ class fine_tuned_model:
             i += 1
     def fine_tune_predict(self, input: str)->str:
 
-        if self.model = None: 
+        if self.model == None: 
             fine_tune_list = subprocess.run('openai api fine_tunes.list', shell=True, capture_output=True)
             if len(fine_tune_list) < 1:
                  self.fine_tune_model()
