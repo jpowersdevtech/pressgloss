@@ -1,5 +1,3 @@
-
-import pandas as pd
 import json
 import openai  # for OpenAI API calls
 import time  # for measuring time duration of API calls
