@@ -28,9 +28,7 @@ class gloss2daide:
         if model == None or '': 
               self.model='gpt-3.5-turbo'
         else: 
-              self.model = model
-        
-    
+              self.model = model    
     def build_chat_complete(self, input: str, model='gpt-3.5-turbo'):
             #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
             # start_time = time.time()
@@ -107,6 +105,7 @@ class fine_tuned_model:
             feedback = subprocess.run(tune_create_cmd, shell=True, capture_output=True)
             self.model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', feedback).group(0)
             print(self.model)
+        return self.model
     def add_to_training_list(self, amount2add=int):
         if amount2add < 1: 
              return
