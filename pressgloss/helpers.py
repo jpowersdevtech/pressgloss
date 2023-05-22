@@ -14,7 +14,12 @@ from bs4 import BeautifulSoup
 # pressgloss imports
 import pressgloss.core
 
+#grammarimport: 
+from daidepp.grammar.grammar_utils import create_daide_grammar
+
 refData = []
+
+#save list of dicts to 
 
 # Initialization loads reference data from resources CSV.
 this_dir, this_filename = os.path.split(__file__)
@@ -717,3 +722,197 @@ def tonetize(utterance, glosssofar): # type: (pressgloss.core.PressUtterance, st
     retstr = piglatinize(retstr)
 
   return retstr
+
+simple_system = '''You are an assistant for the board game diplomacy that helps players convert between DAIDE and English messages. 
+        The format of the inputs will be
+```
+FRM (RECIPIENT) (SENDER): (English message)
+
+```
+        The format of the outputs will be
+```
+FRM (RECIPIENT) (SENDER) (DAIDE Code)
+```
+A movement order is in the form of
+Order Format 	
+Hold: (unit) HLD 	
+Move: (unit) MTO province
+Support to hold: (unit) SUP (unit) 	
+Support to move: (unit) SUP (unit) MTO prov_no_coast
+Convoy: (unit) CVY (unit) CTO province 
+Move by convoy: (unit) CTO province VIA (sea_province sea_province ...)
+
+Press can come in the form of 
+Proposal: PRP ((Press message) (Press message) (Press message)...)
+Orders to do next phase: XDO ((Order) (Order) (Order)...)
+Alliance of powers against another: ALY (power power...) VSS (power power...)
+Peace between powers: PCE (power power...)
+Demilitarized zone: DMZ (power power...) (province province...)
+Query: QRY (Press message or order)
+ORR: (ORR (Press message) (Press message))
+AND: (AND (Press message) (Press message))
+```
+'''
+
+arrangement_list = ['DMZ', 'ALY', 'PCE', 'AND', 'ORR', 'XDO']
+
+def add_paranthesis(substring, string):
+    match=re.findall(substring, string)
+    for i in match:
+        string = string.replace(i, '('+i+')')
+    return string
+    
+#A function to remove extra characters between ALY and VSS
+def aly_fix(string):
+    match=re.search('(?<=ALY\(.*?\))(.*?)(?=VSS)', string)
+    if match:
+        start, end = match.span()
+        string = string[:start] + string[end:]
+        return string
+    else:
+        return string
+
+
+def error_fetch(string):
+    try:
+        grammar.parse(string)
+        error = 'No Error'
+        return error, None
+    except Exception as e:
+        error = str(e)
+        error_type = re.findall(r"\s'(.*?)'\s", error)[0]
+        return error, error_type
+
+def grammar_cleaner(daide_attempt:str)->str:
+    i = 0
+    string = daide_attempt
+    error, error_type = error_fetch(string)
+    print(error)
+    while error != 'No Error' and i < 10:
+        #Get rid of incorrect server-client commands
+        string = re.sub(r'\sBNC\([A-Z]*\)', '', string)
+        #Replace incorrectly labeled units
+        string = re.sub(r'\sA\s', ' AMY ', string)
+        string = re.sub(r'\sF\s', ' FLT ', string)
+        string = re.sub(r'\sFLE\s', ' FLT ', string)
+        if string.count('(') > string.count(')'):
+            string = string + ')'
+        elif string.count('(') < string.count(')'):
+            #Remove the last parenthesis
+            string = string[:-1]
+        
+        error, error_type = error_fetch(string)
+        tokens = re.findall(r'[\s\(\)]*([A-Z]{3})[\s\(\)]*', string)
+        powers = []
+        arrangements = []
+        error_bits = re.findall(r"\s'(.*?)'[\s]*", error)
+        if len(error_bits) > 1:
+            message_mismatch = re.findall(r"\s'(.*?)'[\s]*", error)[1]
+            message_mismatch = re.sub(r'\(', r'\(', message_mismatch)
+            message_mismatch = re.sub(r'\)', r'\)', message_mismatch)
+        else:
+            message_mismatch = None
+        for token in tokens:
+            if token in powerlist:
+                powers.append(token)
+            if token in arrangement_list:
+                arrangements.append(token)
+        print(tokens)
+        if 'AND' and 'PRP' in tokens:
+            string = re.sub('(?<=PRP\()(.*?)(?=AND)', '', string)
+        if error_type == 'message':
+            print('dealing with message error')
+
+            
+            if string[:3] in arrangement_list:
+                string = 'PRP(' + string + ')'
+
+            if error[:38] == "Rule 'message' matched in its entirety": 
+
+                string = re.sub('\s' + message_mismatch, '', string)    
+
+            # #Remove substrings in the form of with BNC(*)
+            # string = re.sub(r'\sBNC\([A-Z]*\)', '', string)
+            # print(string)
+            #Try to parse the string again
+            print('parsing again')
+            original_error = error
+            error, error_type = error_fetch(string)
+        elif error_type == 'rpar' or error_type == 'lpar':
+            print('dealing with parenthesis error')
+
+            print(error)
+            #Count number of tokens that are in arrangement_list
+            # if len(powers)>1:
+            #     string = re.sub(r'\sDMZ', ' DMZ' + '(' + powers[0] + ' ' + powers[1] + ')', string)
+            #     print(string)
+            if len(arrangements) > 1 and 'AND' not in tokens: 
+                string = re.sub(r'PRP\(', 'PRP(AND ', string)
+            if 'AND' in tokens:
+                #Add parenthesis to around PCE(...)
+                string = add_paranthesis(r'PCE\(.*?\)(?=\s)', string)
+
+                #Add parenthesis to around DMZ(...)
+                string = add_paranthesis(r'(?<=\s)DMZ[\s]*\(.*?\)[\s]*\(.*?\)', string)
+                string = add_paranthesis(r'ALY\(.*?\)[\s]*VSS[\s]*\(.*?\)(?=\s)', string)
+                string = add_paranthesis(r'XDO\(.*?\).*?\)(?<=\s)', string)
+            #Count paranthesis and balance them across the string 
+            print('parsing again')
+            original_error = error
+            error, error_type = error_fetch(string)
+        elif error_type == 'arrangement': 
+            print('dealing with arrangement error')
+            if message_mismatch == None: 
+                return string
+            message_mismatch = message_mismatch[:3]
+            if 'VSS' in tokens:
+                #Replace mismatch string with ALY
+                string = re.sub(message_mismatch, 'ALY', string)
+                #remove characters between ALY(.*?) and VSS 
+                string = re.sub('(?<=ALY\(.{7}?\))(.*?)(?=VSS)', '', string)
+            else:
+                print(message_mismatch)
+                string = re.sub(message_mismatch, 'PCE', string)
+            print('parsing again')
+            original_error = error
+            error, error_type = error_fetch(string)
+        elif error_type == 'press_message':
+
+            if string[:3] == 'YES' and 'PRP' not in tokens:
+                string = string[:3] + '(PRP' + string[3:] + ')'
+
+
+            print('parsing again')
+            error, error_type = error_fetch(string)
+
+        print(string)
+
+        i += 1
+    i += 1
+
+    if error != 'No Error':
+        return(daide_attempt)
+    else:
+        return string
+
+def jsonl_loader(json_file_pointer: str)->list: 
+  with open(json_file_pointer, 'r') as json_file:
+    return list(json_file)
+  
+
+def dicts_to_jsonl(data_list: list, filename: str) -> None:
+    """
+    Method saves list of dicts into jsonl file.
+    :param data: (list) list of dicts to be stored,
+    :param filename: (str) path to the output file. If suffix .jsonl is not given then methods appends
+        .jsonl suffix into the file.
+    """
+    sjsonl = '.jsonl'
+    # Check filename
+    if not filename.endswith(sjsonl):
+        filename = filename + sjsonl
+    # Save data
+    with open(filename, 'w') as out:
+        for ddict in data_list:
+            jout = json.dumps(ddict) + '\n'
+            out.write(jout)

@@ -13,6 +13,7 @@ from flask import Blueprint
 import pressgloss.core as PRESSGLOSS
 import pressgloss.gamelog as GAMELOG
 import pressgloss.helpers as helpers
+import pressgloss.daide_translate as DAIDE
 
 landingpage = Blueprint('landingpage', __name__, template_folder='templates')
 theapi = Blueprint('theapi', __name__, template_folder='templates')
@@ -75,4 +76,33 @@ def randomdaide(): # type: () -> Response
     results = {"daide": utterance.daide, "gloss": utterance.english}
     return flask.jsonify(results)
 
+  return flask.jsonify({})
+
+@theapi.route('/gloss2daide', methods=['POST'])
+def gloss2daide(): # type: () -> Response
+  """
+  Handle GLOSS input from the page.  This will be a single gloss expression.
+
+  :return: A Flask Response with type JSON containing the DAIDE.
+  :rtype: Response
+  """
+
+  if flask.request.method == 'POST':
+    reqdict = flask.request.get_json(force=True)
+    englishtext = reqdict['englishtext']
+    thetones = reqdict['tones']
+    results = {"DAIDE": DAIDE.gloss2daide(englishtext, thetones)}
+    return flask.jsonify(results)
+
+  return flask.jsonify({})
+@theapi.route('/gloss2daidetune', methods=['POST'])
+def gloss2daidetune(): # type: () -> Response
+  """
+  Start training finetuned job for gloss2daide
+  """
+  if flask.request.method == 'POST':
+    reqdict = flask.request.get_json(force=True)
+    training_scope = reqdict[training_scope]
+    results = {"Output": DAIDE.gloss2daidetune(training_scope)}
+    return flask.jsonify(results)
   return flask.jsonify({})
