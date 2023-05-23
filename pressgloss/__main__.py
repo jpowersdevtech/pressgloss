@@ -20,6 +20,7 @@ import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
 import pressgloss.gamelog as GAMELOG
 import pressgloss.daideapp as DAIDEAPP
+import pressgloss.daide_translate as DAIDE
 from . import create_app
 
 # python -m pressgloss --operation translate --daide "FRM (ENG) (FRA ITA) (PRP (PCE (FRA ITA)))" --tones "Haughty,Urgent"
@@ -40,9 +41,11 @@ from . import create_app
 def main(): # type: () -> None
   logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
   leParser = argparse.ArgumentParser()
-  leParser.add_argument('--operation', help='What do you want to do? (translate|random|app|test|analyzelogs|analyzegym)')
+  leParser.add_argument('--operation', help='What do you want to do? (translate|random|app|test|analyzelogs|analyzegym|encode|finetune)')
   leParser.add_argument('--number', help='How many expressions to create.')
   leParser.add_argument('--daide', help='The DAIDE format press to use.')
+  leParser.add_argument('--english', help='The English message to translate.')
+  leParser.add_argument('--model', help='The model to use.')
   leParser.add_argument('--tones', help='The tones to use.')
   leParser.add_argument('--gameid', help='The ID of a game to analyze.')
   leParser.add_argument('--input', help='An input file or folder.')
@@ -103,6 +106,15 @@ def main(): # type: () -> None
     print('There were ' + str(len(interestinggames)) + ' game files found.')
   elif lesArgs.operation == 'test':
     print('testing')
+  elif lesArgs.operation == 'encode':
+    tones = []
+    if hasattr(lesArgs, 'tones') and lesArgs.tones is not None:
+      tones = [curtone for curtone in lesArgs.tones.split(',')]
+    encoding = DAIDE.gloss2daide(lesArgs.english, tones, lesArgs.model)
+    print(encoding)
+  elif lesArgs.operation == 'finetune':
+    model = DAIDE.fine_tuned_model.finetune()
+    print(f'{model} fine tuned, use -- model to use') 
 
 if __name__ == '__main__':
   main()
