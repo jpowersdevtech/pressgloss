@@ -8,6 +8,8 @@ import re
 import random
 import configparser
 
+import subprocess
+
 # 3rd-party imports
 from bs4 import BeautifulSoup
 
@@ -790,7 +792,6 @@ def grammar_cleaner(daide_attempt:str)->str:
     i = 0
     string = daide_attempt
     error, error_type = error_fetch(string)
-    print(error)
     while error != 'No Error' and i < 10:
         #Get rid of incorrect server-client commands
         string = re.sub(r'\sBNC\([A-Z]*\)', '', string)
@@ -919,3 +920,13 @@ def dicts_to_jsonl(data_list: list, filename: str) -> None:
         for ddict in data_list:
             jout = json.dumps(ddict) + '\n'
             out.write(jout)
+
+def run_cmd(cmd):
+    result = subprocess.run([
+      '/bin/bash',
+      '-c',
+      cmd
+    ], stdout=subprocess.PIPE)
+    returncode = result.returncode
+    stdout = result.stdout
+    return { 'returncode' : returncode, 'stdout': stdout}

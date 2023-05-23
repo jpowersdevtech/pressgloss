@@ -7,7 +7,6 @@ import random
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
 
-import subprocess
 
 class gloss2daide: 
     def __init__(self, input=str, model=None, gloss=None, tones=None): 
@@ -21,17 +20,20 @@ class gloss2daide:
             self.tones = tones
         if gloss == None: 
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            gloss = [{'role': 'user', 'content': utterance.english},
+            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+            gloss = [{'role': 'user', 'content': english},
                                     {'role': 'assistant', 'content': utterance.daide}]
         while len(gloss) < 8:
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            gloss.extend([{'role': 'user', 'content': utterance.english},
+            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+
+            gloss.extend([{'role': 'user', 'content': english},
                                     {'role': 'assistant', 'content': utterance.daide}])
-        if model == None or '' or []: 
-              model='gpt-3.5-turbo'
+        if model==[]: 
+            print('No model specified, using default model')
+            model='gpt-3.5-turbo'
          
-        print(model)  
-        self.build_chat_complete(gloss, input)
+        self.daide = self.build_chat_complete(gloss, input, model)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
             #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
@@ -41,7 +43,6 @@ class gloss2daide:
             message_data = [{"role": "system", "content": helpers.simple_system}]
             message_data.extend(gloss)
             message_data.append({"role": "user", "content": input})
-            print(message_data)
             content =None 
             error = 'No_Error'
             while True:
@@ -84,12 +85,13 @@ class gloss2daide:
                 return content
     
 class fine_tuned_model:
-    def __init__(self, training_data=None, model=str, data_size=1000):
+    def __init__(self, training_data=None, data_size=1000):
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
-        self.traininglist = []
+        self.training_list = []
         if training_data is None: 
-            self.add_to_training_list(data_size)
+            self.training_list = self.add_to_training_list(self.training_list, data_size)
+            self.training_data = 'training_file'
         else: 
             if type(training_data) == list: 
                 self.training_list = training_data
@@ -97,39 +99,44 @@ class fine_tuned_model:
                 helpers.dicts_to_jsonl(self.training_list, 'training_file')
             else: 
                 self.training_data = training_data
+        self.model = self.fine_tune_model(self.training_list, data_size)
             
         
-    def fine_tune_model(self, n=0):
-        if n > self.data_size:
-             self.add_to_training_list(n-self.data_size)
-             self.data_size = n
-        helpers.dicts_to_jsonl(self.training_list, self.training_data)
+    def fine_tune_model(self, training_list, n: int):
+        training_list = self.add_to_training_list(training_list, n)
+        helpers.dicts_to_jsonl(training_list, self.training_data)
         
-        open_ai_feedback_cmd = f'openai tools fine_tunes.prepare_data -f {self.training_data}.jsonl -q --assume-yes'
-        tune_create_cmd = f'openai api fine_tunes.create -t "{self.training_data}_prepared_train.jsonl" -v "{self.training_data}_prepared_valid.jsonl" -m curie --assume-yes'
-        feedback = subprocess.run(open_ai_feedback_cmd, shell=True, capture_output=True)
-        if 'ERROR' in str(feedback):
+        open_ai_feedback_cmd = f'yes | openai tools fine_tunes.prepare_data -f {self.training_data}.jsonl -q'
+        tune_create_cmd = f'yes | openai api fine_tunes.create -t "{self.training_data}_prepared_train.jsonl" -v "{self.training_data}_prepared_valid.jsonl" -m curie'
+        try:
+            feedback = helpers.run_cmd(open_ai_feedback_cmd)
+        except Exception as e:
+            print(f"Request failed due to {e}, trying again in 5 seconds")
+            time.sleep(5)
+        if 'error' in str(feedback):
             print('Error in training data.')
             return feedback
         else: 
             print(feedback)
-            feedback = subprocess.run(tune_create_cmd, shell=True, capture_output=True)
-            self.model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', feedback).group(0)
-            print(self.model)
-        return self.model
-    def add_to_training_list(self, amount2add=int):
+            feedback = helpers.run_cmd(tune_create_cmd)
+            model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', feedback).group(0)
+            print(model)
+        return model
+    def add_to_training_list(self, training_list, amount2add=int):
         if amount2add < 1: 
              return
         i = 0
         while i < amount2add:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            self.training_list.extend([{'prompt': utterance.english, "completion": utterance.daide}])
+            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+            training_list.append({'prompt': english, "completion": utterance.daide})
             i += 1
+        return training_list
     def fine_tune_predict(self, input: str)->str:
 
         if self.model == None: 
-            fine_tune_list = subprocess.run('openai api fine_tunes.list', shell=True, capture_output=True)
+            fine_tune_list = helpers.run_cmd('openai api fine_tunes.list')
             if len(fine_tune_list) < 1:
                  self.fine_tune_model()
         else:
