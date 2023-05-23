@@ -10,7 +10,7 @@ import pressgloss.helpers as helpers
 import subprocess
 
 class gloss2daide: 
-    def __init__(self, input=str, model=None, gloss=None, tones=None): 
+    def __init__(self, input=str, model='', gloss=None, tones=None): 
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
         
@@ -21,17 +21,20 @@ class gloss2daide:
             self.tones = tones
         if gloss == None: 
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            gloss = [{'role': 'user', 'content': utterance.english},
+            english = ' '.join(utterance.frompower) + ' '.join(utterance.topowers) + utterance.english
+            gloss = [{'role': 'user', 'content': english},
                                     {'role': 'assistant', 'content': utterance.daide}]
         while len(gloss) < 8:
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            gloss.extend([{'role': 'user', 'content': utterance.english},
+            english = ' '.join(utterance.frompower) + ' '.join(utterance.topowers) + utterance.english
+
+            gloss.extend([{'role': 'user', 'content': english},
                                     {'role': 'assistant', 'content': utterance.daide}])
         if model == None or '' or []: 
               model='gpt-3.5-turbo'
          
         print(model)  
-        self.build_chat_complete(gloss, input)
+        self.daide = self.build_chat_complete(gloss, input)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
             #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
@@ -41,7 +44,6 @@ class gloss2daide:
             message_data = [{"role": "system", "content": helpers.simple_system}]
             message_data.extend(gloss)
             message_data.append({"role": "user", "content": input})
-            print(message_data)
             content =None 
             error = 'No_Error'
             while True:

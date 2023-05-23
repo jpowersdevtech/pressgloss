@@ -111,7 +111,7 @@ def main(): # type: () -> None
     if hasattr(lesArgs, 'tones') and lesArgs.tones is not None:
       tones = [curtone for curtone in lesArgs.tones.split(',')]
     encoding = DAIDE.gloss2daide(lesArgs.english, tones, lesArgs.model)
-    print(encoding)
+    print(encoding.daide)
   elif lesArgs.operation == 'finetune':
     model = DAIDE.fine_tuned_model.finetune()
     print(f'{model} fine tuned, use -- model to use') 

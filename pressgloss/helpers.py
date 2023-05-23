@@ -790,7 +790,6 @@ def grammar_cleaner(daide_attempt:str)->str:
     i = 0
     string = daide_attempt
     error, error_type = error_fetch(string)
-    print(error)
     while error != 'No Error' and i < 10:
         #Get rid of incorrect server-client commands
         string = re.sub(r'\sBNC\([A-Z]*\)', '', string)
