@@ -30,6 +30,14 @@ To generate 10 random DAIDE expressions, with glosses (random tones will also be
 
     python -m pressgloss --operation random --number 10
 
+To fine tune a model: 
+
+    python -m pressgloss --operation finetune
+
+To use a model to encode a DAIDE expression:
+
+    python -m pressgloss --operation encode --model (optional) --english "I think this proposal will help us both out. I offer a peace treaty between us. I think our interests are aligned for the time being." --tones "Friendly
+
 To get the usage instructions:
 
     python -m pressgloss --help

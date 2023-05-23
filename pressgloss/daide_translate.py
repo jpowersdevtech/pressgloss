@@ -107,19 +107,22 @@ class fine_tuned_model:
         helpers.dicts_to_jsonl(training_list, self.training_data)
         
         open_ai_feedback_cmd = f'yes | openai tools fine_tunes.prepare_data -f {self.training_data}.jsonl -q'
-        tune_create_cmd = f'yes | openai api fine_tunes.create -t "{self.training_data}_prepared_train.jsonl" -v "{self.training_data}_prepared_valid.jsonl" -m curie'
-        try:
-            feedback = helpers.run_cmd(open_ai_feedback_cmd)
-        except Exception as e:
-            print(f"Request failed due to {e}, trying again in 5 seconds")
-            time.sleep(5)
-        if 'error' in str(feedback):
+        tune_create_cmd = f'yes | openai api fine_tunes.create -t "{self.training_data}_prepared.jsonl" -m curie'
+        while True:
+
+            try:
+                feedback = helpers.run_cmd(open_ai_feedback_cmd)
+            except Exception as e:
+                print(f"Request failed due to {e}, trying again in 5 seconds")
+                time.sleep(5)
+            break
+        if 'error' in str(feedback['stdout']):
             print('Error in training data.')
-            return feedback
+            return feedback['stdout']
         else: 
             print(feedback)
             feedback = helpers.run_cmd(tune_create_cmd)
-            model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', feedback).group(0)
+            model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', feedback['stdout']).group(0)
             print(model)
         return model
     def add_to_training_list(self, training_list, amount2add=int):
