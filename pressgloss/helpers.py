@@ -756,6 +756,9 @@ AND: (AND (Press message) (Press message))
 
 arrangement_list = ['DMZ', 'ALY', 'PCE', 'AND', 'ORR', 'XDO']
 
+grammar = create_daide_grammar(level=130)
+
+
 def add_paranthesis(substring, string):
     match=re.findall(substring, string)
     for i in match:
