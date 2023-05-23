@@ -10,7 +10,7 @@ import pressgloss.helpers as helpers
 import subprocess
 
 class gloss2daide: 
-    def __init__(self, input=str, model='', gloss=None, tones=None): 
+    def __init__(self, input=str, model=None, gloss=None, tones=None): 
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
         
@@ -21,20 +21,20 @@ class gloss2daide:
             self.tones = tones
         if gloss == None: 
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ' '.join(utterance.frompower) + ' '.join(utterance.topowers) + utterance.english
+            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
             gloss = [{'role': 'user', 'content': english},
                                     {'role': 'assistant', 'content': utterance.daide}]
         while len(gloss) < 8:
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ' '.join(utterance.frompower) + ' '.join(utterance.topowers) + utterance.english
+            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
 
             gloss.extend([{'role': 'user', 'content': english},
                                     {'role': 'assistant', 'content': utterance.daide}])
-        if model == None or '' or []: 
-              model='gpt-3.5-turbo'
+        if model==[]: 
+            print('No model specified, using default model')
+            model='gpt-3.5-turbo'
          
-        print(model)  
-        self.daide = self.build_chat_complete(gloss, input)
+        self.daide = self.build_chat_complete(gloss, input, model)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
             #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
