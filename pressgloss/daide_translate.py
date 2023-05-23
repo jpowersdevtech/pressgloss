@@ -120,11 +120,18 @@ class fine_tuned_model:
             print('Error in training data.')
             return feedback['stdout']
         else: 
-            print(feedback)
-            feedback = helpers.run_cmd(tune_create_cmd)
-            model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', feedback['stdout']).group(0)
-            print(model)
-        return model
+            while True:
+                try:
+                    print(feedback)
+                    feedback = helpers.run_cmd(tune_create_cmd)
+                    model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', str(feedback['stdout'])).group(0)
+                    print(model)
+                    return model
+                except Exception as e:
+                    print(f"Request failed due to {e}, trying again in 5 seconds")
+                    time.sleep(5)
+                break
+        
     def add_to_training_list(self, training_list, amount2add=int):
         if amount2add < 1: 
              return
