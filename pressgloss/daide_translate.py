@@ -107,7 +107,6 @@ class fine_tuned_model:
         helpers.dicts_to_jsonl(training_list, self.training_data)
         
         open_ai_feedback_cmd = f'yes | openai tools fine_tunes.prepare_data -f {self.training_data}.jsonl -q'
-        tune_create_cmd = f'yes | openai api fine_tunes.create -t "{self.training_data}_prepared.jsonl" -m curie'
         while True:
 
             try:
@@ -119,18 +118,29 @@ class fine_tuned_model:
         if 'error' in str(feedback['stdout']):
             print('Error in training data.')
             return feedback['stdout']
-        else: 
-            while True:
-                try:
-                    print(feedback)
-                    feedback = helpers.run_cmd(tune_create_cmd)
-                    model = re.search(r'(?<=create\s-m\s)[a-z\:\-0-9]+', str(feedback['stdout'])).group(0)
-                    print(model)
-                    return model
-                except Exception as e:
-                    print(f"Request failed due to {e}, trying again in 5 seconds")
-                    time.sleep(5)
-                break
+        
+
+        tune_create_cmd = re.search(r'(?<=Now use that file when fine-tuning:\\n>\s)([\sa-zA-Z\:\-0-9.\_"()]+)', str(feedback['stdout'])).group(0)
+            
+        try:
+            
+            feedback = helpers.run_cmd(tune_create_cmd)
+            print('finetune model feedback')
+            print(feedback)
+            model = re.search(r'(?<=Created\sfine-tune:\s)([a-zA-Z\-0-9.]+)', str(feedback['stdout']))
+            while model is None:
+                tracking_command = re.search(r'(?<=To\sresume\sthe stream,\srun:\\n\\n\s\s)([\sa-zA-Z\:\-0-9.\_]+)', str(feedback['stdout'])).group(0)
+                feedback = helpers.run_cmd(tracking_command)
+                print('tracking feedback')
+                print(feedback)
+                model = re.search(r'(?<=Created\sfine-tune:\s)([a-zA-Z\-0-9.]+)', str(feedback['stdout']))
+            print('Model created, returning')
+            model = str(model.group(0))
+            print(model)
+            return model
+        except Exception as e:
+            print(f"Request failed due to {e}, trying again in 5 seconds")
+            time.sleep(5)
         
     def add_to_training_list(self, training_list, amount2add=int):
         if amount2add < 1: 
