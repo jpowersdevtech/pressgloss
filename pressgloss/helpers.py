@@ -790,8 +790,20 @@ def error_fetch(string):
 
 def grammar_cleaner(daide_attempt:str)->str:
     i = 0
-    string = daide_attempt
+
+    #We need to remove some alterations that happen to the string due to preprocessing of prompts
+    #Remove extra spaces
+    string = re.sub(r'\s', '', daide_attempt)
+    # uppercasing the string in case the training algorithm removed its uppercase. 
+
+    string = string.upper()
     error, error_type = error_fetch(string)
+    # We need to add this string in case the training prep script removed it as header. 
+    
+
+    #Check if daide_attempt starts with 'FRM ('
+    if not string.startswith('FRM ('):
+        string = 'FRM (' + string
     while error != 'No Error' and i < 10:
         #Get rid of incorrect server-client commands
         string = re.sub(r'\sBNC\([A-Z]*\)', '', string)
@@ -878,7 +890,6 @@ def grammar_cleaner(daide_attempt:str)->str:
                 print(message_mismatch)
                 string = re.sub(message_mismatch, 'PCE', string)
             print('parsing again')
-            original_error = error
             error, error_type = error_fetch(string)
         elif error_type == 'press_message':
 
