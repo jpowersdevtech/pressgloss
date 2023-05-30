@@ -164,3 +164,29 @@ class fine_tuned_model:
             return res
 
          
+class validate_model(self, model, test_size=100, tones=None):
+     def __init__(self, model, test_size):
+        self.model = model
+        self.test_size = test_size
+        mismatch = 0
+        parse_failure = 0
+        i = 0
+        if tones is None:
+            tones = random.sample(helpers.tonelist, random.randint(1, 3))
+        while i < test_size:
+            utterance = PRESSGLOSS.PressUtterance(None, tones)
+            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+            daide = utterance.daide
+            translation = gloss2daide.build_chat_complete(english, model=model)
+            if daide != translation:
+                mismatch += 1
+                if helpers.parse(translation) == None:
+                    parse_failure += 1
+            i += 1
+        mismatch_rate = mismatch / test_size
+        parse_failure_rate = parse_failure / test_size
+        self.accuracy = 1 - mismatch_rate
+        self.parse_accuracy = 1 - parse_failure_rate
+
+            
+        
