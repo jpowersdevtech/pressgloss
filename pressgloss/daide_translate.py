@@ -180,7 +180,7 @@ class validate_model(self, model, test_size=100, tones=None):
             translation = gloss2daide.build_chat_complete(english, model=model)
             if daide != translation:
                 mismatch += 1
-                if helpers.parse(translation) == None:
+                if helpers.error_fetch(translation) != 'No_Error':
                     parse_failure += 1
             i += 1
         mismatch_rate = mismatch / test_size
