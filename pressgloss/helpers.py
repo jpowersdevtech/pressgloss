@@ -19,6 +19,10 @@ import pressgloss.core
 #grammarimport: 
 from daidepp.grammar.grammar_utils import create_daide_grammar
 
+#Tokenizer for NLP preprocessing
+from transformers import AutoTokenizer
+
+
 refData = []
 
 #save list of dicts to 
@@ -941,3 +945,33 @@ def run_cmd(cmd):
     returncode = result.returncode
     stdout = result.stdout
     return { 'returncode' : returncode, 'stdout': stdout}
+
+def nlp_preprocess(text, tokenizer=None):
+    #Remove all non-alphanumeric characters
+    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+    #Remove all numbers
+    text = re.sub(r'[0-9]', '', text)
+    #Remove all single characters
+    text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
+    #Remove single characters from the start
+    text = re.sub(r'\^[a-zA-Z]\s+', ' ', text)
+    #Substitute multiple spaces with single space
+    text = re.sub(r'\s+', ' ', text, flags=re.I)
+    #Remove prefix 'b'
+    text = re.sub(r'^b\s+', '', text)
+    #Convert text to lowercase
+    text = text.lower()
+    if tokenizer == None:
+      tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+    else:
+      tokenizer = AutoTokenizer.from_pretrained(tokenizer, padding=True, return_tensors="pt")
+    encoded_input = tokenizer(text)
+
+    return encoded_input
+
+def decode_outputs(outputs, tokenizer):
+    decoded_outputs = []
+    for output in outputs:
+        decoded_output = tokenizer.decode(output, skip_special_tokens=True)
+        decoded_outputs.append(decoded_output)
+    return decoded_outputs

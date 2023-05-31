@@ -7,33 +7,57 @@ import random
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
 
+from transformers import T5ForConditionalGeneration
 
+tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xxl")
+model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xxl", device_map="auto")
+
+input_text = "translate English to German: How old are you?"
+input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to("cuda")
+
+outputs = model.generate(input_ids)
+print(tokenizer.decode(outputs[0]))
+
+openai_model_list = [
+    'curie',
+    'text-davinci-003',
+    'gpt-3.5-turbo',
+    'gpt-4',
+    'gpt-4-32k'
+    'babbage',
+    'ada'
+]
 class gloss2daide: 
-    def __init__(self, input=str, model=None, gloss=None, tones=None): 
-        openai.organization = os.getenv('OPENAI_ORG')
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        
-
+    def __init__(self, input=str, model=None, gloss=None, tones=None, tokenizer=None): 
         if tones is None:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
         else:
             self.tones = tones
-        if gloss == None: 
-            utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
-            gloss = [{'role': 'user', 'content': english},
-                                    {'role': 'assistant', 'content': utterance.daide}]
-        while len(gloss) < 8:
-            utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+        if model==None or model in openai_model_list:
+            self.model = model
+            openai.organization = os.getenv('OPENAI_ORG')
+            openai.api_key = os.getenv("OPENAI_API_KEY")
+        
 
-            gloss.extend([{'role': 'user', 'content': english},
-                                    {'role': 'assistant', 'content': utterance.daide}])
-        if model==[]: 
-            print('No model specified, using default model')
-            model='gpt-3.5-turbo'
-         
-        self.daide = self.build_chat_complete(gloss, input, model)
+            
+            if gloss == None: 
+                utterance = PRESSGLOSS.PressUtterance(None, tones)
+                english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+                gloss = [{'role': 'user', 'content': english},
+                                        {'role': 'assistant', 'content': utterance.daide}]
+            while len(gloss) < 8:
+                utterance = PRESSGLOSS.PressUtterance(None, tones)
+                english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+
+                gloss.extend([{'role': 'user', 'content': english},
+                                        {'role': 'assistant', 'content': utterance.daide}])
+            if model==[]: 
+                print('No model specified, using default model')
+                model='gpt-3.5-turbo'
+            
+            self.daide = self.build_chat_complete(gloss, input, model)
+        else:
+            self.daide = self.huggingface_translate(input, model, tokenizer)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
             #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
@@ -83,7 +107,12 @@ class gloss2daide:
                 return 'HUH?'
             else:
                 return content
-    
+    def huggingface_translate(self, input: str, model, tokenizer):
+        input_ids = helpers.nlp_preprocess(input, tokenizer)
+        model = T5ForConditionalGeneration.from_pretrained(model, device_map="auto")
+        outputs = model.generate(input_ids)
+        return helpers.decode_outputs(outputs, tokenizer)
+
 class fine_tuned_model:
     def __init__(self, training_data=None, data_size=1000):
         openai.organization = os.getenv('OPENAI_ORG')
