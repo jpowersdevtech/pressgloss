@@ -52,7 +52,11 @@ def main(): # type: () -> None
   leParser.add_argument('--output', help='An output file or folder.')
   leParser.add_argument('--config', help='A configuration file with various settings.')
   leParser.add_argument('--scale', help='A scaling factor for the data the model is trained/validated on.')
-
+  leParser.add_argument('--verbose', help='Whether to print out more information.')
+  helpers.blockPrint()
+  if not hasattr(lesArgs, 'verbose') or lesArgs.verbose is None:
+    helpers.enablePrint()
+  
   lesArgs = leParser.parse_args()
   if not hasattr(lesArgs, 'operation') or lesArgs.operation is None:
     logging.error('pressgloss needs to know what to do - maybe translate?')
@@ -70,7 +74,7 @@ def main(): # type: () -> None
       tones = [curtone for curtone in lesArgs.tones.split(',')]
     for citer in range(0, iterations):
       english = PRESSGLOSS.daide2gloss(lesArgs.daide, tones)
-      print(english)
+      result = english
   elif lesArgs.operation == 'random':
     legaltones = [tone for tone in helpers.tonelist if tone not in ['Urgent', 'Expert', 'Obsequious', 'Haughty', 'PigLatin']]
     print('DAIDE,Tones,Gloss')
@@ -81,7 +85,7 @@ def main(): # type: () -> None
       if random.choice([True, False]):
         curtones.append('Expert')
       utterance = PRESSGLOSS.PressUtterance(None, curtones)
-      print('"' + utterance.daide + '","' + ';'.join(curtones) + '","' + utterance.english + '"')
+      result = '"' + utterance.daide + '","' + ';'.join(curtones) + '","' + utterance.english + '"'
   elif lesArgs.operation == 'expound':
     print('DAIDE,Tones,Gloss')
     legaltones = [tone for tone in helpers.tonelist if tone not in ['Urgent', 'Expert', 'Obsequious', 'Haughty', 'PigLatin']]
@@ -92,7 +96,7 @@ def main(): # type: () -> None
       if random.choice([True, False]):
         tones.append('Expert')
       english = PRESSGLOSS.daide2gloss(lesArgs.daide, tones)
-      print('"' + lesArgs.daide + '","' + str(tones) + '","' + english + '"')
+      result = '"' + lesArgs.daide + '","' + str(tones) + '","' + english + '"'
   elif lesArgs.operation == 'app':
     app = create_app()
     app.run(debug=True, host='0.0.0.0')
@@ -104,18 +108,19 @@ def main(): # type: () -> None
       GAMELOG.prettifygamefile(curgame, curgame)
   elif lesArgs.operation == 'analyzegym':
     interestinggames = GAMELOG.analyzegym(lesArgs.input)
-    print('There were ' + str(len(interestinggames)) + ' game files found.')
+    result = 'There were ' + str(len(interestinggames)) + ' game files found.'
   elif lesArgs.operation == 'test':
-    print('testing')
+    result = 'testing'
   elif lesArgs.operation == 'encode':
     tones = []
     if hasattr(lesArgs, 'tones') and lesArgs.tones is not None:
       tones = [curtone for curtone in lesArgs.tones.split(',')]
     encoding = DAIDE.gloss2daide(lesArgs.english, tones, lesArgs.model)
-    print(encoding.daide)
+    result = encoding.daide
   elif lesArgs.operation == 'finetune':
-    finetune = DAIDE.fine_tuned_model()
-    print(f'{finetune.model} fine tuned, use -- model to use') 
+    if hasattr(lesArgs, 'scale') and lesArgs.scale is not None:
+      finetune = DAIDE.fine_tuned_model(data_size = lesArgs.scale)
+    result = f'{finetune.model} fine tuned, use -- model to use'
   elif lesArgs.operation == 'validate':
     print('validating')
     tones = []
@@ -126,6 +131,8 @@ def main(): # type: () -> None
     else:
       scale = None
     validation = DAIDE.validate_model(lesArgs.model, scale, tones)
-    print('Validation accuracy: ' + str(validation.accuracy) + '% with ' + str(validation.parse_accuracy) + '% parsible')
+    result = 'Validation accuracy: ' + str(validation.accuracy) + '% with ' + str(validation.parse_accuracy) + '% parsible'
+  helpers.enablePrint()
+  print(result)
 if __name__ == '__main__':
   main()
