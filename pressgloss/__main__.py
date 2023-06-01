@@ -54,10 +54,11 @@ def main(): # type: () -> None
   leParser.add_argument('--scale', help='A scaling factor for the data the model is trained/validated on.')
   leParser.add_argument('--verbose', help='Whether to print out more information.')
   helpers.blockPrint()
-  if not hasattr(lesArgs, 'verbose') or lesArgs.verbose is None:
-    helpers.enablePrint()
+  
   
   lesArgs = leParser.parse_args()
+  if not hasattr(lesArgs, 'verbose') or lesArgs.verbose is None:
+    helpers.enablePrint()
   if not hasattr(lesArgs, 'operation') or lesArgs.operation is None:
     logging.error('pressgloss needs to know what to do - maybe translate?')
     leParser.print_help()
