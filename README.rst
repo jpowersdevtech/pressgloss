@@ -36,7 +36,11 @@ To fine tune a model:
 
 To use a model to encode a DAIDE expression:
 
-    python -m pressgloss --operation encode --model (optional) --english "I think this proposal will help us both out. I offer a peace treaty between us. I think our interests are aligned for the time being." --tones "Friendly
+    python -m pressgloss --operation encode --model (optional) --english "I think this proposal will help us both out. I offer a peace treaty between us. I think our interests are aligned for the time being." --tones "Friendly"
+
+To validate a model, either finetuned or few-shot: 
+
+    python -m pressgloss --operation validate --model (optional)
 
 To get the usage instructions:
 
