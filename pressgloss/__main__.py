@@ -51,6 +51,7 @@ def main(): # type: () -> None
   leParser.add_argument('--input', help='An input file or folder.')
   leParser.add_argument('--output', help='An output file or folder.')
   leParser.add_argument('--config', help='A configuration file with various settings.')
+  leParser.add_argument('--scale', help='A scaling factor for the data the model is trained/validated on.')
 
   lesArgs = leParser.parse_args()
   if not hasattr(lesArgs, 'operation') or lesArgs.operation is None:
@@ -115,6 +116,16 @@ def main(): # type: () -> None
   elif lesArgs.operation == 'finetune':
     finetune = DAIDE.fine_tuned_model()
     print(f'{finetune.model} fine tuned, use -- model to use') 
-
+  elif lesArgs.operation == 'validate':
+    print('validating')
+    tones = []
+    if hasattr(lesArgs, 'tones') and lesArgs.tones is not None:
+      tones = [curtone for curtone in lesArgs.tones.split(',')]
+    if hasattr(lesArgs, 'scale') and lesArgs.scale:
+      scale = float(lesArgs.scale)
+    else:
+      scale = None
+    validation = DAIDE.validate_model(lesArgs.model, scale, tones)
+    print('Validation accuracy: ' + str(validation.accuracy) + '% with ' + str(validation.parse_accuracy) + '% parsible')
 if __name__ == '__main__':
   main()

@@ -4,4 +4,4 @@ flask
 bs4
 openai
 daidepp @ git+https://github.com/SHADE-AI/daidepp@main
-
+transformers
