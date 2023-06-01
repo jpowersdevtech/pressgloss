@@ -219,8 +219,8 @@ class validate_model:
         
         mismatch_rate = mismatch / test_size
         parse_failure_rate = parse_failure / test_size
-        self.accuracy = 1 - mismatch_rate
-        self.parse_accuracy = 1 - parse_failure_rate
+        self.accuracy = (1 - mismatch_rate)*100
+        self.parse_accuracy = (1 - parse_failure_rate)*100
 
             
         
