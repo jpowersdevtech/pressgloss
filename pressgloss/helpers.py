@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Standard library imports
-import os
+import os, sys
 import csv
 import json
 import re
@@ -19,8 +19,9 @@ import pressgloss.core
 #grammarimport: 
 from daidepp.grammar.grammar_utils import create_daide_grammar
 
+#Temporarily removing huggingface imports due to incomatibility with some systems.
 #Tokenizer for NLP preprocessing
-from transformers import AutoTokenizer
+# from transformers import AutoTokenizer
 
 
 refData = []
@@ -792,12 +793,20 @@ def error_fetch(string):
         error_type = re.findall(r"\s'(.*?)'\s", error)[0]
         return error, error_type
 
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
 def grammar_cleaner(daide_attempt:str)->str:
     i = 0
 
     #We need to remove some alterations that happen to the string due to preprocessing of prompts
     #Remove extra spaces
-    string = re.sub(r'\s', '', daide_attempt)
+    # string = re.sub(r'\s', '', daide_attempt)
     # uppercasing the string in case the training algorithm removed its uppercase. 
 
     string = string.upper()
@@ -946,32 +955,33 @@ def run_cmd(cmd):
     stdout = result.stdout
     return { 'returncode' : returncode, 'stdout': stdout}
 
-def nlp_preprocess(text, tokenizer=None):
-    #Remove all non-alphanumeric characters
-    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
-    #Remove all numbers
-    text = re.sub(r'[0-9]', '', text)
-    #Remove all single characters
-    text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
-    #Remove single characters from the start
-    text = re.sub(r'\^[a-zA-Z]\s+', ' ', text)
-    #Substitute multiple spaces with single space
-    text = re.sub(r'\s+', ' ', text, flags=re.I)
-    #Remove prefix 'b'
-    text = re.sub(r'^b\s+', '', text)
-    #Convert text to lowercase
-    text = text.lower()
-    if tokenizer == None:
-      tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
-    else:
-      tokenizer = AutoTokenizer.from_pretrained(tokenizer, padding=True, return_tensors="pt")
-    encoded_input = tokenizer(text)
+# See above note by import
+# def nlp_preprocess(text, tokenizer=None):
+#     #Remove all non-alphanumeric characters
+#     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+#     #Remove all numbers
+#     text = re.sub(r'[0-9]', '', text)
+#     #Remove all single characters
+#     text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
+#     #Remove single characters from the start
+#     text = re.sub(r'\^[a-zA-Z]\s+', ' ', text)
+#     #Substitute multiple spaces with single space
+#     text = re.sub(r'\s+', ' ', text, flags=re.I)
+#     #Remove prefix 'b'
+#     text = re.sub(r'^b\s+', '', text)
+#     #Convert text to lowercase
+#     text = text.lower()
+#     if tokenizer == None:
+#       tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+#     else:
+#       tokenizer = AutoTokenizer.from_pretrained(tokenizer, padding=True, return_tensors="pt")
+#     encoded_input = tokenizer(text)
 
-    return encoded_input
+#     return encoded_input
 
-def decode_outputs(outputs, tokenizer):
-    decoded_outputs = []
-    for output in outputs:
-        decoded_output = tokenizer.decode(output, skip_special_tokens=True)
-        decoded_outputs.append(decoded_output)
-    return decoded_outputs
+# def decode_outputs(outputs, tokenizer):
+#     decoded_outputs = []
+#     for output in outputs:
+#         decoded_output = tokenizer.decode(output, skip_special_tokens=True)
+#         decoded_outputs.append(decoded_output)
+#     return decoded_outputs

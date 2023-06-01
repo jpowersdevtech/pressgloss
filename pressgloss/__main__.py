@@ -125,7 +125,7 @@ def main(): # type: () -> None
       scale = float(lesArgs.scale)
     else:
       scale = None
-    validation = DAIDE.validate(lesArgs.model, scale, tones)
-    return 'Validation accuracy: ' + str(validation.accuracy) + '% with ' + str(validation.parse_accuracy) + '% parsible'
+    validation = DAIDE.validate_model(lesArgs.model, scale, tones)
+    print('Validation accuracy: ' + str(validation.accuracy) + '% with ' + str(validation.parse_accuracy) + '% parsible')
 if __name__ == '__main__':
   main()

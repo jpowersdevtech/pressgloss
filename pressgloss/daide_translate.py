@@ -7,16 +7,9 @@ import random
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
 
-from transformers import T5ForConditionalGeneration
+# Temporarily removing due to incompatibility with some systems 
+# from transformers import T5ForConditionalGeneration
 
-tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xxl")
-model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xxl", device_map="auto")
-
-input_text = "translate English to German: How old are you?"
-input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to("cuda")
-
-outputs = model.generate(input_ids)
-print(tokenizer.decode(outputs[0]))
 
 openai_model_list = [
     'curie',
@@ -33,7 +26,9 @@ class gloss2daide:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
         else:
             self.tones = tones
-        if model==None or model in openai_model_list:
+        if model==None:
+            model = 'gpt-3.5-turbo'
+        if model in openai_model_list:
             self.model = model
             openai.organization = os.getenv('OPENAI_ORG')
             openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -60,58 +55,58 @@ class gloss2daide:
             self.daide = self.huggingface_translate(input, model, tokenizer)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
-            #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
-            # start_time = time.time()
-            #If the request fails, we will try again after 5 seconds
+        #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
+        # start_time = time.time()
+        #If the request fails, we will try again after 5 seconds
 
-            message_data = [{"role": "system", "content": helpers.simple_system}]
-            message_data.extend(gloss)
-            message_data.append({"role": "user", "content": input})
-            content =None 
-            error = 'No_Error'
-            while True:
-                    try:
-                            response = openai.ChatCompletion.create(
-                            model=model,
-                            messages=message_data,
-                            temperature=0)
-                            content= response['choices'][0]['message']['content']
-                            content= helpers.grammar_cleaner(content)
-                            error = helpers.error_fetch(content)
-                    except Exception as e:
-                            # print(f"Request failed due to {e}, trying again in 5 seconds")
-                            time.sleep(5)
+        message_data = [{"role": "system", "content": helpers.simple_system}]
+        message_data.extend(gloss)
+        message_data.append({"role": "user", "content": input})
+        content =None 
+        error = 'No_Error'
+        while True:
+                try:
+                        response = openai.ChatCompletion.create(
+                        model=model,
+                        messages=message_data,
+                        temperature=0)
+                        content= response['choices'][0]['message']['content']
+                        content= helpers.grammar_cleaner(content)
+                        error = helpers.error_fetch(content)
+                except Exception as e:
+                        # print(f"Request failed due to {e}, trying again in 5 seconds")
+                        time.sleep(5)
 
+                
+                
+                break
+        if error != 'No_Error':
+                message_data.extend(
+                        [{'role': 'assistant', 'content': content},
+                        {"role": "user", "content": f"That's not correct DAIDE, {error}, try again"}])
+                try:
+                        response = openai.ChatCompletion.create(
+                        model=model,
+                        messages=message_data,
+                        temperature=0)
+                        content= response['choices'][0]['message']['content']
+                        content= helpers.grammar_cleaner(re.sub('(.*)\\n\\n', '', content))
+                        error = helpers.error_fetch(content)
+                
                     
-                    
-                    break
-            if error != 'No_Error':
-                    message_data.extend(
-                            [{'role': 'assistant', 'content': content},
-                            {"role": "user", "content": f"That's not correct DAIDE, {error}, try again"}])
-                    try:
-                            response = openai.ChatCompletion.create(
-                            model=model,
-                            messages=message_data,
-                            temperature=0)
-                            content= response['choices'][0]['message']['content']
-                            content= helpers.grammar_cleaner(re.sub('(.*)\\n\\n', '', content))
-                            error = helpers.error_fetch(content)
-                    
-                        
 
-                    except Exception as e:
-                            print(f"Request failed due to {e}, trying again in 5 seconds")
-                            time.sleep(5)
-            if error != 'No_Error':
-                return 'HUH?'
-            else:
-                return content
-    def huggingface_translate(self, input: str, model, tokenizer):
-        input_ids = helpers.nlp_preprocess(input, tokenizer)
-        model = T5ForConditionalGeneration.from_pretrained(model, device_map="auto")
-        outputs = model.generate(input_ids)
-        return helpers.decode_outputs(outputs, tokenizer)
+                except Exception as e:
+                        print(f"Request failed due to {e}, trying again in 5 seconds")
+                        time.sleep(5)
+        if error != 'No_Error':
+            return 'HUH?'
+        else:
+            return content
+    # def huggingface_translate(self, input: str, model, tokenizer):
+    #     input_ids = helpers.nlp_preprocess(input, tokenizer)
+    #     model = T5ForConditionalGeneration.from_pretrained(model, device_map="auto")
+    #     outputs = model.generate(input_ids)
+    #     return helpers.decode_outputs(outputs, tokenizer)
 
 class fine_tuned_model:
     def __init__(self, training_data=None, data_size=1000):
@@ -193,25 +188,35 @@ class fine_tuned_model:
             return res
 
          
-class validate_model(self, model, test_size=100, tones=None):
-     def __init__(self, model, test_size):
+class validate_model:
+     def __init__(self, model, test_size, tones=None):
         self.model = model
-        self.test_size = test_size
         mismatch = 0
         parse_failure = 0
         i = 0
+        if test_size is None: 
+            test_size = 100
+        
         if tones is None:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
         while i < test_size:
             utterance = PRESSGLOSS.PressUtterance(None, tones)
             english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
             daide = utterance.daide
-            translation = gloss2daide.build_chat_complete(english, model=model)
+            encoding = gloss2daide(english, model=model)
+            translation = encoding.daide
             if daide != translation:
                 mismatch += 1
-                if helpers.error_fetch(translation) != 'No_Error':
+                try:
+                    if helpers.error_fetch(translation) != 'No_Error':
+                        parse_failure += 1
+                    else:
+                        pass
+                except Exception as e:
+                    print(f"API failure: {e}, probably server error, adding to failure rate.")
                     parse_failure += 1
             i += 1
+        
         mismatch_rate = mismatch / test_size
         parse_failure_rate = parse_failure / test_size
         self.accuracy = 1 - mismatch_rate
