@@ -122,7 +122,7 @@ def main(): # type: () -> None
     if hasattr(lesArgs, 'scale') and lesArgs.scale is not None:
       lesArgs.scale = float(lesArgs.scale)
     finetune = DAIDE.fine_tuned_model(data_size = lesArgs.scale)
-    result = f'{finetune.model} fine tuned, use -- model to use'
+    result = finetune.feedback
   elif lesArgs.operation == 'validate':
     print('validating')
     tones = []

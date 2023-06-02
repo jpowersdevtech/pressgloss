@@ -175,7 +175,7 @@ class fine_tuned_model:
                 tracking_command = re.search(r'(?<=To\sresume\sthe stream,\srun:\\n\\n\s\s)([\sa-zA-Z\:\-0-9.\_]+)', str(feedback['stdout'])).group(0)
                 feedback = helpers.run_cmd(tracking_command)
                 print('tracking feedback')
-                print(feedback)
+                self.feedback = str(feedback['stdout'])
                 model = re.search(r'(?<=Created\sfine-tune:\s)([a-zA-Z\-0-9.]+)', str(feedback['stdout']))
             print('Model created, returning')
             model = str(model.group(0))
