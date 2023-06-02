@@ -28,13 +28,15 @@ class gloss2daide:
             self.tones = tones
         if model==None:
             model = 'gpt-3.5-turbo'
-        if model in openai_model_list:
-            self.model = model
-            openai.organization = os.getenv('OPENAI_ORG')
-            openai.api_key = os.getenv("OPENAI_API_KEY")
-        
+        # if model in openai_model_list:
+        self.model = model
+        openai.organization = os.getenv('OPENAI_ORG')
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        if openai.api_key == None:
+            print('Please set OPENAI_ORG and OPENAI_API_KEY environment variables')
+            return
 
-            
+        if model in openai_model_list:
             if gloss == None: 
                 utterance = PRESSGLOSS.PressUtterance(None, tones)
                 english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
@@ -51,8 +53,27 @@ class gloss2daide:
                 model='gpt-3.5-turbo'
             
             self.daide = self.build_chat_complete(gloss, input, model)
-        else:
-            self.daide = self.huggingface_translate(input, model, tokenizer)
+        else: 
+            self.daide = self.finetune_completion_request(input, model)
+        
+        # else:
+        #     self.daide = self.huggingface_translate(input, model, tokenizer)
+
+    def finetune_completion_request(self, input, model):
+         
+        try:
+            response = openai.Completion.create(
+            model=model,
+            prompt=input,
+            max_tokens=100)
+            content= response['choices'][0]['text']
+            print("Before cleaner", content)
+            content= helpers.grammar_cleaner(content)
+            print("After cleaner", content)
+            return response
+        except Exception as e:
+            print(f"Request failed due to {e}, trying again in 5 seconds")
+            time.sleep(5)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
         #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
@@ -109,9 +130,13 @@ class gloss2daide:
     #     return helpers.decode_outputs(outputs, tokenizer)
 
 class fine_tuned_model:
-    def __init__(self, training_data=None, data_size=1000):
+    def __init__(self, training_data=None, data_size=100000):
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
+
+        if openai.api_key == None:
+            print('Please set OPENAI_ORG and OPENAI_API_KEY environment variables')
+            return
         self.training_list = []
         if training_data is None: 
             self.training_list = self.add_to_training_list(self.training_list, data_size)
@@ -156,7 +181,7 @@ class fine_tuned_model:
                 tracking_command = re.search(r'(?<=To\sresume\sthe stream,\srun:\\n\\n\s\s)([\sa-zA-Z\:\-0-9.\_]+)', str(feedback['stdout'])).group(0)
                 feedback = helpers.run_cmd(tracking_command)
                 print('tracking feedback')
-                print(feedback)
+                self.feedback = str(feedback['stdout'])
                 model = re.search(r'(?<=Created\sfine-tune:\s)([a-zA-Z\-0-9.]+)', str(feedback['stdout']))
             print('Model created, returning')
             model = str(model.group(0))
@@ -201,9 +226,9 @@ class validate_model:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
         while i < test_size:
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+            english = ''.join(utterance.frompower) + ') ' + ' ('.join(utterance.topowers) + ') ' + utterance.english
             daide = utterance.daide
-            encoding = gloss2daide(english, model=model)
+            encoding = gloss2daide(input=english, model=model)
             translation = encoding.daide
             if daide != translation:
                 mismatch += 1
