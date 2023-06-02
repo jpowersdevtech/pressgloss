@@ -128,7 +128,7 @@ class gloss2daide:
     #     return helpers.decode_outputs(outputs, tokenizer)
 
 class fine_tuned_model:
-    def __init__(self, training_data=None, data_size=1000):
+    def __init__(self, training_data=None, data_size=100000):
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
         self.training_list = []
