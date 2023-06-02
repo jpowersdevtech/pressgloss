@@ -6,6 +6,8 @@ A Python library for converting formal Diplomacy DAIDE Press language into
 human-readable glosses with tone.  Some functions are exposed as JSON POST
 API endpoints.
 
+This library is built with an OpenAI API, which is a paid service.  An openai key is used for many functions in encoding and finetuning models. For more usage guidance around finetunes, see: https://platform.openai.com/docs/guides/fine-tuning
+
 ------------------------
 Install and run the app:
 ------------------------
@@ -45,6 +47,9 @@ To validate a model, either finetuned or few-shot:
 To get the usage instructions:
 
     python -m pressgloss --help
+
+To see finetunes created by your organization: 
+    openai api fine_tunes.list
 
 ---------
 API:
