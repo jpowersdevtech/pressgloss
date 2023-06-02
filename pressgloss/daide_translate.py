@@ -148,7 +148,7 @@ class fine_tuned_model:
                 helpers.dicts_to_jsonl(self.training_list, 'training_file')
             else: 
                 self.training_data = training_data
-        self.model = self.fine_tune_model(self.training_list, data_size)
+        self.tracking_number = self.fine_tune_model(self.training_list, data_size)
             
         
     def fine_tune_model(self, training_list, n: int):
@@ -181,12 +181,11 @@ class fine_tuned_model:
                 tracking_command = re.search(r'(?<=To\sresume\sthe stream,\srun:\\n\\n\s\s)([\sa-zA-Z\:\-0-9.\_]+)', str(feedback['stdout'])).group(0)
                 feedback = helpers.run_cmd(tracking_command)
                 print('tracking feedback')
-                self.feedback = str(feedback['stdout'])
-                model = re.search(r'(?<=Created\sfine-tune:\s)([a-zA-Z\-0-9.]+)', str(feedback['stdout']))
+                feedback = re.search(r'(?<=Created\sfine-tune:\s)([a-zA-Z\-0-9.]+)', str(feedback['stdout']))
             print('Model created, returning')
             model = str(model.group(0))
             print(model)
-            return model
+            return feedback
         except Exception as e:
             print(f"Request failed due to {e}, trying again in 5 seconds")
             time.sleep(5)

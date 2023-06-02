@@ -120,9 +120,11 @@ def main(): # type: () -> None
     result = encoding.daide
   elif lesArgs.operation == 'finetune':
     if hasattr(lesArgs, 'scale') and lesArgs.scale is not None:
-      lesArgs.scale = float(lesArgs.scale)
+      lesArgs.scale = int(lesArgs.scale)
+    else:
+      lesArgs.scale = 100000
     finetune = DAIDE.fine_tuned_model(data_size = lesArgs.scale)
-    result = finetune.feedback
+    result = f'Fine tune job created, you can track it with the id: {finetune.tracking_number}'
   elif lesArgs.operation == 'validate':
     print('validating')
     tones = []
