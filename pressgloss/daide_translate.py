@@ -32,7 +32,7 @@ class gloss2daide:
         self.model = model
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
-        if openai.organization == None or openai.api_key == None:
+        if openai.api_key == None:
             print('Please set OPENAI_ORG and OPENAI_API_KEY environment variables')
             return
 
@@ -134,7 +134,7 @@ class fine_tuned_model:
         openai.organization = os.getenv('OPENAI_ORG')
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
-        if openai.organization == None or openai.api_key == None:
+        if openai.api_key == None:
             print('Please set OPENAI_ORG and OPENAI_API_KEY environment variables')
             return
         self.training_list = []

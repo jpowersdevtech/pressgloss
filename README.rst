@@ -8,6 +8,7 @@ API endpoints.
 
 This library is built with an OpenAI API, which is a paid service.  An openai key is used for many functions in encoding and finetuning models. For more usage guidance around finetunes, see: https://platform.openai.com/docs/guides/fine-tuning
 
+To use said functions, please assign your openai key to the OPENAI_API_KEY environment variable.  If you do not have an openai key, you can still use the library, but you will not be able to finetune or encode models. Additionally, if you assign OPENAI_ORG, you can collaborate with teamates and share finetunes.
 ------------------------
 Install and run the app:
 ------------------------
