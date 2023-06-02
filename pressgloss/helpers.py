@@ -19,6 +19,11 @@ import pressgloss.core
 #grammarimport: 
 from daidepp.grammar.grammar_utils import create_daide_grammar
 
+# To request finetuned models hosted by openai
+# import requests
+
+
+
 #Temporarily removing huggingface imports due to incomatibility with some systems.
 #Tokenizer for NLP preprocessing
 # from transformers import AutoTokenizer
@@ -809,11 +814,11 @@ def grammar_cleaner(daide_attempt:str)->str:
     # string = re.sub(r'\s', '', daide_attempt)
     # uppercasing the string in case the training algorithm removed its uppercase. 
 
-    string = string.upper()
+    string = daide_attempt.upper()
     error, error_type = error_fetch(string)
     # We need to add this string in case the training prep script removed it as header. 
     
-
+    print(string)
     #Check if daide_attempt starts with 'FRM ('
     if not string.startswith('FRM ('):
         string = 'FRM (' + string
@@ -954,6 +959,10 @@ def run_cmd(cmd):
     returncode = result.returncode
     stdout = result.stdout
     return { 'returncode' : returncode, 'stdout': stdout}
+
+# def finetune_req(model, key):
+
+#   res = requests.post('https://stackoverflow.com/questions/26000336')
 
 # See above note by import
 # def nlp_preprocess(text, tokenizer=None):

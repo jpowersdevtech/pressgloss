@@ -28,13 +28,13 @@ class gloss2daide:
             self.tones = tones
         if model==None:
             model = 'gpt-3.5-turbo'
-        if model in openai_model_list:
-            self.model = model
-            openai.organization = os.getenv('OPENAI_ORG')
-            openai.api_key = os.getenv("OPENAI_API_KEY")
-        
+        # if model in openai_model_list:
+        self.model = model
+        openai.organization = os.getenv('OPENAI_ORG')
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+    
 
-            
+        if model in openai_model_list:
             if gloss == None: 
                 utterance = PRESSGLOSS.PressUtterance(None, tones)
                 english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
@@ -51,8 +51,29 @@ class gloss2daide:
                 model='gpt-3.5-turbo'
             
             self.daide = self.build_chat_complete(gloss, input, model)
-        else:
-            self.daide = self.huggingface_translate(input, model, tokenizer)
+        else: 
+            print(model)
+            print(input)
+            self.daide = self.finetune_completion_request(input, model)
+        
+        # else:
+        #     self.daide = self.huggingface_translate(input, model, tokenizer)
+
+    def finetune_completion_request(self, input, model):
+         
+        try:
+            response = openai.Completion.create(
+            model=model,
+            prompt=input,
+            max_tokens=100)
+            print(response['choices'][0]['text'])
+            content= response['choices'][0]['text']
+            content= helpers.grammar_cleaner(content)
+            error = helpers.error_fetch(content)
+            return response
+        except Exception as e:
+            print(f"Request failed due to {e}, trying again in 5 seconds")
+            time.sleep(5)
     
     def build_chat_complete(self, gloss, input: str, model= 'gpt-3.5-turbo'):
         #This function uses a string to define a system and a list of dictionaries to define the tunning examples. 
@@ -201,9 +222,9 @@ class validate_model:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
         while i < test_size:
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ''.join(utterance.frompower) + ' ' + ' '.join(utterance.topowers) + utterance.english
+            english = ''.join(utterance.frompower) + ') ' + ' ('.join(utterance.topowers) + ') ' + utterance.english
             daide = utterance.daide
-            encoding = gloss2daide(english, model=model)
+            encoding = gloss2daide(input=english, model=model)
             translation = encoding.daide
             if daide != translation:
                 mismatch += 1
