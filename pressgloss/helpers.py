@@ -814,14 +814,16 @@ def grammar_cleaner(daide_attempt:str)->str:
     # string = re.sub(r'\s', '', daide_attempt)
     # uppercasing the string in case the training algorithm removed its uppercase. 
 
-    string = daide_attempt.upper()
-    error, error_type = error_fetch(string)
+    daide_attempt = daide_attempt.upper()
+    #Remove the completion seperators. 
+    daide_attempt = re.sub(r'\n\n###\n\n', '', daide_attempt)
+    if not daide_attempt.startswith('FRM ('):
+        daide_attempt = 'FRM (' + daide_attempt
+    error, error_type = error_fetch(daide_attempt)
     # We need to add this string in case the training prep script removed it as header. 
-    
-    print(string)
+    string = daide_attempt
     #Check if daide_attempt starts with 'FRM ('
-    if not string.startswith('FRM ('):
-        string = 'FRM (' + string
+    
     while error != 'No Error' and i < 10:
         #Get rid of incorrect server-client commands
         string = re.sub(r'\sBNC\([A-Z]*\)', '', string)

@@ -52,8 +52,6 @@ class gloss2daide:
             
             self.daide = self.build_chat_complete(gloss, input, model)
         else: 
-            print(model)
-            print(input)
             self.daide = self.finetune_completion_request(input, model)
         
         # else:
@@ -66,10 +64,10 @@ class gloss2daide:
             model=model,
             prompt=input,
             max_tokens=100)
-            print(response['choices'][0]['text'])
             content= response['choices'][0]['text']
+            print("Before cleaner", content)
             content= helpers.grammar_cleaner(content)
-            error = helpers.error_fetch(content)
+            print("After cleaner", content)
             return response
         except Exception as e:
             print(f"Request failed due to {e}, trying again in 5 seconds")
