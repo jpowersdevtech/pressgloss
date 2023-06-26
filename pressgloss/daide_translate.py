@@ -6,6 +6,7 @@ import re
 import random
 import pressgloss.core as PRESSGLOSS
 import pressgloss.helpers as helpers
+import pressgloss.AMR.single as amr
 
 # Temporarily removing due to incompatibility with some systems 
 # from transformers import T5ForConditionalGeneration
@@ -220,15 +221,22 @@ class validate_model:
         i = 0
         if test_size is None: 
             test_size = 100
+
+        
         
         if tones is None:
             tones = random.sample(helpers.tonelist, random.randint(1, 3))
         while i < test_size:
+            
             utterance = PRESSGLOSS.PressUtterance(None, tones)
-            english = ''.join(utterance.frompower) + ') ' + ' ('.join(utterance.topowers) + ') ' + utterance.english
             daide = utterance.daide
-            encoding = gloss2daide(input=english, model=model)
-            translation = encoding.daide
+            if model == 'AMR' or 'amr':
+                encoding = amr.ENG_AMR(utterance.english, utterance.frompower, utterance.topowers)
+            else:
+                english = ''.join(utterance.frompower) + ') ' + ' ('.join(utterance.topowers) + ') ' + utterance.english
+                
+                encoding = gloss2daide(input=english, model=model)
+                translation = encoding.daide
             if daide != translation:
                 mismatch += 1
                 try:
@@ -248,3 +256,7 @@ class validate_model:
 
             
         
+class AMR_translation: 
+    def __init__(self) -> None:
+
+        pass
