@@ -17,7 +17,7 @@ ENV PATH=/opt/conda/envs/myenv/bin:$PATH
 RUN pip install -r AMR/umd_requirements.txt
 RUN pip uninstall -y pip
 
-#Second phase
+#Second phaseibhjuy
 
 FROM alpine:latest
 RUN apk update
